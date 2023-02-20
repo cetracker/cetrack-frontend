@@ -1,9 +1,10 @@
+import { MantineProvider, Text } from '@mantine/core';
 
 const App = () => {
   return (
-    <h1>
-      Great things to come.
-    </h1>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <Text>Great things to come.</Text>
+    </MantineProvider>
   )
 }
 
