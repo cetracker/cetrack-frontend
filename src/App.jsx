@@ -1,5 +1,6 @@
 import { MantineProvider } from '@mantine/core';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import PartList from './components/PartList/PartList';
 
 const theme = {
@@ -22,6 +23,7 @@ const App = () => {
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <QueryClientProvider client={queryClient}>
         <PartList />
+        <ReactQueryDevtools />
       </QueryClientProvider>
     </MantineProvider>
   )
