@@ -6,6 +6,9 @@ import eslint from 'vite-plugin-eslint';
 // https://vitejs.dev/config/
 // https://stackoverflow.com/questions/66043612/vue3-vite-project-alias-src-to-not-working
 export default defineConfig({
+  server: {
+    port: 3001,
+  },
   plugins: [
     react(),
     { // default settings on build (i.e. fail on error)
