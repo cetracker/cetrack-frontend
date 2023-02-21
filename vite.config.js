@@ -1,6 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from 'vite';
+import mockDevServerPlugin from 'vite-plugin-mock-dev-server' // https://github.com/pengzhanbo/vite-plugin-mock-dev-server
 import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
@@ -8,6 +9,11 @@ import eslint from 'vite-plugin-eslint';
 export default defineConfig({
   server: {
     port: 3001,
+    proxy: {
+      '^/api': {
+        target: '',
+      },
+    },
   },
   plugins: [
     react(),
@@ -22,7 +28,11 @@ export default defineConfig({
       }),
       apply: 'serve',
       enforce: 'post'
-  }],
+    },
+    mockDevServerPlugin({
+      include: 'mock/**/*.mock.{ts,js,cjs,mjs,json,json5}'
+    }),
+  ],
   resolve: {
     alias: [
       { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
