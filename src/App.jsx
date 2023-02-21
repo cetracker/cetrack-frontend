@@ -1,5 +1,7 @@
 import { Badge, Code, Flex, MantineProvider, Text } from '@mantine/core';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import ElementBox from './components/ElementBox/ElementBox';
+import PartList from './components/PartList/PartList';
 
 const theme = {
   // Override any other properties from default theme
@@ -14,17 +16,22 @@ const theme = {
   },
 }
 
+const queryClient = new QueryClient()
+
 const App = () => {
   return (
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
-      <Flex mih={30} justify="center" align="center" bg="gray.2" gap="md" >
-        <Text>Great things to come.</Text>
-        <Badge size='md'>Badge</Badge>
-      </Flex>
-      <Code>
-        Code snippet
-      </Code>
-      <ElementBox />
+      <QueryClientProvider client={queryClient}>
+        <Flex mih={30} justify="center" align="center" bg="gray.2" gap="md" >
+          <Text>Great things to come.</Text>
+          <Badge size='md'>Badge</Badge>
+        </Flex>
+        <Code>
+          Code snippet
+        </Code>
+        <ElementBox />
+        <PartList />
+      </QueryClientProvider>
     </MantineProvider>
   )
 }
