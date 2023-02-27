@@ -1,6 +1,18 @@
 import { Alert, Center, Loader, Table } from "@mantine/core";
 import { IconAlertCircle } from '@tabler/icons-react';
-import useParts from "../../hooks/useParts";
+import { useQuery } from '@tanstack/react-query'
+import fetchPartsQuery from "./fetchParts";
+
+// ⬇️ needs access to queryClient
+export const loader = (queryClient) =>
+  async () => {
+    const query = fetchPartsQuery()
+    // ⬇️ return data or fetch it
+    return (
+      queryClient.getQueryData(query.queryKey) ??
+      (await queryClient.fetchQuery(query))
+    )
+  }
 
 
 const PartList = () => {
@@ -8,7 +20,7 @@ const PartList = () => {
     status,
     error,
     data: parts,
-  } = useParts()
+  } = useQuery(fetchPartsQuery())
   console.log(parts)
 
   return (

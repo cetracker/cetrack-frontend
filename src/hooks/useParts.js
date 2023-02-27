@@ -1,3 +1,5 @@
+/* obsolete after adding react-router - deprecated */
+
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 

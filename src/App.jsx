@@ -1,7 +1,11 @@
-import { AppShell, Header, MantineProvider, Navbar } from '@mantine/core';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AppShell, ColorSchemeProvider, Header, MantineProvider, Navbar } from '@mantine/core';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import PartList from './components/PartList/PartList';
+import { useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import AppHeader from './components/AppHeader/AppHeader';
+import NavigationContent from './components/NavigationContent/NavigationContent';
+import { queryClient } from './main';
 
 const theme = {
   // Override any other properties from default theme
@@ -16,22 +20,26 @@ const theme = {
   },
 }
 
-const queryClient = new QueryClient()
-
 const App = () => {
+  const [colorScheme, setColorScheme] = useState('light');
+  const toggleColorScheme = (value) =>
+    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+
   return (
     <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
       <QueryClientProvider client={queryClient}>
-        <AppShell
-          padding="md"
-          navbar={<Navbar width={{ base: 300 }} height={500} p="xs">{/* Navbar content */}</Navbar>}
-          header={<Header height={60} p="xs">{/* Header content */}</Header>}
-          styles={(theme) => ({
-            main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },
-          })}
-        >
-          <PartList />
-        </AppShell>
+      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
+          <AppShell
+            padding="md"
+            navbar={<Navbar width={{ base: 150 }} height={500} p="xs" gap="10"> <NavigationContent/> </Navbar>}
+            header={<Header height={60} p="xs"> <AppHeader/> </Header>}
+            styles={(theme) => ({
+              main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },
+            })}
+          >
+            <Outlet/>
+          </AppShell>
+        </ColorSchemeProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
     </MantineProvider>
