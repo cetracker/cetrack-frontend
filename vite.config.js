@@ -1,17 +1,18 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from 'vite';
-import mockDevServerPlugin from 'vite-plugin-mock-dev-server' // https://github.com/pengzhanbo/vite-plugin-mock-dev-server
 import eslint from 'vite-plugin-eslint';
+import mockDevServerPlugin from 'vite-plugin-mock-dev-server'; // https://github.com/pengzhanbo/vite-plugin-mock-dev-server
 
 // https://vitejs.dev/config/
 // https://stackoverflow.com/questions/66043612/vue3-vite-project-alias-src-to-not-working
 export default defineConfig({
   server: {
     port: 3001,
+    strictPort: true,
     proxy: {
       '^/api': {
-        target: '',
+        target: ''
       },
     },
   },

@@ -6,6 +6,11 @@ import { Outlet } from 'react-router-dom';
 import AppHeader from './components/AppHeader/AppHeader';
 import NavigationContent from './components/NavigationContent/NavigationContent';
 import { queryClient } from './main';
+import axios from 'axios';
+
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+axios.defaults.headers.common['Accept'] = 'application/json'
+axios.defaults.headers.post['Content-Type'] = 'application/json'
 
 const theme = {
   // Override any other properties from default theme
