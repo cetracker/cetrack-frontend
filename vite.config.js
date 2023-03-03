@@ -30,9 +30,12 @@ export default defineConfig({
       apply: 'serve',
       enforce: 'post'
     },
-    mockDevServerPlugin({
-      include: 'mock/**/*.mock.{ts,js,cjs,mjs,json,json5}'
-    }),
+    {
+      ...mockDevServerPlugin({
+        include: 'mock/**/*.mock.{ts,js,cjs,mjs,json,json5}'
+      }),
+      apply: 'serve'
+    },
   ],
   resolve: {
     alias: [
