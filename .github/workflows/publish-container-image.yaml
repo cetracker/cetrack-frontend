@@ -13,7 +13,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  NODE_ENV: production
+  # NODE_ENV: production
 
 jobs:
   publish-ghcr:
