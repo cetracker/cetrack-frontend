@@ -56,8 +56,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           labels: |
             org.opencontainers.image.source=https://github.com/cetracker/cetrack-frontend
-            "org.opencontainers.image.description=CETracker frontend container image
-            "org.opencontainers.image.licenses=GPLv3
+            org.opencontainers.image.description=CETracker frontend container image
+            org.opencontainers.image.licenses=GPLv3
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
