@@ -7,8 +7,8 @@ import {
 } from "react-router-dom";
 import App from './App';
 import NotFoundPage from './components/Error404/Error404';
-import PartList, { loader as partsLoader } from './components/PartList/PartList';
-import PartTypeList from './components/PartList/PartTypeList';
+import PartList, { loader as partsLoader } from './components/Parts/PartList';
+import PartTypeList from './components/Parts/PartTypeList';
 
 export const queryClient = new QueryClient();
 
