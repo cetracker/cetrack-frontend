@@ -10,6 +10,12 @@ const NavigationContent = () => {
       <Button component={Link} to="/partTypes">
         Part Types
       </Button>
+      <Button component={Link} to="/bikes">
+        Bikes
+      </Button>
+      <Button component={Link} to="/tours">
+        Tours
+      </Button>
     </Flex>
   );
 }
