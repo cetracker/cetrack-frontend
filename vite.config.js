@@ -11,7 +11,10 @@ export default defineConfig({
     port: 3001,
     strictPort: true,
     proxy: {
-      '^/api': {
+      '^/api/.*': {
+        target: 'http://localhost:8080'
+      },
+      '^/mock/api': {
         target: ''
       },
     },
