@@ -33,11 +33,14 @@ export default defineConfig({
       apply: 'serve',
       enforce: 'post'
     },
+    // mockDevServerPlugin(),
     {
+      // restricting to serve doesn't work
       ...mockDevServerPlugin({
         include: 'mock/**/*.mock.{ts,js,cjs,mjs,json,json5}'
       }),
-      apply: 'serve'
+      apply: 'serve',
+      enforce: 'post'
     },
   ],
   resolve: {

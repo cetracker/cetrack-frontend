@@ -39,15 +39,17 @@ const PartList = () => {
         <Table striped>
           <thead>
             <tr>
-              <th>Id</th>
               <th>Name</th>
+              <th>Purchase Date</th>
+              <th>Id</th>
             </tr>
           </thead>
           <tbody>
-          { parts.parts.map((part) => (
+          { parts.map((part) => (
             <tr key={part.id}>
-              <td>{part.id}</td>
               <td>{part.name}</td>
+              <td>{part.boughtAt}</td>
+              <td>{part.id}</td>
             </tr>
           ))}
           </tbody>
