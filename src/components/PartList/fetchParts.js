@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const getParts = async () => {
   const { data } = await axios.get(
-    `/parts/`
+    `/parts`
   );
   return data;
 }
