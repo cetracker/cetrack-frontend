@@ -2477,7 +2477,7 @@ esbuild@^0.16.14:
     "@esbuild/win32-ia32" "0.16.17"
     "@esbuild/win32-x64" "0.16.17"
 
-esbuild@^0.17.6:
+esbuild@^0.17.11:
   version "0.17.11"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.17.11.tgz#9f3122643b21d7e7731e42f18576c10bfa28152b"
   integrity sha512-pAMImyokbWDtnA/ufPxjQg0fYo2DDuzAlqwnDvbXqHLphe+m80eF++perYKVm8LeTuj2zUuFXC+xgSVxyoHUdg==
@@ -4241,15 +4241,15 @@ vite-plugin-eslint@^1.8.1:
     "@types/eslint" "^8.4.5"
     rollup "^2.77.2"
 
-vite-plugin-mock-dev-server@^0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/vite-plugin-mock-dev-server/-/vite-plugin-mock-dev-server-0.4.3.tgz#6b292dbd809ecc46d67ad2b9ab83ba9b89694736"
-  integrity sha512-pHY9RBQBVYZJrjlvNHm9QYEn2Gqn+doAF8i0rDuFrB4yoH/3Tfee6Wpu7c/Gi7qFdcHF9X+1miXdHQ25RKZGcQ==
+vite-plugin-mock-dev-server@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vite-plugin-mock-dev-server/-/vite-plugin-mock-dev-server-1.0.2.tgz#19baa7f0d5a8d48d07c106c6556c1e1fea2fa463"
+  integrity sha512-AIveSiO7kExDHcq621vtr09Tqysba6DXFBoKRcmanlGPA5J5t/G6FW35y6TbON7s+oCrxf6k4awxN8YkA7ApFw==
   dependencies:
     chokidar "^3.5.3"
     co-body "^6.1.0"
     debug "^4.3.4"
-    esbuild "^0.17.6"
+    esbuild "^0.17.11"
     fast-glob "^3.2.12"
     formidable "^2.1.1"
     http-status "^1.6.2"
