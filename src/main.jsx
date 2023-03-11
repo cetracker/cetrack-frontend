@@ -8,6 +8,7 @@ import {
 import App from './App';
 import BikeList, { loader as bikesLoader } from './components/Bikes/BikeList';
 import NotFoundPage from './components/Error404/Error404';
+import Part, { loader as partLoader } from './components/Parts/Part';
 import PartList, { loader as partsLoader } from './components/Parts/PartList';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
 import TourList, { loader as toursLoader } from './components/Tours/TourList';
@@ -25,17 +26,22 @@ const router = createBrowserRouter([
         children:[
           { index: true, element: <App /> },
           {
-            path: "/parts",
+            path: "parts",
             element: <PartList/>,
             loader: partsLoader(queryClient)
           },
           {
-            path: "/partTypes",
+            path: "parts/:id",
+            element: <Part />,
+            loader: partLoader(queryClient)
+          },
+          {
+            path: "partTypes",
             element: <PartTypeList />,
             loader: partTypesLoader(queryClient)
           },
           {
-            path: "/bikes",
+            path: "bikes",
             element: <BikeList />,
             loader: bikesLoader(queryClient)
           },
