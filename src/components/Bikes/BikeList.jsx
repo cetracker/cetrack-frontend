@@ -1,6 +1,7 @@
-import { Alert, Center, Loader, Table } from "@mantine/core";
-import { IconAlertCircle } from '@tabler/icons-react';
+import { useMemo } from "react";
 import { useQuery } from '@tanstack/react-query';
+import { MantineReactTable } from "mantine-react-table";
+import dayjs from "dayjs";
 import fetchBikesQuery from "./fetchBikes";
 
 // ⬇️ needs access to queryClient
@@ -15,50 +16,58 @@ export const loader = (queryClient) =>
   }
 
 
-const BikeList = () => {
-  const {
-    status,
-    error,
-    data: bikes,
-  } = useQuery(fetchBikesQuery())
+  const BikeList = () => {
+    const {
+      isError,
+      isLoading,
+      isFetching,
+      data: tours,
+    } = useQuery(fetchBikesQuery())
 
-  return (
-    <>
-      {status === 'loading' ? (
-        <Center>
-          <Loader variant="dots"/>
-        </Center>
-      ) : status === 'error' ? (
-        <Center>
-          <Alert icon={<IconAlertCircle size={16} />} title="Error!" color="red" variant="outline">
-            {error.message}
-          </Alert>
-        </Center>
-      ) : (
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Manufacturer</th>
-              <th>Model</th>
-              <th>Purchase Date</th>
-              <th>Id</th>
-            </tr>
-          </thead>
-          <tbody>
-          { bikes.map((bike) => (
-            <tr key={bike.id}>
-              <td>{bike.manufacturer}</td>
-              <td>{bike.model}</td>
-              <td>{bike.boughtAt}</td>
-              <td>{bike.id}</td>
-            </tr>
-          ))}
-          </tbody>
-        </Table>
-      )
-      }
-    </>
-  )
-}
+    const columns = useMemo(
+      () => [
+        {
+          accessorKey: 'manufacturer',
+          header: 'Manufacturer'
+        },
+        {
+          accessorKey: 'model',
+          header: 'model'
+        },
+        {
+          accessorFn: (row) => (row.startedAt ? dayjs(row.startedAt).format('YYYY-MM-DD HH:mm') : ''),
+          header: 'Purchase Date'
+        }
+      ],
+      []
+    )
+
+    return (
+      <>
+        <MantineReactTable
+          columns={columns}
+          data={tours ?? []}
+          enablePagination={false}
+          mantineTableProps={{
+            striped: true
+          }}
+          mantineToolbarAlertBannerProps={
+          isError
+            ? {
+                color: 'error',
+                children: 'Error loading data',
+              }
+            : undefined
+          }
+          showSkeletons={true}
+          state={{
+            isLoading,
+            showAlertBanner: isError,
+            showProgressBars: isFetching,
+          }}
+        />
+      </>
+    )
+  }
 
 export default BikeList;

@@ -1,4 +1,4 @@
-import { Alert, Center, Loader } from "@mantine/core";
+import { Alert, Center, Loader, Title } from "@mantine/core";
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
@@ -37,8 +37,8 @@ const Part = () => {
         </Center>
       ) : (
         <>
-        <div>Name: {part.name}</div>
-        <PartPartTypeRelationTable partTypeRelations={part.partTypeRelations} />
+          <Title order={3}>{part.name}</Title>
+          <PartPartTypeRelationTable partTypeRelations={part.partTypeRelations} />
         </>
       )
       }

@@ -1,6 +1,6 @@
-import { Alert, Center, Loader, Table } from "@mantine/core";
-import { IconAlertCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import { MantineReactTable } from "mantine-react-table";
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchPartsQuery } from "./fetchParts";
 
@@ -30,46 +30,62 @@ const inUseAs = (relations) => {
 
 const PartList = () => {
   const {
-    status,
-    error,
+    isError,
+    isLoading,
+    isFetching,
     data: parts,
   } = useQuery(fetchPartsQuery())
 
   const navigate = useNavigate()
 
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name'
+      },
+      {
+        accessorKey: 'boughtAt',
+        header: 'Purchase Date'
+      },
+      {
+        accessorFn: (row) => inUseAs(row.partTypeRelations),
+        header: 'Currently In Use As'
+      }
+    ],
+    []
+  )
+
   return (
     <>
-      {status === 'loading' ? (
-        <Center>
-          <Loader variant="dots"/>
-        </Center>
-      ) : status === 'error' ? (
-        <Center>
-          <Alert icon={<IconAlertCircle size={16} />} title="Error!" color="red" variant="outline">
-            {error.message}
-          </Alert>
-        </Center>
-      ) : (
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Purchase Date</th>
-              <th>Currently In Use As</th>
-            </tr>
-          </thead>
-          <tbody>
-          { parts.map((part) => (
-            <tr key={part.id} onClick={() => {navigate("/parts/"+part.id)}}>
-              <td>{part.name}</td>
-              <td>{part.boughtAt}</td>
-              <td>{inUseAs(part.partTypeRelations)}</td>
-            </tr>
-          ))}
-          </tbody>
-        </Table>
-      )
-      }
+      <MantineReactTable
+        columns={columns}
+        data={parts ?? []}
+        enablePagination={false}
+        mantineTableProps={{
+          striped: true
+        }}
+        mantineToolbarAlertBannerProps={
+        isError
+          ? {
+              color: 'error',
+              children: 'Error loading data',
+            }
+          : undefined
+        }
+        showSkeletons={true}
+        state={{
+          isLoading,
+          showAlertBanner: isError,
+          showProgressBars: isFetching,
+        }}
+        mantineTableBodyRowProps={({ row }) => ({
+          onClick: () => { navigate("/parts/"+row.original.id) },
+          sx: {
+            cursor: 'pointer',
+          },
+        })}
+      />
     </>
   )
 }

@@ -1,6 +1,8 @@
-import { Alert, Center, Loader, Table } from "@mantine/core";
-import { IconAlertCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import { MantineReactTable } from "mantine-react-table";
+import { useMemo } from 'react';
 import fetchToursQuery from "./fetchTours";
 
 // ⬇️ needs access to queryClient
@@ -14,51 +16,90 @@ export const loader = (queryClient) =>
     )
   }
 
+dayjs.extend(duration)
 
 const TourList = () => {
   const {
-    status,
-    error,
+    isError,
+    isLoading,
+    isFetching,
     data: tours,
   } = useQuery(fetchToursQuery())
 
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'title',
+        header: 'Title'
+      },
+      {
+        accessorFn: (row) => (parseInt(row.distance) / 100).toLocaleString(undefined, {minimumFractionDigits: 2}),
+        header: 'Distance',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 100,
+        maxSize: 140,
+      },
+      {
+        accessorFn: (row) => dayjs.duration(row.durationMoving, 'seconds').format('H:mm:ss'),
+        header: 'Duration Moving',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 130,
+        maxSize: 150,
+      },
+      {
+        accessorFn: (row) => (row.startedAt ? dayjs(row.startedAt).format('YYYY-MM-DD HH:mm') : ''),
+        header: 'Started',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 130,
+        maxSize: 150,
+      }
+    ],
+    []
+  )
+
   return (
     <>
-      {status === 'loading' ? (
-        <Center>
-          <Loader variant="dots"/>
-        </Center>
-      ) : status === 'error' ? (
-        <Center>
-          <Alert icon={<IconAlertCircle size={16} />} title="Error!" color="red" variant="outline">
-            {error.message}
-          </Alert>
-        </Center>
-      ) : (
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Distance</th>
-              <th>Moving</th>
-              <th>Started</th>
-              <th>Id</th>
-            </tr>
-          </thead>
-          <tbody>
-          { tours.map((tour) => (
-            <tr key={tour.id}>
-              <td>{tour.title}</td>
-              <td>{tour.distance}</td>
-              <td>{tour.durationMoving}</td>
-              <td>{tour.startedAt}</td>
-              <td>{tour.id}</td>
-            </tr>
-          ))}
-          </tbody>
-        </Table>
-      )
-      }
+      <MantineReactTable
+        columns={columns}
+        data={tours ?? []}
+        enablePagination={false}
+        enableBottomToolbar={false}
+        mantineTableProps={{
+          striped: true
+        }}
+        mantineToolbarAlertBannerProps={
+        isError
+          ? {
+              color: 'error',
+              children: 'Error loading data',
+            }
+          : undefined
+        }
+        state={{
+          isLoading,
+          showAlertBanner: isError,
+          showProgressBars: isFetching,
+          // showSkeletons: isFetching,
+        }}
+        initialState={{ density: 'sm' }}
+        enableStickyHeader
+        mantineTableContainerProps={{ sx: { maxHeight: '800px' } }}
+      />
     </>
   )
 }

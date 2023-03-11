@@ -1,8 +1,7 @@
-import { Alert, Center, Loader, Table } from "@mantine/core";
-import { IconAlertCircle } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
+import { MantineReactTable } from "mantine-react-table";
+import { useMemo } from "react";
 import { fetchPartTypesQuery } from "./fetchPartTypes";
-
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -15,45 +14,63 @@ export const loader = (queryClient) =>
     )
   }
 
+  const bikeName = (bikeObj) => {
+    const manufacturer = (bikeObj.manufacturer) ? bikeObj.manufacturer : '-'
+    const model = (bikeObj.model) ? bikeObj.model : '-'
+    const bike = manufacturer + " " + model
+    return bike
+  }
 
-const PartTypeList = () => {
+  const PartTypeList = () => {
     const {
-      status,
-      error,
-      data: partTypes,
+      isError,
+      isLoading,
+      isFetching,
+      data: tours,
     } = useQuery(fetchPartTypesQuery())
+
+    const columns = useMemo(
+      () => [
+        {
+          accessorKey: 'name',
+          header: 'Part Type'
+        },
+        {
+          accessorFn: (row) => bikeName(row.bike),
+          header: 'Bike'
+        },
+        {
+          accessorKey: 'id',
+          header: 'Id'
+        },
+      ],
+      []
+    )
 
     return (
       <>
-        {status === 'loading' ? (
-          <Center>
-            <Loader variant="dots"/>
-          </Center>
-        ) : status === 'error' ? (
-          <Center>
-            <Alert icon={<IconAlertCircle size={16} />} title="Error!" color="red" variant="outline">
-              {error.message}
-            </Alert>
-          </Center>
-        ) : (
-          <Table striped>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Id</th>
-              </tr>
-            </thead>
-            <tbody>
-            { partTypes.map((partType) => (
-              <tr key={partType.id}>
-                <td>{partType.name}</td>
-                <td>{partType.id}</td>
-              </tr>
-            ))}
-            </tbody>
-          </Table>
-        )
-        }
+        <MantineReactTable
+          columns={columns}
+          data={tours ?? []}
+          enablePagination={false}
+          mantineTableProps={{
+            striped: true
+          }}
+          mantineToolbarAlertBannerProps={
+          isError
+            ? {
+                color: 'error',
+                children: 'Error loading data',
+              }
+            : undefined
+          }
+          showSkeletons={true}
+          state={{
+            isLoading,
+            showAlertBanner: isError,
+            showProgressBars: isFetching,
+          }}
+        />
       </>
     )
   }
