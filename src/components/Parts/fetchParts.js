@@ -9,9 +9,21 @@ const getParts = async () => {
 
 
 // ⬇️ define your query
-const fetchPartsQuery = () => ({
+export const fetchPartsQuery = () => ({
   queryKey: ['parts'],
   queryFn: getParts
 })
 
-export default fetchPartsQuery;
+const getPart = async (id) => {
+  const { data } = await axios.get(
+    `/parts/${id}`
+  );
+  return data;
+}
+
+
+// ⬇️ define your query
+export const fetchPartQuery = (id) => ({
+  queryKey: ['part', 'detail', id],
+  queryFn: () => getPart(id)
+})

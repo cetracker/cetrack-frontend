@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+/*
+ * Fetch all PartTypes
+ */
 const getPartTypes = async () => {
   const { data } = await axios.get(
     `/partTypes`
@@ -7,11 +10,23 @@ const getPartTypes = async () => {
   return data;
 }
 
-
-// ⬇️ define your query
-const fetchPartTypesQuery = () => ({
+export const fetchPartTypesQuery = () => ({
   queryKey: ['parttypes'],
   queryFn: getPartTypes
 })
 
-export default fetchPartTypesQuery;
+
+/*
+ * Fetch specific PartType (by it's id)
+ */
+const getPartType = async (id) => {
+  const { data } = await axios.get(
+    `/partTypes/${id}`
+  );
+  return data;
+}
+
+export const fetchPartQuery = (id) => ({
+  queryKey: ['parttype', 'detail', id],
+  queryFn: () => getPartType(id)
+})

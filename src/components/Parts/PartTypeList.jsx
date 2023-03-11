@@ -1,7 +1,7 @@
 import { Alert, Center, Loader, Table } from "@mantine/core";
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query'
-import fetchPartTypesQuery from "./fetchPartTypes";
+import { fetchPartTypesQuery } from "./fetchPartTypes";
 
 
 // ⬇️ needs access to queryClient
