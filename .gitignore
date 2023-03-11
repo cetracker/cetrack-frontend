@@ -1,6 +1,10 @@
 # local history
 .history
 
+# docker compose example
+deploy/example/*
+docker-compose.yaml
+
 # Logs
 logs
 *.log
