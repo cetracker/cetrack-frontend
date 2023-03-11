@@ -1,7 +1,8 @@
 import { Alert, Center, Loader, Table } from "@mantine/core";
 import { IconAlertCircle } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query'
-import fetchPartsQuery from "./fetchParts";
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from "react-router-dom";
+import { fetchPartsQuery } from "./fetchParts";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -14,6 +15,18 @@ export const loader = (queryClient) =>
     )
   }
 
+const inUseAs = (relations) => {
+  let usage = ''
+  relations && relations.forEach(relation => {
+    if (!relation.validUntil) {
+      console.log( ' N U L L : ' + relation.partType.name)
+      usage = relation.partType.name
+    } else {
+      console.log(relation.validUntil)
+    }
+  });
+  return usage;
+}
 
 const PartList = () => {
   const {
@@ -21,7 +34,8 @@ const PartList = () => {
     error,
     data: parts,
   } = useQuery(fetchPartsQuery())
-  console.log(parts)
+
+  const navigate = useNavigate()
 
   return (
     <>
@@ -41,15 +55,15 @@ const PartList = () => {
             <tr>
               <th>Name</th>
               <th>Purchase Date</th>
-              <th>Id</th>
+              <th>Currently In Use As</th>
             </tr>
           </thead>
           <tbody>
           { parts.map((part) => (
-            <tr key={part.id}>
+            <tr key={part.id} onClick={() => {navigate("/parts/"+part.id)}}>
               <td>{part.name}</td>
               <td>{part.boughtAt}</td>
-              <td>{part.id}</td>
+              <td>{inUseAs(part.partTypeRelations)}</td>
             </tr>
           ))}
           </tbody>
