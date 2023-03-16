@@ -2,18 +2,42 @@ import { ActionIcon } from "@mantine/core";
 import { IconSquareRoundedPlusFilled } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
+import { bikeName } from "../Bikes/helper";
 
-var lastBike = ''
-const bikeName = (bikeObj) => {
-  const manufacturer = (bikeObj.manufacturer) ? bikeObj.manufacturer : '-'
-  const model = (bikeObj.model) ? bikeObj.model : '-'
-  const bike = manufacturer + " " + model
-  lastBike = bike
-  return bike
+const newRelation = {
+  partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
+  validFrom: '2023-03-01T22:00:00+01',
+  validUntil: null,
+  partType: {
+    id: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
+    name: 'Tretkurbel'
+  }
+}
+const modifiedRelation = {
+  partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
+  validFrom: '2023-03-01T22:00:00+01',
+  validUntil: null,
+  partType: {
+    id: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
+    name: 'Tretkurbel'
+  }
 }
 
-const PartPartTypeRelationTable = ({partTypeRelations}) => {
+const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations }) => {
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const tableInstanceRef = useRef(null);
+  const someEventHandler = () => {
+    console.info("Handler")
+    console.info(tableInstanceRef.current)
+    tableInstanceRef.current.setRowEditing=true //call any of the table instance methods here
+    tableInstanceRef.current.setEditingRow(1)
+  }
+
+  const handleAddRelation = (values) => {
+    console.log(values)
+    addRelation(values)
+  };
 
   const columns = useMemo(
     () => [
@@ -37,16 +61,37 @@ const PartPartTypeRelationTable = ({partTypeRelations}) => {
     []
   )
     return (
-      <MantineReactTable
-        columns={columns}
-        data={partTypeRelations ?? []}
-        renderBottomToolbarCustomActions={() => (
-          <ActionIcon onClick={() => console.log("Action!")}>
-            <IconSquareRoundedPlusFilled />
-          </ActionIcon>
-        )}
-        enablePagination={false}
-      />
+      <>
+        <AddRelationDialog
+              columns={columns}
+              open={createModalOpen}
+              onClose={() => setCreateModalOpen(false)}
+              onSubmit={handleAddRelation}
+              latestRelation={
+                (partTypeRelations  && partTypeRelations.length > 0) ?
+                  partTypeRelations[partTypeRelations.length - 1] : {}
+              }
+        />
+        <MantineReactTable
+          columns={columns}
+          data={partTypeRelations ?? []}
+          renderTopToolbarCustomActions={(table) => (
+            <ActionIcon onClick={() => {
+              console.debug(`Clicked! ${table}`)
+              someEventHandler()
+            }}>
+              <IconSquareRoundedPlusFilled />
+            </ActionIcon>
+          )}
+          renderBottomToolbarCustomActions={() => (
+            <ActionIcon onClick={() => setCreateModalOpen(true)}>
+              <IconSquareRoundedPlusFilled />
+            </ActionIcon>
+          )}
+          enablePagination={false}
+          tableInstanceRef={tableInstanceRef}
+        />
+      </>
     )
 }
 

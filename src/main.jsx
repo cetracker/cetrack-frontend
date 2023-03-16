@@ -1,4 +1,4 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryCache, QueryClient } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
@@ -13,7 +13,11 @@ import PartList, { loader as partsLoader } from './components/Parts/PartList';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
 import TourList, { loader as toursLoader } from './components/Tours/TourList';
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => console.warn(`Query ${query.queryKey} to the backend run into an error, ${error.response.status}:${error.code}!`)
+  })
+});
 
 const router = createBrowserRouter([
   {
