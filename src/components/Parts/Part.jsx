@@ -2,8 +2,8 @@ import { Alert, Center, Loader, Title } from "@mantine/core";
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { fetchPartQuery } from "./fetchParts";
-import { putPart, relatePart } from "./mutatePart";
+import { fetchPartQuery } from "./api/fetchParts";
+import { putPart, relatePart } from "./api/mutatePart";
 import PartPartTypeRelationTable from "./PartPartTypeRelationTable";
 
 export const loader = (queryClient) =>

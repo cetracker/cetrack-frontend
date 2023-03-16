@@ -1,7 +1,7 @@
 import { Loader, NativeSelect } from "@mantine/core";
 import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
-import { fetchPartTypesQuery } from "./fetchPartTypes";
+import { fetchPartTypesQuery } from "./api/fetchPartTypes";
 
 const PartTypeSelector = ({onPartTypeChange, partType}) => {
   const [value, setValue] = useState(JSON.stringify(partType))
