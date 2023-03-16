@@ -80,7 +80,8 @@ const TourList = () => {
         enablePagination={false}
         enableBottomToolbar={false}
         mantineTableProps={{
-          striped: true
+          striped: true,
+          highlightOnHover: false,
         }}
         mantineToolbarAlertBannerProps={
         isError

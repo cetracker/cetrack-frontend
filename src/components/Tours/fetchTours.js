@@ -11,7 +11,8 @@ const getTours = async () => {
 // ⬇️ define your query
 const fetchToursQuery = () => ({
   queryKey: ['tours'],
-  queryFn: getTours
+  queryFn: getTours,
+  useErrorBoundary: true,
 })
 
 export default fetchToursQuery;
