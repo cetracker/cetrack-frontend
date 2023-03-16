@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from "react";
-import { fetchPartTypesQuery } from "./fetchPartTypes";
+import { fetchPartTypesQuery } from "./api/fetchPartTypes";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>

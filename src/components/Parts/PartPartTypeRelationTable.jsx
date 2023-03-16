@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useRef, useState } from "react";
 import { bikeName } from "../Bikes/helper";
+import AddRelationDialog from "./AddRelationDialog";
 
 const newRelation = {
   partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
