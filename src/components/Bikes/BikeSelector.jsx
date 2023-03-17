@@ -1,11 +1,12 @@
 import { Loader, NativeSelect } from "@mantine/core";
 import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
-import { fetchPartTypesQuery } from "./api/fetchPartTypes";
+import fetchBikesQuery from "./fetchBikes";
+import { bikeName } from "./helper";
 
-const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
-  const [value, setValue] = useState(JSON.stringify(partType))
-  const { status, data: partTypes } = useQuery(fetchPartTypesQuery())
+const BikeSelector = ({onBikeChange, bike, error}) => {
+  const [value, setValue] = useState(JSON.stringify(bike))
+  const { status, data: bikes } = useQuery(fetchBikesQuery())
   return(
     <>
       { status !== 'success' ? (
@@ -13,16 +14,16 @@ const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
       ) : (
         <NativeSelect
           data={ [{ value: '', label: "Please select!"}]
-          .concat(Array.from(partTypes.map((partType) => (
-            { value: JSON.stringify(partType),
-              label: partType.name
+          .concat(Array.from(bikes.map((bike) => (
+            { value: JSON.stringify(bike),
+              label: bikeName(bike)
             })
           ))) }
           value={value}
           error={error}
           onChange={(event) => {
             setValue(event.currentTarget.value)
-            onPartTypeChange(event.currentTarget.value)
+            onBikeChange(event.currentTarget.value)
           }}/>
       )
       }
@@ -30,4 +31,4 @@ const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
   )
 }
 
-export default PartTypeSelector;
+export default BikeSelector;

@@ -1,11 +1,13 @@
 import { ActionIcon } from '@mantine/core';
 import { IconSquareRoundedPlusFilled } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import AddPartDialog from './AddPartDialog';
 import { fetchPartsQuery } from "./api/fetchParts";
+import { addPart } from "./api/mutatePart";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -21,11 +23,10 @@ export const loader = (queryClient) =>
 const inUseAs = (relations) => {
   let usage = ''
   relations && relations.forEach(relation => {
+    // when relation is open ended (null),
+    // the part is currently in use
     if (!relation.validUntil) {
-      console.log( ' N U L L : ' + relation.partType.name)
       usage = relation.partType.name
-    } else {
-      console.log(relation.validUntil)
     }
   });
   return usage;
@@ -49,7 +50,7 @@ const PartList = () => {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts'] }) }
   })
 
-  const addPart = (part) => {
+  const handleAddPart = (part) => {
     addPartMutation.mutate(part)
   }
 
@@ -61,7 +62,7 @@ const PartList = () => {
         header: 'Name'
       },
       {
-        accessorKey: 'boughtAt',
+        accessorFn: (row) => (row.boughtAt ? dayjs(row.boughAt).format('YYYY-MM-DD HH:mm') : ''),
         header: 'Purchase Date'
       },
       {
@@ -77,12 +78,13 @@ const PartList = () => {
       <AddPartDialog
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSubmit={addPart}
+        onSubmit={handleAddPart}
       />
       <MantineReactTable
         columns={columns}
         data={parts ?? []}
         enablePagination={false}
+        enableStickyHeader
         mantineTableProps={{
           striped: true
         }}
@@ -106,7 +108,7 @@ const PartList = () => {
             cursor: 'pointer',
           },
         })}
-        renderBottomToolbarCustomActions={() => (
+        renderTopToolbarCustomActions={() => (
           <ActionIcon onClick={() => setCreateModalOpen(true)}>
             <IconSquareRoundedPlusFilled />
           </ActionIcon>

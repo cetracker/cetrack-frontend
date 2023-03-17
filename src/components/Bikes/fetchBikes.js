@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const getBikes = async () => {
+export const getBikes = async () => {
   const { data } = await axios.get(
     `/bikes`
   );
@@ -9,7 +9,7 @@ const getBikes = async () => {
 
 
 // ⬇️ define your query
-const fetchBikesQuery = () => ({
+export const fetchBikesQuery = () => ({
   queryKey: ['bikes'],
   queryFn: getBikes
 })

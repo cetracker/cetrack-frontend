@@ -1,8 +1,12 @@
-import { useMemo } from "react";
-import { useQuery } from '@tanstack/react-query';
-import { MantineReactTable } from "mantine-react-table";
+import { useMemo, useState } from "react";
+import { ActionIcon } from "@mantine/core";
+import { IconSquareRoundedPlusFilled } from "@tabler/icons-react";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
+import { MantineReactTable } from "mantine-react-table";
+import AddBikeDialog from "./AddBikeDialog"
 import fetchBikesQuery from "./fetchBikes";
+import { addBike } from "./mutateBike";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -17,12 +21,26 @@ export const loader = (queryClient) =>
 
 
   const BikeList = () => {
+    const [createModalOpen, setCreateModalOpen] = useState(false)
+
     const {
       isError,
       isLoading,
       isFetching,
       data: tours,
     } = useQuery(fetchBikesQuery())
+
+    const queryClient = useQueryClient();
+
+    const addBikeMutation = useMutation({
+      queryKey: ['bike'],
+      mutationFn: (bike) => addBike(bike),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) }
+    })
+
+    const handleAddBike = (bike) => {
+      addBikeMutation.mutate(bike)
+    }
 
     const columns = useMemo(
       () => [
@@ -35,7 +53,7 @@ export const loader = (queryClient) =>
           header: 'model'
         },
         {
-          accessorFn: (row) => (row.startedAt ? dayjs(row.startedAt).format('YYYY-MM-DD HH:mm') : ''),
+          accessorFn: (row) => (row.boughtAt ? dayjs(row.boughAt).format('YYYY-MM-DD HH:mm') : ''),
           header: 'Purchase Date'
         }
       ],
@@ -44,6 +62,11 @@ export const loader = (queryClient) =>
 
     return (
       <>
+        <AddBikeDialog
+          open={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onSubmit={handleAddBike}
+        />
         <MantineReactTable
           columns={columns}
           data={tours ?? []}
@@ -59,6 +82,11 @@ export const loader = (queryClient) =>
               }
             : undefined
           }
+          renderTopToolbarCustomActions={() => (
+            <ActionIcon onClick={() => setCreateModalOpen(true)}>
+              <IconSquareRoundedPlusFilled />
+            </ActionIcon>
+          )}
           showSkeletons={true}
           state={{
             isLoading,

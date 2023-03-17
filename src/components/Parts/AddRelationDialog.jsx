@@ -1,18 +1,53 @@
-import { useState } from "react";
 import { Badge, Button, Flex, Modal, Stack, Title } from "@mantine/core";
 import { DatePicker } from '@mantine/dates';
 import dayjs from "dayjs";
-import PartTypeSelector from "./PartTypeSelector";
+import { useState } from "react";
 import { bikeName } from "../Bikes/helper";
+import PartTypeSelector from "./PartTypeSelector";
 
 const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
 
-    const [values, setValues] = useState({...latestRelation, 'validUntil': null})
+    const [values, setValues] = useState({...latestRelation, 'validFrom': dayjs().startOf('day').format(), 'validUntil': null})
+    const [validationErrorPartType, setValidationErrorPartType] = useState('')
+    const [validationErrorValidFrom, setValidationErrorValidFrom] = useState('')
+    const [validationErrorValidUntil, setValidationErrorValidUntil] = useState('')
 
     const handleSubmit = () => {
       //put your validation logic here
-      onSubmit(values);
-      onClose();
+      let hasAnyError = false;
+      if (values.validFrom && dayjs(values.validFrom).isValid()) {
+        setValidationErrorValidFrom(false)
+        if (values.validUntil) {
+          if(dayjs(values.validUntil).isValid) {
+            setValidationErrorValidUntil(false)
+            if(dayjs(values.validFrom).isAfter(values.validUntil)) {
+              setValidationErrorValidFrom(true)
+              setValidationErrorValidUntil('Valid Until must be after Valid From')
+              hasAnyError = true
+            }
+          } else {
+            setValidationErrorValidUntil('invalid date')
+            hasAnyError = true
+          }
+        } else {
+          // validUntil is optional
+          setValidationErrorValidUntil(false)
+        }
+      } else {
+        setValidationErrorValidFrom('invalid date')
+        hasAnyError = true
+      }
+
+      if (values.partTypeId) {
+        setValidationErrorPartType(false)
+      } else {
+        setValidationErrorPartType(true)
+        hasAnyError = true
+      }
+      if (!hasAnyError) {
+        onSubmit(values)
+        onClose();
+      }
     };
 
     return(
@@ -29,10 +64,10 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
               key='ptSelector'
               label='Parttype'
               partType={values.partType}
+              error={validationErrorPartType}
               onPartTypeChange={(pt) => {
-                console.log(`Values Before: ${JSON.stringify(values)}`)
-                setValues({ ...values, "partType": JSON.parse(pt) })
-                console.log(`Values After: ${JSON.stringify(values)}`)
+                pt ? setValues({ ...values, "partType": JSON.parse(pt), "partTypeId": JSON.parse(pt).id }) :
+                  setValues({...values, "partType": null, "partTypeId": null})
               }}
             />
             <Badge size="lg" radius="xs" variant="outline">
@@ -45,6 +80,7 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
               allowFreeInput
               clearable={false}
               defaultValue={new Date()}
+              error={validationErrorValidFrom}
               onChange={(e) => setValues({ ...values, 'validFrom': dayjs(e).startOf('day').format() })}
             />
             <DatePicker
@@ -52,6 +88,7 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
               label='Valid Until'
               placeholder="optional"
               allowFreeInput
+              error={validationErrorValidUntil}
               onChange={(e) => e ? setValues({ ...values, 'validUntil': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'validUntil': null } )}
             />
           </Stack>

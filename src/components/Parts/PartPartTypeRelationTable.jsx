@@ -6,15 +6,6 @@ import { useMemo, useRef, useState } from "react";
 import { bikeName } from "../Bikes/helper";
 import AddRelationDialog from "./AddRelationDialog";
 
-const newRelation = {
-  partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
-  validFrom: '2023-03-01T22:00:00+01',
-  validUntil: null,
-  partType: {
-    id: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
-    name: 'Tretkurbel'
-  }
-}
 const modifiedRelation = {
   partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
   validFrom: '2023-03-01T22:00:00+01',
@@ -28,15 +19,8 @@ const modifiedRelation = {
 const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const tableInstanceRef = useRef(null);
-  const someEventHandler = () => {
-    console.info("Handler")
-    console.info(tableInstanceRef.current)
-    tableInstanceRef.current.setRowEditing=true //call any of the table instance methods here
-    tableInstanceRef.current.setEditingRow(1)
-  }
 
   const handleAddRelation = (values) => {
-    console.log(values)
     addRelation(values)
   };
 
@@ -64,7 +48,6 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
     return (
       <>
         <AddRelationDialog
-              columns={columns}
               open={createModalOpen}
               onClose={() => setCreateModalOpen(false)}
               onSubmit={handleAddRelation}
@@ -76,14 +59,6 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
         <MantineReactTable
           columns={columns}
           data={partTypeRelations ?? []}
-          renderTopToolbarCustomActions={(table) => (
-            <ActionIcon onClick={() => {
-              console.debug(`Clicked! ${table}`)
-              someEventHandler()
-            }}>
-              <IconSquareRoundedPlusFilled />
-            </ActionIcon>
-          )}
           renderBottomToolbarCustomActions={() => (
             <ActionIcon onClick={() => setCreateModalOpen(true)}>
               <IconSquareRoundedPlusFilled />

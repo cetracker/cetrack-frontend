@@ -18,7 +18,6 @@ export const loader = (queryClient) =>
 
 const Part = () => {
   const params = useParams()
-  // const [partTypeData, setPartTypeData] = useState([])
   const { isLoading, isError, data: part, error } = useQuery(fetchPartQuery(params.id))
 
   const queryClient = useQueryClient();
@@ -26,13 +25,13 @@ const Part = () => {
   const mutatePart = useMutation({
     queryKey: ['part'],
     mutationFn: (muatedPart) => putPart(part.id, muatedPart),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['posts', 'detail', part.id] }) }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts', 'detail', part.id] }) }
   })
 
   const addRelation = useMutation({
     queryKey: ['part', 'relation'],
     mutationFn: (relation) => relatePart(part.id, relation),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['posts', 'detail', part.id] }) }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts', 'detail', part.id] }) }
   })
 
   const addPartPartTypeRelation = (relation) => {

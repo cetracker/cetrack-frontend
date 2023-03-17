@@ -1,7 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { ActionIcon } from '@mantine/core';
+import { IconSquareRoundedPlusFilled } from '@tabler/icons-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MantineReactTable } from "mantine-react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from 'react';
+import { bikeName } from '../Bikes/helper';
+import AddPartTypeDialog from './AddPartTypeDialog';
 import { fetchPartTypesQuery } from "./api/fetchPartTypes";
+import { addPartType } from "./api/mutatePartType";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -14,22 +19,29 @@ export const loader = (queryClient) =>
     )
   }
 
-  const bikeName = (bikeObj) => {
-    const manufacturer = (bikeObj.manufacturer) ? bikeObj.manufacturer : '-'
-    const model = (bikeObj.model) ? bikeObj.model : '-'
-    const bike = manufacturer + " " + model
-    return bike
-  }
-
   const PartTypeList = () => {
+    const [createModalOpen, setCreateModalOpen] = useState(false)
     const {
       isError,
       isLoading,
       isFetching,
-      data: tours,
+      isSuccess,
+      data: partTypes,
     } = useQuery(fetchPartTypesQuery())
 
-    const columns = useMemo(
+    const queryClient = useQueryClient();
+
+    const addPartTypeMutation = useMutation({
+      queryKey: ['parttype'],
+      mutationFn: (partType) => addPartType(partType),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parttypes'] }) }
+    })
+
+    const handleAddPartType = (partType) => {
+      addPartTypeMutation.mutate(partType)
+    }
+
+      const columns = useMemo(
       () => [
         {
           accessorKey: 'name',
@@ -49,10 +61,22 @@ export const loader = (queryClient) =>
 
     return (
       <>
+        {isSuccess && (
+          <AddPartTypeDialog
+            open={createModalOpen}
+            onClose={() => setCreateModalOpen(false)}
+            latestBike={
+                  (partTypes && partTypes.length > 0) ?
+                    partTypes[partTypes.length - 1].bike : {}
+                }
+            onSubmit={handleAddPartType}
+          />
+        )}
         <MantineReactTable
           columns={columns}
-          data={tours ?? []}
+          data={partTypes ?? []}
           enablePagination={false}
+          enableStickyHeader
           mantineTableProps={{
             striped: true
           }}
@@ -64,6 +88,11 @@ export const loader = (queryClient) =>
               }
             : undefined
           }
+          renderTopToolbarCustomActions={() => (
+          <ActionIcon onClick={() => setCreateModalOpen(true)}>
+            <IconSquareRoundedPlusFilled />
+          </ActionIcon>
+        )}
           showSkeletons={true}
           state={{
             isLoading,
