@@ -11,6 +11,7 @@ import NotFoundPage from './components/Error404/Error404';
 import Part, { loader as partLoader } from './components/Parts/Part';
 import PartList, { loader as partsLoader } from './components/Parts/PartList';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
+import TourImport from './components/Tours/TourImport';
 import TourList, { loader as toursLoader } from './components/Tours/TourList';
 
 export const queryClient = new QueryClient({
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
             path: "/tours",
             element: <TourList />,
             loader: toursLoader(queryClient)
+          },
+          {
+            path: "/tourImport",
+            element: <TourImport />,
           },
         ]
       }
