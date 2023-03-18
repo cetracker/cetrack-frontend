@@ -13,6 +13,7 @@ import PartList, { loader as partsLoader } from './components/Parts/PartList';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
 import TourImport from './components/Tours/TourImport';
 import TourList, { loader as toursLoader } from './components/Tours/TourList';
+import Index from './Index';
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
@@ -29,7 +30,7 @@ const router = createBrowserRouter([
       {
         errorElement: <NotFoundPage />,
         children:[
-          { index: true, element: <App /> },
+          { index: true, element: <Index /> },
           {
             path: "parts",
             element: <PartList/>,
