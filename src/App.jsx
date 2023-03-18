@@ -1,12 +1,12 @@
 import { AppShell, ColorSchemeProvider, Header, MantineProvider, Navbar } from '@mantine/core';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import axios from 'axios';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import AppHeader from './components/AppHeader/AppHeader';
 import NavigationContent from './components/NavigationContent/NavigationContent';
 import { queryClient } from './main';
-import axios from 'axios';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 axios.defaults.headers.common['Accept'] = 'application/json'
@@ -36,7 +36,7 @@ const App = () => {
       <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
           <AppShell
             padding="md"
-            navbar={<Navbar width={{ base: 150 }} height={500} p="xs" gap="10"> <NavigationContent/> </Navbar>}
+            navbar={<Navbar width={{ base: 180 }} height={300} p="xs" gap="10"> <NavigationContent/> </Navbar>}
             header={<Header height={60} p="xs"> <AppHeader/> </Header>}
             styles={(theme) => ({
               main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },
