@@ -1,5 +1,6 @@
-import { Badge, Button, Flex, Modal, Stack, Title } from "@mantine/core";
+import { Badge, Button, Flex, Modal, Popover, Stack, Text, Title } from "@mantine/core";
 import { DatePicker } from '@mantine/dates';
+import { useDisclosure } from '@mantine/hooks';
 import dayjs from "dayjs";
 import { useState } from "react";
 import { bikeName } from "../Bikes/helper";
@@ -11,6 +12,7 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
     const [validationErrorPartType, setValidationErrorPartType] = useState('')
     const [validationErrorValidFrom, setValidationErrorValidFrom] = useState('')
     const [validationErrorValidUntil, setValidationErrorValidUntil] = useState('')
+    const [popOpened, { close: popClose, open: popOpen }] = useDisclosure(false);
 
     const handleSubmit = () => {
       //put your validation logic here
@@ -104,7 +106,24 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
         >
 
           <Button onClick={onClose} variant="subtle"> Cancel </Button>
-          <Button color="teal" onClick={handleSubmit} variant="filled"> Add </Button>
+          <Popover width={300} position="bottom" withArrow shadow="md" opened={popOpened}>
+            <Popover.Target>
+              <Button
+                color="teal"
+                onClick={handleSubmit}
+                variant="filled"
+                onMouseEnter={popOpen} onMouseLeave={popClose}
+              >
+                Add
+              </Button>
+            </Popover.Target>
+            <Popover.Dropdown sx={{ pointerEvents: 'none' }}>
+              <Text size="sm">
+                Currently active relation of a different part with this part type will be terminated automatically
+                at Midnight on the day before "Valid From" above.
+              </Text>
+            </Popover.Dropdown>
+          </Popover>
         </Flex>
       </Modal>
   );
