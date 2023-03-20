@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
+import { bikeName } from '../Bikes/helper';
 import fetchToursQuery from "./fetchTours";
 
 // ⬇️ needs access to queryClient
@@ -67,6 +68,10 @@ const TourList = () => {
         },
         size: 130,
         maxSize: 150,
+      },
+      {
+        accessorFn: (row) => bikeName(row.bike),
+        header: 'Bike'
       }
     ],
     []

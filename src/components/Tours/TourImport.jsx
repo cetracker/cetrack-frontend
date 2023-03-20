@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { IconArrowBadgeRight, IconArrowBadgeUp, IconCheck, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
+import BikeSelector from '../Bikes/BikeSelector';
 import importMyTourBookTours from './mutateTours';
 
 const sqlExportQuery=`SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY, TOURTITLE AS TITLE, TOURSTARTTIME AS startedAt, TOURDISTANCE AS distance,
@@ -12,12 +13,13 @@ const sqlExportQuery=`SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY
 
 const TourImport = () => {
   const [value, setValue] = useState('')
+  const [bikeId, setBikeId] = useState(null)
   const [validationError, setValidationError] = useState('')
   const [validationErrorMessage, setvalidationErrorMessage] = useState('')
   const [opened, { toggle }] = useDisclosure(false);
 
   const queryClient = useQueryClient();
-  const addPartMutation = useMutation({
+  const addToursMutation = useMutation({
     queryKey: ['tours'],
     mutationFn: (tours) => importMyTourBookTours(tours),
     onSuccess: () => {
@@ -27,8 +29,14 @@ const TourImport = () => {
   })
 
   const handleImportTours = () => {
-    value &&
-      addPartMutation.mutate(JSON.parse(value))
+    if (value) {
+      let tours = JSON.parse(value)
+      if (bikeId) {
+        tours = tours.map( (tour) => ({ ...tour, 'bikeId': bikeId }))
+      }
+      console.log(tours)
+      addToursMutation.mutate(tours)
+    }
   }
   const handleValidateTours = () => {
     // ToDo add more validations
@@ -46,6 +54,10 @@ const TourImport = () => {
   const handleJSONInputChnage = (json) => {
     setValidationError(null)
     setValue(json)
+  }
+
+  const handleBikeChange = (bike) => {
+    bike? setBikeId(JSON.parse(bike).id) : setBikeId(null)
   }
 
   return (
@@ -68,6 +80,7 @@ const TourImport = () => {
             Upload
           </Button>
         </Group>
+        <BikeSelector onBikeChange={handleBikeChange} />
         <JsonInput
           label="Your MyTourBook tour details"
           placeholder="Paste your tours exported as JSON from the Derby MTB database into this text field."
