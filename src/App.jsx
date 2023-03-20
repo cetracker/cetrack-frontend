@@ -31,12 +31,12 @@ const App = () => {
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   return (
-    <MantineProvider theme={theme} withGlobalStyles withNormalizeCSS>
+    <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
       <QueryClientProvider client={queryClient}>
-      <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
+        <MantineProvider theme={{...theme, colorScheme}} withGlobalStyles withNormalizeCSS>
           <AppShell
             padding="md"
-            navbar={<Navbar width={{ base: 180 }} height={300} p="xs" gap="10"> <NavigationContent/> </Navbar>}
+            navbar={<Navbar width={{ base: 180 }} height={330} p="xs" gap="10"> <NavigationContent/> </Navbar>}
             header={<Header height={60} p="xs"> <AppHeader/> </Header>}
             styles={(theme) => ({
               main: { backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0] },
@@ -44,10 +44,10 @@ const App = () => {
           >
             <Outlet/>
           </AppShell>
-        </ColorSchemeProvider>
+        </MantineProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
-    </MantineProvider>
+    </ColorSchemeProvider>
   )
 }
 
