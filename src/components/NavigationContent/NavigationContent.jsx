@@ -1,5 +1,5 @@
 import { Box, NavLink } from '@mantine/core';
-import { IconAB2, IconBike, IconMap, IconSettingsFilled, IconUpload } from '@tabler/icons-react';
+import { IconAB2, IconBike, IconMap, IconSettingsFilled, IconUpload, IconReportAnalytics } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -48,6 +48,15 @@ const NavigationContent = () => {
         icon={<IconUpload />}
         onClick={() => setActive('tourimport')}
         active={'tourimport' === active}
+        color="teal"
+        variant='filled'
+      />
+      <NavLink
+        label="Report"
+        component={Link} to="/report"
+        icon={<IconReportAnalytics />}
+        onClick={() => setActive('report')}
+        active={'report' === active}
         color="teal"
         variant='filled'
       />

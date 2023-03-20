@@ -11,6 +11,7 @@ import NotFoundPage from './components/Error404/Error404';
 import Part, { loader as partLoader } from './components/Parts/Part';
 import PartList, { loader as partsLoader } from './components/Parts/PartList';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
+import ReportList, { loader as reportLoader } from './components/Report/ReportList';
 import TourImport from './components/Tours/TourImport';
 import TourList, { loader as toursLoader } from './components/Tours/TourList';
 import Index from './Index';
@@ -60,6 +61,11 @@ const router = createBrowserRouter([
             path: "/tourImport",
             element: <TourImport />,
           },
+          {
+            path: "/report",
+            element: <ReportList />,
+            loader: reportLoader(queryClient)
+          }
         ]
       }
     ]
