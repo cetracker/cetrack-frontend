@@ -15,7 +15,7 @@ const AddBikeDialog = ({ open, onClose, onSubmit }) => {
 
     return(
       <Modal opened={open} withCloseButton={false} onClose={onClose}>
-        <Title ta="center">Add New Part</Title>
+        <Title ta="center">Add New Bike</Title>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
             sx={{
