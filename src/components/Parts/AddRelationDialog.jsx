@@ -1,5 +1,5 @@
 import { Badge, Button, Flex, Modal, Popover, Stack, Text, Title } from "@mantine/core";
-import { DatePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -75,7 +75,7 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
             <Badge size="lg" radius="xs" variant="outline">
               { values?.partType?.bike ? bikeName(values.partType.bike) : 'Unknown' }
             </Badge>
-            <DatePicker
+            <DatePickerInput
               key='validFrom'
               label='Valid From'
               withAsterisk
@@ -83,14 +83,16 @@ const AddRelationDialog = ({ open, onClose, onSubmit, latestRelation }) => {
               clearable={false}
               defaultValue={new Date()}
               error={validationErrorValidFrom}
+              popoverProps={{ withinPortal: true }}
               onChange={(e) => setValues({ ...values, 'validFrom': dayjs(e).startOf('day').format() })}
             />
-            <DatePicker
+            <DatePickerInput
               key='validUntil'
               label='Valid Until'
               placeholder="optional"
               allowFreeInput
               error={validationErrorValidUntil}
+              popoverProps={{ withinPortal: true }}
               onChange={(e) => e ? setValues({ ...values, 'validUntil': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'validUntil': null } )}
             />
           </Stack>

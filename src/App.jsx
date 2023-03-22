@@ -16,7 +16,7 @@ const theme = {
   // Override any other properties from default theme
   colorScheme: 'light',
   fontFamily: 'Open Sans, sans serif',
-  spacing: { xs: 15, sm: 20, md: 25, lg: 30, xl: 40 },
+  // spacing: { xs: '1rem', sm: '1.2rem', md: '1.8rem', lg: '2.2rem', xl: '2.8rem' },
   headings: {
     fontFamily: 'Roboto, sans-serif',
     sizes: {

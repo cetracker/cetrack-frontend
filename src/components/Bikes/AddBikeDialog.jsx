@@ -1,5 +1,5 @@
 import { Button, Flex, Modal, Stack, TextInput, Title } from "@mantine/core";
-import { DatePicker } from '@mantine/dates';
+import { DatePickerInput } from '@mantine/dates';
 import dayjs from "dayjs";
 import { useState } from "react";
 
@@ -37,18 +37,20 @@ const AddBikeDialog = ({ open, onClose, onSubmit }) => {
               withAsterisk
               onChange={(event) => setValues({ ...values, 'model': event.currentTarget.value})}
             />
-            <DatePicker
+            <DatePickerInput
               key='boughtAt'
               label='Purchase Date'
               placeholder="optional"
               allowFreeInput
+              popoverProps={{ withinPortal: true }}
               onChange={(e) => e ? setValues({ ...values, 'boughtAt': dayjs(e).startOf('day').format() }) : setValues({ ...values, 'boughtAt': null } )}
             />
-            <DatePicker
+            <DatePickerInput
               key='retiredAt'
               label='Retired'
               allowFreeInput
               placeholder="optional - not implemented yet"
+              popoverProps={{ withinPortal: true }}
               // onChange={(e) => e ? setValues({ ...values, 'retiredAt': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'retiredAt': null } )}
             />
           </Stack>
