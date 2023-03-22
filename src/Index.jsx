@@ -27,7 +27,7 @@ const Index = () =>
       <List.Item>Add at least one bike via menu entry bikes on the left <IconArrowLeft size={"1rem"}/></List.Item>
       <List.Item>Add Part Types a bike consists off and it's usage you want to track. E.g. Handlebar, Chain, Brake Disc.</List.Item>
       <List.Item>Add Parts you have used, will use or currently use on your bike</List.Item>
-      <List.Item>To relate a part to a part type, select the Bike from the Parts table and use the <IconSquareRoundedPlusFilled size={"1rem"} on top of the relation table/> </List.Item>
+      <List.Item>To relate a part to a part type, select the Bike from the Parts table and use the <IconSquareRoundedPlusFilled size={"1rem"} /> on top of the relation table.</List.Item>
       <List.Item>Export tours from MyTourBook's Derby DB. Find Instructions on "Import Tours".</List.Item>
       <List.Item>Import the resulting JSON via "Import Tours".</List.Item>
       <List.Item>Find the usage reports on the still to be implemented "Report" page.</List.Item>
