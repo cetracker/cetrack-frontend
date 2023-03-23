@@ -1,27 +1,43 @@
 import { ActionIcon } from "@mantine/core";
-import { IconSquareRoundedPlusFilled } from "@tabler/icons-react";
+import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useRef, useState } from "react";
 import { bikeName } from "../Bikes/helper";
-import AddRelationDialog from "./AddRelationDialog";
-
-const modifiedRelation = {
-  partTypeId: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
-  validFrom: '2023-03-01T22:00:00+01',
-  validUntil: null,
-  partType: {
-    id: 'f4e07039-d3cd-4f46-95c5-678f4926c226',
-    name: 'Tretkurbel'
-  }
-}
+import RelationEditDialog from "./RelationEditDialog";
 
 const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations }) => {
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [relationDialogVariant, setRelationDialogVariant] = useState('add')
+  const [relationForModal, setRelationForModal] = useState({})
+  const [rowIdCurrentlyModifying, setRowIdCurrentlyModifying] = useState(-1)
   const tableInstanceRef = useRef(null);
 
-  const handleAddRelation = (values) => {
-    addRelation(values)
+  const handleOnSubmitRelation = (values) => {
+    if(relationDialogVariant === 'add') {
+      addRelation(values)
+    } if(relationDialogVariant === 'modify') {
+      handleModifyRelation(values)
+    }
+
+  }
+
+  const handleRemoveRelation = (rowId) => {
+    const reducedRelations = tableInstanceRef.current.getRowModel().rows.filter( (row) =>(
+      row.id !== rowId
+    )).map((row) => row.original)
+    console.debug('ReducedRelations', reducedRelations)
+    modifyRelations(reducedRelations)
+
+  }
+
+  const handleModifyRelation = (values) => {
+
+      const modifiedRelations = tableInstanceRef.current.getRowModel().rows.map( (row) => (
+            row.id !== rowIdCurrentlyModifying ? row.original : (values)
+      ))
+      modifyRelations(modifiedRelations)
+      setRowIdCurrentlyModifying(-1)
   };
 
   const columns = useMemo(
@@ -47,25 +63,60 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
   )
     return (
       <>
-        <AddRelationDialog
+        <RelationEditDialog
               open={createModalOpen}
-              onClose={() => setCreateModalOpen(false)}
-              onSubmit={handleAddRelation}
-              latestRelation={
-                (partTypeRelations  && partTypeRelations.length > 0) ?
-                  partTypeRelations[partTypeRelations.length - 1] : {}
-              }
+              variant={relationDialogVariant}
+              onClose={() => {
+                setRowIdCurrentlyModifying(-1)
+                setRelationForModal((partTypeRelations  && partTypeRelations.length > 0) ?
+            partTypeRelations[partTypeRelations.length - 1] : {})
+                setCreateModalOpen(false)
+              }}
+              onSubmit={handleOnSubmitRelation}
+              initialRelation={relationForModal}
         />
         <MantineReactTable
           columns={columns}
           data={partTypeRelations ?? []}
           renderBottomToolbarCustomActions={() => (
-            <ActionIcon onClick={() => setCreateModalOpen(true)}>
+            <ActionIcon onClick={() => {
+              setRelationForModal(
+                (partTypeRelations  && partTypeRelations.length > 0) ?
+                  partTypeRelations[partTypeRelations.length - 1]
+                : {}
+              )
+              setRelationDialogVariant('add')
+              setCreateModalOpen(true)
+            }}>
               <IconSquareRoundedPlusFilled />
             </ActionIcon>
           )}
+          displayColumnDefOptions={{
+            'mrt-row-actions': {
+              Cell: ({ cell, row, table }) => (<>
+                <ActionIcon
+              onClick={() => {
+                setRowIdCurrentlyModifying(row.id)
+                setRelationDialogVariant('modify')
+                setRelationForModal(row.original)
+                setCreateModalOpen(true)
+              }}><IconEdit />
+            </ActionIcon>
+            <ActionIcon
+              onClick={() => {
+                handleRemoveRelation(row.id)
+              }}><IconTrash />
+            </ActionIcon>
+                </>
+              )
+            }
+          }}
           enablePagination={false}
           tableInstanceRef={tableInstanceRef}
+          enableRowActions
+          enableEditing={false}
+          renderRowActionMenuItems={({ row }) => [
+          ]}
         />
       </>
     )

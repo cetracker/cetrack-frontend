@@ -1,6 +1,7 @@
 import { Loader, NativeSelect } from "@mantine/core";
 import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
+import { bikeName } from "../Bikes/helper";
 import { fetchPartTypesQuery } from "./api/fetchPartTypes";
 
 const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
@@ -15,7 +16,7 @@ const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
           data={ [{ value: '', label: "Please select!"}]
           .concat(Array.from(partTypes.map((partType) => (
             { value: JSON.stringify(partType),
-              label: partType.name
+              label: `${partType.name}  (${bikeName(partType.bike)})`
             })
           ))) }
           value={value}

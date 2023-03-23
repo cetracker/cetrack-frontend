@@ -25,22 +25,23 @@ const Part = () => {
   const mutatePart = useMutation({
     queryKey: ['part'],
     mutationFn: (muatedPart) => putPart(part.id, muatedPart),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts', 'detail', part.id] }) }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['part', 'detail', part.id] }) }
   })
 
   const addRelation = useMutation({
     queryKey: ['part', 'relation'],
     mutationFn: (relation) => relatePart(part.id, relation),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts', 'detail', part.id] }) }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['part', 'detail', part.id] }) }
   })
 
   const addPartPartTypeRelation = (relation) => {
     addRelation.mutate({ ...relation, 'partId': part.id })
   }
 
-  const modifyPartPartTypeRelation = (relation) => {
-    let completedRelation = { ...relation, 'partId': part.id }
-    let mutatedPart = { ...part, 'partTypeRelations': [...part.partTypeRelations, completedRelation] }
+  const modifyPartPartTypeRelation = (relations) => {
+
+    const mutatedPart = { ...part,
+      'partTypeRelations': relations.map( (relation) => ({ ...relation, 'partId': part.id })) }
     // console.info(`M-PART: ${JSON.stringify(mutatedPart, null, 2)}`)
     mutatePart.mutate(mutatedPart)
   }
