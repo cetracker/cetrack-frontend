@@ -5,8 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import AddBikeDialog from "./AddBikeDialog"
-import fetchBikesQuery from "./fetchBikes";
-import { addBike } from "./mutateBike";
+import fetchBikesQuery from "./api/fetchBikes";
+import { addBike } from "./api/mutateBike";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>

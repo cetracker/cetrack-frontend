@@ -1,7 +1,7 @@
 import { Loader, NativeSelect } from "@mantine/core";
 import { useQuery } from '@tanstack/react-query';
 import { useState } from "react";
-import fetchBikesQuery from "./fetchBikes";
+import fetchBikesQuery from "./api/fetchBikes";
 import { bikeName } from "./helper";
 
 const BikeSelector = ({onBikeChange, bike, error}) => {
