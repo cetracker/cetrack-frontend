@@ -1,13 +1,13 @@
 import { ActionIcon } from '@mantine/core';
-import { IconSquareRoundedPlusFilled } from '@tabler/icons-react';
+import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import AddPartDialog from './AddPartDialog';
+import PartEditDialog from './PartEditDialog';
 import { fetchPartsQuery } from "./api/fetchParts";
-import { addPart } from "./api/mutatePart";
+import { addPart, putPart, removePart } from "./api/mutatePart";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -34,6 +34,8 @@ const inUseAs = (relations) => {
 
 const PartList = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [partDialogVariant, setPartDialogVariant] = useState('add')
+  const [partUnderEdit, setPartUnderEdit] = useState({})
   const {
     isError,
     isLoading,
@@ -49,9 +51,34 @@ const PartList = () => {
     mutationFn: (part) => addPart(part),
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts'] }) }
   })
+  const modifyPartMutation = useMutation({
+    queryKey: ['part'],
+    mutationFn: (part) => putPart(part.id, part),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts'] }) }
+    // ToDo close dialog on success
+    // ToDo handle onError?
+  })
+  const removePartMutation = useMutation({
+    queryKey: ['part'],
+    mutationFn: (partId) => removePart(partId),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parts'] }) }
+  })
 
-  const handleAddPart = (part) => {
-    addPartMutation.mutate(part)
+  const handlePartSubmit = (part) => {
+    (partDialogVariant === 'add') ? (
+      addPartMutation.mutate(part)
+    ) : (
+      modifyPartMutation.mutate(part)
+    )
+    setPartDialogVariant('add')
+    setPartUnderEdit({})
+  }
+
+  const handleRemovePart = (part) => {
+    if ( !window.confirm(`Are you sure you want to delete Part(${part.name})?`)) {
+      return
+    }
+    removePartMutation.mutate(part.id)
   }
 
 
@@ -62,7 +89,7 @@ const PartList = () => {
         header: 'Name'
       },
       {
-        accessorFn: (row) => (row.boughtAt ? dayjs(row.boughAt).format('YYYY-MM-DD HH:mm') : ''),
+        accessorFn: (row) => (row.boughtAt ? dayjs(row.boughtAt).format('YYYY-MM-DD') : ''),
         header: 'Purchase Date'
       },
       {
@@ -75,10 +102,16 @@ const PartList = () => {
 
   return (
     <>
-      <AddPartDialog
+      <PartEditDialog
         open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleAddPart}
+        onClose={() => {
+          setCreateModalOpen(false)
+          setPartDialogVariant('add')
+          setPartUnderEdit({})
+        }}
+        onSubmit={handlePartSubmit}
+        variant={partDialogVariant}
+        initialPart={partUnderEdit}
       />
       <MantineReactTable
         columns={columns}
@@ -113,6 +146,28 @@ const PartList = () => {
             <IconSquareRoundedPlusFilled />
           </ActionIcon>
         )}
+        enableRowActions
+        displayColumnDefOptions={{
+            'mrt-row-actions': {
+              Cell: ({ row }) => (<>
+                <ActionIcon
+              onClick={(e) => {
+                e.stopPropagation()
+                setPartDialogVariant('modify')
+                setPartUnderEdit(row.original)
+                setCreateModalOpen(true)
+              }}><IconEdit />
+            </ActionIcon>
+            <ActionIcon
+              onClick={(e) => {
+                e.stopPropagation()
+                handleRemovePart(row.original)
+              }}><IconTrash />
+            </ActionIcon>
+                </>
+              )
+            }
+          }}
       />
     </>
   )

@@ -14,6 +14,13 @@ export const addPart = async (part) => {
   return data;
 }
 
+export const removePart = async (partId) => {
+  const { data } = await axios.delete(
+    `/parts/${partId}`
+  );
+  return data;
+}
+
 export const relatePart = async (id, relation) => {
   const { data } = await axios.post(
     `/parts/${id}/action/relate`, relation
