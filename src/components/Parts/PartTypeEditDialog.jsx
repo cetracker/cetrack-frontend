@@ -2,19 +2,29 @@ import { Button, Flex, Modal, Stack, TextInput, Title } from "@mantine/core";
 import { useState } from "react";
 import BikeSelector from "../Bikes/BikeSelector";
 
-const AddPartTypeDialog = ({ open, onClose, onSubmit, latestBike }) => {
+const PartTypeEditDialog = ({ open, onClose, onSubmit, variant, initialPartType }) => {
 
-    const [values, setValues] = useState({ "bike": latestBike })
+    const [values, setValues] = useState({})
+    const [validationErrorPartTypeName, setValidationErrorPartTypeName] = useState(null)
+
+    let { bike: lastBike } = initialPartType
+    const initialValues = variant === 'add' ? { bike: lastBike } : initialPartType
 
     const handleSubmit = () => {
-      //put your validation logic here
-      onSubmit(values)
-      onClose();
+      const submitValues = { ...initialValues, ...values}
+      console.info('SubmitValues', submitValues)
+      if (!submitValues?.name || submitValues.name === '') {
+        setValidationErrorPartTypeName('Name is mandatory!')
+      } else {
+        setValidationErrorPartTypeName(null)
+        onSubmit(submitValues);
+        onClose();
+      }
     };
 
     return(
       <Modal opened={open} withCloseButton={false} onClose={onClose}>
-        <Title ta="center">Add New Parttype</Title>
+        <Title ta="center">{variant === 'new'? "Add New" : "Edit"} Parttype</Title>
         <form onSubmit={(e) => e.preventDefault()}>
           <Stack
             sx={{
@@ -26,13 +36,15 @@ const AddPartTypeDialog = ({ open, onClose, onSubmit, latestBike }) => {
               key="name"
               label="Name"
               placeholder="The part type's name"
+              defaultValue={(variant === 'modify' && initialValues?.name) ? initialValues.name : null}
               withAsterisk
+              error={validationErrorPartTypeName}
               onChange={(event) => setValues({ ...values, 'name': event.currentTarget.value })}
             />
             <BikeSelector
               key='bikeSelector'
               label='Bike'
-              bike={values.bike}
+              bike={initialValues.bike}
               onBikeChange={(bike) => {
                 bike ? setValues({ ...values, "bike": JSON.parse(bike) }) :
                   setValues({ ...values, "bike": null })
@@ -52,11 +64,12 @@ const AddPartTypeDialog = ({ open, onClose, onSubmit, latestBike }) => {
         >
 
           <Button onClick={onClose} variant="subtle"> Cancel </Button>
-          <Button color="teal" onClick={handleSubmit} variant="filled"> Add </Button>
+          <Button color="teal" onClick={handleSubmit} variant="filled">{ variant==='new' ? "Add" : "Save"}</Button>
+
         </Flex>
       </Modal>
   );
 
   };
 
-  export default AddPartTypeDialog;
+  export default PartTypeEditDialog;
