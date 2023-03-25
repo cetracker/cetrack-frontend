@@ -1,8 +1,6 @@
 import axios from 'axios';
 
 export const putPartType = async (id, partType) => {
-  console.log('ID:', id)
-  console.log('PT:', partType)
   const { data } = await axios.put(
     `/partTypes/${id}`, partType
   );
