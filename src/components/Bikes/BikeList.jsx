@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
 import { ActionIcon } from "@mantine/core";
-import { IconSquareRoundedPlusFilled } from "@tabler/icons-react";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from "@tabler/icons-react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
-import AddBikeDialog from "./AddBikeDialog"
+import { useMemo, useState } from "react";
+import AddBikeDialog from "./AddBikeDialog";
 import fetchBikesQuery from "./api/fetchBikes";
-import { addBike } from "./api/mutateBike";
+import { addBike, putBike, removeBike } from "./api/mutateBike";
+import { bikeName } from "./helper";
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -22,12 +23,14 @@ export const loader = (queryClient) =>
 
   const BikeList = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
+    const [bikeDialogVariant, setBikeDialogVariant] = useState('')
+    const [bikeUnderEdit, setBikeUnderEdit] = useState({})
 
     const {
       isError,
       isLoading,
       isFetching,
-      data: tours,
+      data: bikes,
     } = useQuery(fetchBikesQuery())
 
     const queryClient = useQueryClient();
@@ -37,9 +40,31 @@ export const loader = (queryClient) =>
       mutationFn: (bike) => addBike(bike),
       onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) }
     })
+    const modifyBikeMutation = useMutation({
+      queryKey: ['bike'],
+      mutationFn: (bike) => putBike(bike.id, bike),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) }
+    })
+    const removeBikeMutation = useMutation({
+      queryKey: ['bike'],
+      mutationFn: (bikeId) => removeBike(bikeId),
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) }
+    })
 
-    const handleAddBike = (bike) => {
-      addBikeMutation.mutate(bike)
+    const handleBikeSubmit = (bike) => {
+      (bikeDialogVariant === 'add') ? (
+        addBikeMutation.mutate(bike)
+      ) : (
+        modifyBikeMutation.mutate(bike)
+      )
+      setBikeUnderEdit({})
+    }
+
+    const handleRemoveBike = (bike) => {
+      if ( !window.confirm(`Are you sure you want to delete Bike (${bikeName(bike)})?`)) {
+        return
+      }
+      removeBikeMutation.mutate(bike.id)
     }
 
     const columns = useMemo(
@@ -53,7 +78,7 @@ export const loader = (queryClient) =>
           header: 'model'
         },
         {
-          accessorFn: (row) => (row.boughtAt ? dayjs(row.boughAt).format('YYYY-MM-DD HH:mm') : ''),
+          accessorFn: (row) => (row.boughtAt ? dayjs(row.boughtAt).format('YYYY-MM-DD') : ''),
           header: 'Purchase Date'
         }
       ],
@@ -64,12 +89,17 @@ export const loader = (queryClient) =>
       <>
         <AddBikeDialog
           open={createModalOpen}
-          onClose={() => setCreateModalOpen(false)}
-          onSubmit={handleAddBike}
+          onClose={() => {
+            setCreateModalOpen(false)
+            setBikeUnderEdit({})
+          }}
+          variant={bikeDialogVariant}
+          onSubmit={handleBikeSubmit}
+          initialBike={bikeUnderEdit}
         />
         <MantineReactTable
           columns={columns}
-          data={tours ?? []}
+          data={bikes ?? []}
           enablePagination={false}
           mantineTableProps={{
             striped: true
@@ -83,7 +113,11 @@ export const loader = (queryClient) =>
             : undefined
           }
           renderTopToolbarCustomActions={() => (
-            <ActionIcon onClick={() => setCreateModalOpen(true)}>
+            <ActionIcon onClick={() => {
+                setCreateModalOpen(true)
+                setBikeDialogVariant('add')
+              }}
+            >
               <IconSquareRoundedPlusFilled />
             </ActionIcon>
           )}
@@ -92,6 +126,28 @@ export const loader = (queryClient) =>
             isLoading,
             showAlertBanner: isError,
             showProgressBars: isFetching,
+          }}
+          enableRowActions
+          displayColumnDefOptions={{
+            'mrt-row-actions': {
+              Cell: ({ row }) => (<>
+                <ActionIcon
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setBikeDialogVariant('modify')
+                    setBikeUnderEdit(row.original)
+                    setCreateModalOpen(true)
+                  }}><IconEdit />
+                </ActionIcon>
+                <ActionIcon
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleRemoveBike(row.original)
+                  }}><IconTrash />
+                </ActionIcon>
+              </>
+              )
+            }
           }}
         />
       </>
