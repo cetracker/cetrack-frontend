@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
+import { formatDuration } from '../../helper/durationFormatter';
 import fetchReportQuery from "./api/fetchReport";
 
 // ⬇️ needs access to queryClient
@@ -33,8 +34,8 @@ const ReportList = () => {
         header: 'Part'
       },
       {
-        accessorFn: (row) => (parseInt(row.distance) / 100).toLocaleString(undefined, {minimumFractionDigits: 2}),
-        header: 'Distance',
+        accessorFn: (row) => (parseInt(row.distance) / 1000).toLocaleString(undefined, {minimumFractionDigits: 3}),
+        header: 'Distance (km)',
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -43,9 +44,10 @@ const ReportList = () => {
         },
         size: 100,
         maxSize: 140,
+        sortingFn: (rowA, rowB, columnId) => rowA.original.distance < rowB.original.distance ? 1 : -1,
       },
       {
-        accessorFn: (row) => dayjs.duration(row.durationMoving, 'seconds').format('H:mm:ss'),
+        accessorFn: (row) => row.durationMoving? formatDuration(row.durationMoving): '',
         header: 'Duration Moving',
         mantineTableHeadCellProps: {
           align: 'right',

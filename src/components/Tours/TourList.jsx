@@ -4,6 +4,7 @@ import duration from 'dayjs/plugin/duration';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
 import { bikeName } from '../Bikes/helper';
+import { formatDuration } from '../../helper/durationFormatter'
 import fetchToursQuery from "./fetchTours";
 
 // ⬇️ needs access to queryClient
@@ -34,8 +35,8 @@ const TourList = () => {
         header: 'Title'
       },
       {
-        accessorFn: (row) => (parseInt(row.distance) / 100).toLocaleString(undefined, {minimumFractionDigits: 2}),
-        header: 'Distance',
+        accessorFn: (row) => (parseInt(row.distance) / 1000).toLocaleString(undefined, {minimumFractionDigits: 3}),
+        header: 'Distance (km)',
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -46,7 +47,7 @@ const TourList = () => {
         maxSize: 140,
       },
       {
-        accessorFn: (row) => dayjs.duration(row.durationMoving, 'seconds').format('H:mm:ss'),
+        accessorFn: (row) => formatDuration(row.durationMoving),
         header: 'Duration Moving',
         mantineTableHeadCellProps: {
           align: 'right',
