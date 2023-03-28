@@ -23,11 +23,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
-    "vite": "^4.1.4"
+    "vite": "^4.2.1"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^4.24.9",
-    "@types/react": "^18.0.27",
+    "@types/react": "^18.0.29",
     "@types/react-dom": "^18.0.10",
     "eslint": "^8.35.0",
     "eslint-config-react-app": "^7.0.1",
@@ -35,6 +35,6 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "vite-plugin-eslint": "^1.8.1",
-    "vite-plugin-mock-dev-server": "^1.0.2"
+    "vite-plugin-mock-dev-server": "^1.0.7"
   }
 }
