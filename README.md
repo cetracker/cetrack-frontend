@@ -40,7 +40,7 @@ If you want test your modification inside a container image you may want to buil
 #### Docker
 
 ```bash
-docker build -t ghcr.io/cetracker/cetrack-frontend:0.0.1-SNAPSHOT .
+docker build -t ghcr.io/cetracker/cetrack-frontend:0.1.0-SNAPSHOT .
 ```
 
 #### Podman / Buildah
