@@ -12,3 +12,8 @@ export const formatDuration = (duration) => {
   let formatString = `${(hours > 0) ? `${hours}h`:''} ${(minutes < 10  && hours > 0)? '0' + minutes: minutes}:${seconds < 10? '0' + seconds : seconds}`;
   return formatString;
 }
+
+export const formatJaskWh = (power) => {
+  const kWh = power / 1000000 * 0.2778
+  return kWh.toLocaleString(undefined, {minimumFractionDigits: 1})
+}

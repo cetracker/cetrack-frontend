@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
-import { formatDuration } from '../../helper/durationFormatter';
+import { formatDuration, formatJaskWh } from '../../helper/durationFormatter';
 import fetchReportQuery from "./api/fetchReport";
 
 // ⬇️ needs access to queryClient
@@ -83,8 +83,8 @@ const ReportList = () => {
         maxSize: 150,
       },
       {
-        accessorFn: (row) => (parseInt(row.totalPower) / 1000).toLocaleString(undefined, {minimumFractionDigits: 3}),
-        header: 'Sum Power (kW)',
+        accessorFn: (row) => formatJaskWh(row.totalPower),
+        header: 'Sum Power (kWh)',
         mantineTableHeadCellProps: {
           align: 'right',
         },

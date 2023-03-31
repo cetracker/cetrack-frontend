@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
-import { formatDuration } from '../../helper/durationFormatter';
+import { formatDuration, formatJaskWh } from '../../helper/durationFormatter';
 import { bikeName } from '../Bikes/helper';
 import fetchToursQuery from "./fetchTours";
 
@@ -35,6 +35,14 @@ const TourList = () => {
   )
   const sumAltUp = useMemo(
     () => tours.reduce((acc, curr) => acc + curr.altUp, 0),
+    [tours]
+  )
+  const sumAltDown = useMemo(
+    () => tours.reduce((acc, curr) => acc + curr.altDown, 0),
+    [tours]
+  )
+  const sumPower = useMemo(
+    () => tours.reduce((acc,curr) => acc + curr.powerTotal, 0),
     [tours]
   )
   const sumMoving = useMemo(
@@ -147,10 +155,20 @@ const TourList = () => {
         },
         size: 110,
         maxSize: 130,
+        Footer: () => (
+          <Flex justify='flex-end'>
+            <Stack>
+              Total Down
+              <Box>
+                { sumAltDown } m
+              </Box>
+            </Stack>
+          </Flex>
+        )
       },
       {
-        accessorKey: 'powerTotal',
-        header: 'Power (W)',
+        accessorFn: (row) => formatJaskWh(row.powerTotal),
+        header: 'Power (kWh)',
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -159,13 +177,23 @@ const TourList = () => {
         },
         size: 110,
         maxSize: 130,
+        Footer: () => (
+          <Flex justify='flex-end'>
+            <Stack>
+              Total Power
+              <Box>
+                <span>{formatJaskWh(sumPower)}kWh - {(parseInt(sumPower/10000)/100).toLocaleString(undefined, {minimumFractionDigits: 1})} MJ</span>
+              </Box>
+            </Stack>
+          </Flex>
+        )
       },
       {
         accessorFn: (row) => bikeName(row.bike),
         header: 'Bike'
       }
     ],
-    [sumAltUp, sumDistance, sumMoving]
+    [sumDistance, sumMoving, sumAltUp, sumAltDown, sumPower]
   )
 
   return (
@@ -197,7 +225,7 @@ const TourList = () => {
         initialState={{
           density: 'sm',
           sorting: [
-            { id: 'started', asc: true}
+            { id: 'Started', asc: true}
           ],
           columnVisibility: {startYear: false, startMonth: false}
         }}
