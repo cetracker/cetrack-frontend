@@ -1,4 +1,4 @@
-import { ActionIcon } from '@mantine/core';
+import { ActionIcon, Checkbox } from '@mantine/core';
 import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MantineReactTable } from "mantine-react-table";
@@ -75,12 +75,18 @@ export const loader = (queryClient) =>
           header: 'Part Type'
         },
         {
-          accessorFn: (row) => bikeName(row.bike),
-          header: 'Bike'
+          accessorKey: 'mandatory',
+          header: 'Mandatory',
+          Cell: ({cell}) => (
+            <Checkbox
+              checked={cell.getValue('mandatory')}
+              disabled='true'>
+            </Checkbox>
+          )
         },
         {
-          accessorKey: 'id',
-          header: 'Id'
+          accessorFn: (row) => bikeName(row.bike),
+          header: 'Bike'
         },
       ],
       []
