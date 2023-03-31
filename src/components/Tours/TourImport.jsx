@@ -7,7 +7,7 @@ import BikeSelector from '../Bikes/BikeSelector';
 import importMyTourBookTours from './mutateTours';
 
 const sqlExportQuery=`SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY, TOURTITLE AS TITLE, TOURSTARTTIME AS STARTTIMESTAMP,
-  TOURDISTANCE AS distance, TOURALTUP, TOURALTDOWN,
+  TOURDISTANCE AS distance, TOURALTUP, TOURALTDOWN, POWER_TOTALWORK AS POWERTOTAL,
   TOURDEVICETIME_ELAPSED AS timeElapsedDevice, TOURCOMPUTEDTIME_MOVING AS durationMoving , TOURDEVICETIME_RECORDED AS timeRecordedDevice
   FROM "USER".TOURDATA
   WHERE STARTYEAR=2022 AND TOURPERSON_PERSONID=0 AND TOURTYPE_TYPEID=0;`
@@ -52,8 +52,8 @@ const TourImport = () => {
       setValidationError('invalid')
     }
   }
-  const handleJSONInputChnage = (json) => {
-    setValidationError(null)
+  const handleJSONInputChange = (json) => {
+    setValidationError('')
     setValue(json)
   }
 
@@ -86,7 +86,7 @@ const TourImport = () => {
           label="Your MyTourBook tour details"
           placeholder="Paste your tours exported as JSON from the Derby MTB database into this text field."
           value={value}
-          onChange={handleJSONInputChnage}
+          onChange={handleJSONInputChange}
           validationError="Invalid JSON"
           formatOnBlur
           autosize

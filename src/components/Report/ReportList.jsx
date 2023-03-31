@@ -58,6 +58,42 @@ const ReportList = () => {
         size: 130,
         maxSize: 150,
       },
+      {
+        accessorKey: 'altUp',
+        header: 'Uphill',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 130,
+        maxSize: 150,
+      },
+      {
+        accessorKey: 'altDown',
+        header: 'Downhill',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 130,
+        maxSize: 150,
+      },
+      {
+        accessorFn: (row) => (parseInt(row.totalPower) / 1000).toLocaleString(undefined, {minimumFractionDigits: 3}),
+        header: 'Sum Power (kW)',
+        mantineTableHeadCellProps: {
+          align: 'right',
+        },
+        mantineTableBodyCellProps: {
+          align: 'right',
+        },
+        size: 130,
+        maxSize: 150,
+      },
     ],
     []
   )
