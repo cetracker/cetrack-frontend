@@ -35,13 +35,13 @@ const Part = () => {
   })
 
   const addPartPartTypeRelation = (relation) => {
-    addRelation.mutate({ ...relation, 'partId': part.id })
+    addRelation.mutate({ ...relation, 'partId': part.id, 'part': part })
   }
 
   const modifyPartPartTypeRelation = (relations) => {
 
     const mutatedPart = { ...part,
-      'partTypeRelations': relations.map( (relation) => ({ ...relation, 'partId': part.id })) }
+      'partTypeRelations': relations.map( (relation) => ({ ...relation, 'partId': part.id, 'part': part })) }
     // console.info(`M-PART: ${JSON.stringify(mutatedPart, null, 2)}`)
     mutatePart.mutate(mutatedPart)
   }
