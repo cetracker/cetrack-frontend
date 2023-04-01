@@ -19,6 +19,19 @@ export const loader = (queryClient) =>
     )
   }
 
+  const currentlyUsedPart = (relations) => {
+    let usage = ''
+    relations && relations.forEach(relation => {
+      // when relation is open ended (null),
+      // the part is currently in use
+      if (!relation.validUntil) {
+        usage = relation.part.name
+      }
+    });
+    return usage;
+  }
+
+
   const PartTypeList = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false)
     const [partTypeDialogVariant, setPartTypeDialogVariant] = useState('')
@@ -77,17 +90,28 @@ export const loader = (queryClient) =>
         {
           accessorKey: 'mandatory',
           header: 'Mandatory',
-          Cell: ({cell}) => (
+          Cell: ({cell, row}) => {
+            const noPartAssigned = row.getValue('Currently Used Part') === '' && cell.getValue('mandatory')
+            return (
             <Checkbox
-              checked={cell.getValue('mandatory')}
-              disabled='true'>
-            </Checkbox>
-          )
+              checked={row.getValue('mandatory')}
+              error={noPartAssigned ? 'Currently no part assigned!' : ''}
+              color={noPartAssigned ? 'red' : 'teal'}
+
+              style={{
+                color: noPartAssigned? 'red' : undefined
+              }}
+            />
+          )}
         },
         {
           accessorFn: (row) => bikeName(row.bike),
           header: 'Bike'
         },
+        {
+          accessorFn: (row) => currentlyUsedPart(row.partTypeRelations),
+          header: 'Currently Used Part'
+        }
       ],
       []
     )
