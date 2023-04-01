@@ -26,7 +26,7 @@ const getPartType = async (id) => {
   return data;
 }
 
-export const fetchPartQuery = (id) => ({
+export const fetchPartTypeQuery = (id) => ({
   queryKey: ['parttype', 'detail', id],
   queryFn: () => getPartType(id)
 })

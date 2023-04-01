@@ -10,6 +10,7 @@ import BikeList, { loader as bikesLoader } from './components/Bikes/BikeList';
 import NotFoundPage from './components/Error404/Error404';
 import Part, { loader as partLoader } from './components/Parts/Part';
 import PartList, { loader as partsLoader } from './components/Parts/PartList';
+import PartType, { loader as partTypeLoader } from './components/Parts/PartType';
 import PartTypeList, { loader as partTypesLoader } from './components/Parts/PartTypeList';
 import ReportList, { loader as reportLoader } from './components/Report/ReportList';
 import TourImport from './components/Tours/TourImport';
@@ -46,6 +47,11 @@ const router = createBrowserRouter([
             path: "partTypes",
             element: <PartTypeList />,
             loader: partTypesLoader(queryClient)
+          },
+          {
+            path: "parttypes/:id",
+            element: <PartType />,
+            loader: partTypeLoader(queryClient)
           },
           {
             path: "bikes",

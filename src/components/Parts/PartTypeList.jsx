@@ -3,6 +3,7 @@ import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from '@tabler/icons-
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { bikeName } from '../Bikes/helper';
 import { fetchPartTypesQuery } from "./api/fetchPartTypes";
 import { addPartType, deletePartType, putPartType } from "./api/mutatePartType";
@@ -45,6 +46,7 @@ export const loader = (queryClient) =>
       data: partTypes,
     } = useQuery(fetchPartTypesQuery())
 
+    const navigate = useNavigate()
     const queryClient = useQueryClient();
 
     const addPartTypeMutation = useMutation({
@@ -167,6 +169,12 @@ export const loader = (queryClient) =>
             showAlertBanner: isError,
             showProgressBars: isFetching,
           }}
+          mantineTableBodyRowProps={({ row }) => ({
+            onClick: () => { navigate("/parttypes/"+row.original.id) },
+            sx: {
+              cursor: 'pointer',
+            },
+          })}
           enableRowActions
           displayColumnDefOptions={{
               'mrt-row-actions': {
