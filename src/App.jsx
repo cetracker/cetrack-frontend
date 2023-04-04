@@ -1,4 +1,5 @@
 import { AppShell, ColorSchemeProvider, Header, MantineProvider, Navbar } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
@@ -34,6 +35,7 @@ const App = () => {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme} >
       <QueryClientProvider client={queryClient}>
         <MantineProvider theme={{...theme, colorScheme}} withGlobalStyles withNormalizeCSS>
+          <Notifications />
           <AppShell
             padding="md"
             navbar={<Navbar width={{ base: 180 }} height={330} p="xs" gap="10"> <NavigationContent/> </Navbar>}

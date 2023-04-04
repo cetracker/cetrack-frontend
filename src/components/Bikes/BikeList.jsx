@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
 import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from "react";
+import { showUserError } from "../../helper/errorNotification";
 import AddBikeDialog from "./AddBikeDialog";
 import fetchBikesQuery from "./api/fetchBikes";
 import { addBike, putBike, removeBike } from "./api/mutateBike";
@@ -48,7 +49,12 @@ export const loader = (queryClient) =>
     const removeBikeMutation = useMutation({
       queryKey: ['bike'],
       mutationFn: (bikeId) => removeBike(bikeId),
-      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) }
+      onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['bikes'] }) },
+      onError: (error) => {
+        const errorResponse = error.response.data
+        showUserError(errorResponse.status, errorResponse.code, errorResponse.message)
+      }
+
     })
 
     const handleBikeSubmit = (bike) => {
