@@ -30,7 +30,7 @@
     "@tanstack/react-query-devtools": "^4.24.9",
     "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.10",
-    "eslint": "^8.38.0",
+    "eslint": "^8.39.0",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-react": "^7.32.2",
