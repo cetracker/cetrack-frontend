@@ -72,9 +72,9 @@ const AddBikeDialog = ({ open, onClose, onSubmit, initialBike, variant }) => {
             <DateInput
               key='retiredAt'
               label='Retired'
-              placeholder="optional - not implemented yet"
+              placeholder="optional"
               defaultValue={ (initialBike?.retiredAt)? new Date(initialBike.retiredAt) : null }
-              disabled={true}
+              clearable={true}
               popoverProps={{ withinPortal: true }}
               onChange={(e) => e ? setValues({ ...values, 'retiredAt': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'retiredAt': null } )}
             />

@@ -93,6 +93,10 @@ const PartList = () => {
         header: 'Purchase Date'
       },
       {
+        accessorFn: (row) => (row.retiredAt ? dayjs(row.retiredAt).format('YYYY-MM-DD') : ''),
+        header: 'Retired Date'
+      },
+      {
         accessorFn: (row) => inUseAs(row.partTypeRelations),
         header: 'Currently In Use As'
       }

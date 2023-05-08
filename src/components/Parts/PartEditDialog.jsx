@@ -55,10 +55,9 @@ const PartEditDialog = ({ open, onClose, onSubmit, variant, initialPart }) => {
             <DateInput
               key='retiredAt'
               label='Retired'
-              placeholder="optional - not implemented yet"
+              placeholder="optional"
               defaultValue={ (initialPart?.retiredAt)? new Date(initialPart.retiredAt) : null }
               clearable={true}
-              disabled={true}
               popoverProps={{ withinPortal: true }}
               onChange={(e) => e ? setValues({ ...values, 'retiredAt': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'retiredAt': null } )}
             />
