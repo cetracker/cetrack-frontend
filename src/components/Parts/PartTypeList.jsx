@@ -99,6 +99,7 @@ export const loader = (queryClient) =>
               checked={row.getValue('mandatory')}
               error={noPartAssigned ? 'Currently no part assigned!' : ''}
               color={noPartAssigned ? 'red' : 'teal'}
+              readOnly={true}
 
               style={{
                 color: noPartAssigned? 'red' : undefined
