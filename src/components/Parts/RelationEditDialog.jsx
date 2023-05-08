@@ -2,7 +2,7 @@ import { Badge, Button, Flex, Modal, Popover, Stack, Text, Title } from "@mantin
 import { DatePickerInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import dayjs from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { bikeName } from "../Bikes/helper";
 import PartTypeSelector from "./PartTypeSelector";
 
@@ -14,21 +14,22 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
     const [validationErrorValidUntil, setValidationErrorValidUntil] = useState('')
     const [popOpened, { close: popClose, open: popOpen }] = useDisclosure(false);
 
+
+    useEffect(() => {
+      setValues(variant === 'add' ? { ...initialRelation, 'validFrom': dayjs().format(), 'validUntil': null } : initialRelation)
+    }, [initialRelation, variant])
+
     const title = variant=== 'add'? "Add New Relation" : "Modify Relation"
-    const initialValues = variant === 'add' ?
-                            { ...initialRelation, 'validFrom': dayjs().format(), 'validUntil': null}
-                            : initialRelation
 
     const handleSubmit = () => {
-      const submitValues = { ...initialValues, ...values}
       //put your validation logic here
       let hasAnyError = false;
-      if (submitValues.validFrom && dayjs(submitValues.validFrom).isValid()) {
+      if (values.validFrom && dayjs(values.validFrom).isValid()) {
         setValidationErrorValidFrom(false)
-        if (submitValues.validUntil) {
-          if(dayjs(submitValues.validUntil).isValid) {
+        if (values.validUntil) {
+          if(dayjs(values.validUntil).isValid) {
             setValidationErrorValidUntil(false)
-            if(dayjs(submitValues.validFrom).isAfter(submitValues.validUntil)) {
+            if(dayjs(values.validFrom).isAfter(values.validUntil)) {
               setValidationErrorValidFrom(true)
               setValidationErrorValidUntil('Valid Until must be after Valid From')
               hasAnyError = true
@@ -46,14 +47,14 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
         hasAnyError = true
       }
 
-      if (submitValues.partTypeId) {
+      if (values.partTypeId) {
         setValidationErrorPartType(false)
       } else {
         setValidationErrorPartType(true)
         hasAnyError = true
       }
       if (!hasAnyError) {
-        onSubmit(submitValues)
+        onSubmit(values)
         onClose();
       }
     };
@@ -71,7 +72,7 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
             <PartTypeSelector
               key='ptSelector'
               label='Parttype'
-              partType={initialValues.partType}
+              partType={values.partType}
               error={validationErrorPartType}
               onPartTypeChange={(pt) => {
                 pt ? setValues({ ...values, "partType": JSON.parse(pt), "partTypeId": JSON.parse(pt).id }) :
@@ -81,8 +82,8 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
             <Badge size="lg" radius="xs" variant="outline">
               { values?.partType?.bike ?
                   bikeName(values.partType.bike)
-                : initialValues?.partType?.bike ?
-                  bikeName(initialValues?.partType?.bike)
+                : values?.partType?.bike ?
+                  bikeName(values?.partType?.bike)
                 : 'Unknown' }
             </Badge>
             <DatePickerInput
@@ -90,7 +91,7 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
               label='Valid From'
               withAsterisk
               clearable={false}
-              defaultValue={ (initialValues?.validFrom)? new Date(initialValues.validFrom) : null }
+              value={ (values?.validFrom)? new Date(values.validFrom) : null }
               error={validationErrorValidFrom}
               popoverProps={{ withinPortal: true }}
               onChange={(e) => setValues({ ...values, 'validFrom': dayjs(e).startOf('day').format() })}
@@ -100,7 +101,7 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
               label='Valid Until'
               placeholder="optional"
               clearable={true}
-              defaultValue={ (initialValues?.validUntil)? new Date(initialValues.validUntil) : null }
+              value={ (values?.validUntil)? new Date(values.validUntil) : null }
               error={validationErrorValidUntil}
               popoverProps={{ withinPortal: true }}
               onChange={(e) => e ? setValues({ ...values, 'validUntil': dayjs(e).endOf('day').format() }) : setValues({ ...values, 'validUntil': null } )}
