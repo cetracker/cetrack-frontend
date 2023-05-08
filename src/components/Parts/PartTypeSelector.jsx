@@ -14,10 +14,12 @@ const PartTypeSelector = ({onPartTypeChange, partType, error}) => {
       ) : (
         <NativeSelect
           data={ [{ value: '', label: "Please select!"}]
-          .concat(Array.from(partTypes.map((partType) => (
-            { value: JSON.stringify(partType),
+          .concat(Array.from(partTypes.map((partType) => {
+            const pt = {...partType, 'partTypeRelations': []}
+            return { value: JSON.stringify(pt),
               label: `${partType.name}  (${bikeName(partType.bike)})`
-            })
+            }
+          }
           ))) }
           value={value}
           error={error}
