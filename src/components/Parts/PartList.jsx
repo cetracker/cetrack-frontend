@@ -25,8 +25,16 @@ const inUseAs = (relations) => {
   relations && relations.forEach(relation => {
     // when relation is open ended (null),
     // the part is currently in use
+
     if (!relation.validUntil) {
       usage = relation.partType.name
+    } else {
+      var from = new Date(relation.validFrom)
+      var until = new Date(relation.validUntil)
+      var today = new Date()
+      if (today >= from && today <= until) {
+        usage = relation.partType.name
+      }
     }
   });
   return usage;
