@@ -5,9 +5,9 @@ import { MantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { bikeName } from '../Bikes/helper';
+import PartTypeEditDialog from './PartTypeEditDialog';
 import { fetchPartTypesQuery } from "./api/fetchPartTypes";
 import { addPartType, deletePartType, putPartType } from "./api/mutatePartType";
-import PartTypeEditDialog from './PartTypeEditDialog';
 
 // ⬇️ needs access to queryClient
 export const loader = (queryClient) =>
@@ -22,14 +22,54 @@ export const loader = (queryClient) =>
 
   const currentlyUsedPart = (relations) => {
     let usage = ''
+    // check if a /valid/ relation is defined first
+    if(!validateRelations(relations)) return usage;
+
     relations && relations.forEach(relation => {
       // when relation is open ended (null),
       // the part is currently in use
       if (!relation.validUntil) {
         usage = relation.part.name
+      } else {
+        var from = new Date(relation.validFrom)
+        var until = new Date(relation.validUntil)
+        var today = new Date()
+        if (today >= from && today <= until) {
+          usage = relation.part.name
+        }
       }
     });
     return usage;
+  }
+
+  // ToDo relation list need to be sorted
+  const validateRelations = (relations) => {
+    var lastRelation = null
+    var isValid = false
+    relations && relations.forEach( relation => {
+      if (!relation.validUntil) {
+        if(!lastRelation) {
+          lastRelation = relation
+          isValid = true
+        } else {
+          // more than one open ended relations discovered!
+          isValid = false
+          // return false; // not working
+        }
+      } else {
+        const from = new Date(relation.validFrom)
+        if(lastRelation) {
+          const lastUntil = new Date(lastRelation.validUntil)
+          if(from > lastUntil) {
+            isValid = true
+          } else {
+            // valid range is overlapping?
+            isValid = false
+          }
+        }
+      }
+    });
+    return isValid;
   }
 
 
