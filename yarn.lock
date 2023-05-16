@@ -4373,10 +4373,10 @@ vite-plugin-eslint@^1.8.1:
     "@types/eslint" "^8.4.5"
     rollup "^2.77.2"
 
-vite-plugin-mock-dev-server@^1.1.7:
-  version "1.1.7"
-  resolved "https://registry.yarnpkg.com/vite-plugin-mock-dev-server/-/vite-plugin-mock-dev-server-1.1.7.tgz#bd29f83d9c106313afa2434155f83c0c8353ab55"
-  integrity sha512-TROCFs7ONNasLSCNNWn+fODn3ApyXBWTyudS5KyhRZjdJnHESdIEc12Bn7tAxY4svIRT7B/yEH3ghjUEyc0vdg==
+vite-plugin-mock-dev-server@^1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/vite-plugin-mock-dev-server/-/vite-plugin-mock-dev-server-1.1.11.tgz#403176c1ddf25cec698ad4a83533df362c0380ee"
+  integrity sha512-4liyzycvmoHnXEvW1ZlgVqRSp1Grh/YclyXSylz7p26N7dNmIrBU0+yyQbTHxc16K+96UK8VxKlvvdC5kUkH9A==
   dependencies:
     chokidar "^3.5.3"
     co-body "^6.1.0"
