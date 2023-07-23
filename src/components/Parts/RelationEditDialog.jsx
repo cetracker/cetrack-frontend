@@ -16,7 +16,7 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
 
 
     useEffect(() => {
-      setValues(variant === 'add' ? { ...initialRelation, 'validFrom': dayjs().format(), 'validUntil': null } : initialRelation)
+      setValues(variant === 'add' ? { ...initialRelation, 'validFrom': dayjs().startOf('day').format(), 'validUntil': null } : initialRelation)
     }, [initialRelation, variant])
 
     const title = variant=== 'add'? "Add New Relation" : "Modify Relation"
