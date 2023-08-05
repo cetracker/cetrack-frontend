@@ -3494,10 +3494,10 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-mantine-react-table@^1.0.0-beta.10:
-  version "1.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/mantine-react-table/-/mantine-react-table-1.0.0-beta.10.tgz#7b06b71efeb86701146699a19d008327c43e864d"
-  integrity sha512-05qvAUs2+qcEWTag5lxZZAw68b6oMaaUrZhcMWKx6HEinwuOACwoiRdBh7SPDCIdDnLGGl3WPhm7gtUcP62v4A==
+mantine-react-table@^1.0.0-beta.17:
+  version "1.0.0-beta.17"
+  resolved "https://registry.yarnpkg.com/mantine-react-table/-/mantine-react-table-1.0.0-beta.17.tgz#973e758f5ce0fb8a4cbc97313bc505eb28857940"
+  integrity sha512-u4iCXlbGskk+lbIYpjkR0SFwKxDHOU12ZnBWe+l4A2jDjlilyLpwp/tJVwCyjmZEvjE5YPf/e9hsK3xacxd/HA==
   dependencies:
     "@tanstack/match-sorter-utils" "8.8.4"
     "@tanstack/react-table" "8.9.2"
