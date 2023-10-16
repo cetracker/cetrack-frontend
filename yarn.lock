@@ -1849,18 +1849,18 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.2.0.tgz#8be36a1f66f3265389e90b5f9c9962146758f728"
   integrity sha512-sXo/qW2/pAcmT43VoRKOJbDOfV3cYpq3szSVfIThQXNt+E4DfKj361vaAt3c88U5tPUxzEswam7GW48PJqtKAg==
 
-"@tabler/icons-react@^2.38.0":
-  version "2.38.0"
-  resolved "https://registry.yarnpkg.com/@tabler/icons-react/-/icons-react-2.38.0.tgz#2f77785ab4b6a0aee3f056675b97c6fe8a1b4af8"
-  integrity sha512-4oLo7z7HkFQXZNNAo3tmhpdZTeFrSNSxngmrEOGZ6WsjT2WRlc6kcEHMVxfCekV19JeB6Yprg30Bdr4sUYJLiQ==
+"@tabler/icons-react@^2.39.0":
+  version "2.39.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons-react/-/icons-react-2.39.0.tgz#740bed37d04d7ccd6b6a9d813126728b733aeb49"
+  integrity sha512-MyUK1jqtmHPZBnDXqIc1Y5OnfoqG+tGaSB1/gcl0mlY462fJ5f3QB0ZIZzAHMAGYb6K2iJSdFIFavhcgpDDZ7Q==
   dependencies:
-    "@tabler/icons" "2.38.0"
+    "@tabler/icons" "2.39.0"
     prop-types "^15.7.2"
 
-"@tabler/icons@2.38.0":
-  version "2.38.0"
-  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-2.38.0.tgz#fe79c675aafa9a2bbacb6d3c02d6b38662fae890"
-  integrity sha512-icDKK6n8jUYAavHK+L2Xe0/tYjwZVS7uhVazhCMVjdm3RfJLFbeLSNEIWcYdGOg6QAock9yqWse8hnhvsy2M3w==
+"@tabler/icons@2.39.0":
+  version "2.39.0"
+  resolved "https://registry.yarnpkg.com/@tabler/icons/-/icons-2.39.0.tgz#5f75dbac0419d0f88ab7109f8739ff956f15b672"
+  integrity sha512-iK3j2jIEGIUaJcbYYg5iwyG1Y/m4lzUxAUbxRpvgeXCWP29jvZaH5hajZmU3KaSealddHuJg7PSQislPHpCsoQ==
 
 "@tanstack/match-sorter-utils@8.8.4", "@tanstack/match-sorter-utils@^8.7.0":
   version "8.8.4"
