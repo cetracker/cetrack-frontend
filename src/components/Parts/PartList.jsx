@@ -2,7 +2,7 @@ import { ActionIcon } from '@mantine/core';
 import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
-import { MantineReactTable } from "mantine-react-table";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import PartEditDialog from './PartEditDialog';
@@ -112,6 +112,60 @@ const PartList = () => {
     []
   )
 
+  const table = useMantineReactTable({
+    columns,
+    data: parts ?? [],
+    enablePagination: false,
+    enableStickyHeader: true,
+    mantineTableProps: { striped: true },
+    mantineToolbarAlertBannerProps: isError
+      ? {
+          color: 'error',
+          children: 'Error loading data',
+        }
+      : undefined,
+    showSkeletons: true,
+    state: {
+      isLoading,
+      showAlertBanner: isError,
+      showProgressBars: isFetching,
+    },
+    mantineTableBodyRowProps: ({ row }) => ({
+      onClick: () => { navigate("/parts/"+row.original.id) },
+      sx: {
+        cursor: 'pointer',
+      },
+    }),
+    renderTopToolbarCustomActions: () => (
+      <ActionIcon onClick={() => setCreateModalOpen(true)}>
+        <IconSquareRoundedPlusFilled />
+      </ActionIcon>
+    ),
+    enableRowActions: true,
+    displayColumnDefOptions: {
+        'mrt-row-actions': {
+          Cell: ({ row }) => (<>
+            <ActionIcon
+          onClick={(e) => {
+            e.stopPropagation()
+            setPartDialogVariant('modify')
+            setPartUnderEdit(row.original)
+            setCreateModalOpen(true)
+          }}><IconEdit />
+        </ActionIcon>
+        <ActionIcon
+          onClick={(e) => {
+            e.stopPropagation()
+            handleRemovePart(row.original)
+          }}><IconTrash />
+        </ActionIcon>
+            </>
+          )
+        }
+      }
+
+  })
+
   return (
     <>
       <PartEditDialog
@@ -125,62 +179,7 @@ const PartList = () => {
         variant={partDialogVariant}
         initialPart={partUnderEdit}
       />
-      <MantineReactTable
-        columns={columns}
-        data={parts ?? []}
-        enablePagination={false}
-        enableStickyHeader
-        mantineTableProps={{
-          striped: true
-        }}
-        mantineToolbarAlertBannerProps={
-        isError
-          ? {
-              color: 'error',
-              children: 'Error loading data',
-            }
-          : undefined
-        }
-        showSkeletons={true}
-        state={{
-          isLoading,
-          showAlertBanner: isError,
-          showProgressBars: isFetching,
-        }}
-        mantineTableBodyRowProps={({ row }) => ({
-          onClick: () => { navigate("/parts/"+row.original.id) },
-          sx: {
-            cursor: 'pointer',
-          },
-        })}
-        renderTopToolbarCustomActions={() => (
-          <ActionIcon onClick={() => setCreateModalOpen(true)}>
-            <IconSquareRoundedPlusFilled />
-          </ActionIcon>
-        )}
-        enableRowActions
-        displayColumnDefOptions={{
-            'mrt-row-actions': {
-              Cell: ({ row }) => (<>
-                <ActionIcon
-              onClick={(e) => {
-                e.stopPropagation()
-                setPartDialogVariant('modify')
-                setPartUnderEdit(row.original)
-                setCreateModalOpen(true)
-              }}><IconEdit />
-            </ActionIcon>
-            <ActionIcon
-              onClick={(e) => {
-                e.stopPropagation()
-                handleRemovePart(row.original)
-              }}><IconTrash />
-            </ActionIcon>
-                </>
-              )
-            }
-          }}
-      />
+      <MantineReactTable table={table} />
     </>
   )
 }
