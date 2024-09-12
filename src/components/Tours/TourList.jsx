@@ -79,7 +79,11 @@ const TourList = () => {
       {
         accessorFn: (row) => (parseInt(Math.round(row.distance/10)) / 100).toLocaleString(undefined, {minimumFractionDigits: 2}),
         header: 'Distance (km)',
-        aggregationFn: 'sum',
+        aggregationFn: (columnId, leafRows, childRows) => {
+                let sum = leafRows.reduce((acc, curr) => acc + curr.original.distance, 0)
+                return (parseInt(Math.round(sum/10)) / 100).toLocaleString(undefined, {minimumFractionDigits: 2})
+              },
+        AggregatedCell: ({ cell }) => <div>{cell.getValue()}</div>,
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -125,6 +129,8 @@ const TourList = () => {
       {
         accessorKey: 'altUp',
         header: 'Up (m)',
+        aggregationFn: 'sum',
+        AggregatedCell: ({ cell }) => <div>{cell.getValue()}</div>,
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -147,6 +153,8 @@ const TourList = () => {
       {
         accessorKey: 'altDown',
         header: 'Down (m)',
+        aggregationFn: 'sum',
+        AggregatedCell: ({ cell }) => <div>{cell.getValue()}</div>,
         mantineTableHeadCellProps: {
           align: 'right',
         },
@@ -190,7 +198,8 @@ const TourList = () => {
       },
       {
         accessorFn: (row) => bikeName(row.bike),
-        header: 'Bike'
+        header: 'Bike',
+        filterVariant: 'select'
       }
     ],
     [sumDistance, sumMoving, sumAltUp, sumAltDown, sumPower]
@@ -204,6 +213,7 @@ const TourList = () => {
         enableGrouping
         enablePagination={false}
         enableBottomToolbar={false}
+        enableFacetedValues={true}
         mantineTableProps={{
           striped: true,
           highlightOnHover: false,
