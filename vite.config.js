@@ -11,8 +11,11 @@ export default defineConfig({
     port: 3001,
     strictPort: true,
     proxy: {
-      '^/api/.*': {
-        target: 'http://localhost:8080'
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '^/mock/api': {
         target: ''
