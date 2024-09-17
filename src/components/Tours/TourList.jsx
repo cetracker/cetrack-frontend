@@ -66,6 +66,7 @@ const TourList = () => {
       },
       {
         accessorFn: (row) => (row.startedAt ? dayjs(row.startedAt).format('YYYY-MM-DD HH:mm') : ''),
+        sortingFn: (rowA, rowB, columnId) => dayjs(rowA.getValue(columnId)).isBefore(dayjs(rowB.getValue(columnId))),
         header: 'Started',
         mantineTableHeadCellProps: {
           align: 'right',
@@ -235,7 +236,7 @@ const TourList = () => {
         initialState={{
           density: 'sm',
           sorting: [
-            { id: 'Started', asc: true}
+            { id: 'Started', desc: true }
           ],
           columnVisibility: {startYear: false, startMonth: false}
         }}

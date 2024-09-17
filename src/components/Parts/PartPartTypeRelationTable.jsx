@@ -64,6 +64,12 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
   const table = useMantineReactTable({
     columns,
     data: partTypeRelations ?? [],
+    initialState: {
+      density: 'sm',
+      sorting: [
+        { id: 'Valid From', asc: true }
+      ],
+    },
     renderBottomToolbarCustomActions: () => (
       <ActionIcon onClick={() => {
         setRelationForModal(

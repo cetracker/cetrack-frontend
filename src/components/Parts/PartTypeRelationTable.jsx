@@ -27,6 +27,12 @@ const PartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations
         data={partTypeRelations ?? []}
         enablePagination={false}
         enableEditing={false}
+        initialState={{
+          density: 'sm',
+          sorting: [
+            { id: 'Valid From', asc: true }
+          ],
+        }}
       />
     )
 }
