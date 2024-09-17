@@ -1,8 +1,29 @@
+import { ActionIcon } from "@mantine/core";
+import { IconSquareRoundedPlusFilled } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import dayjs from "dayjs";
-import { MantineReactTable } from "mantine-react-table";
-import { useMemo } from "react";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
+import { useMemo, useState } from "react";
+import { relatePart } from "./api/mutatePart";
+import RelationEditDialog from "./RelationEditDialog";
 
-const PartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations }) => {
+const PartTypeRelationTable = ({ partTypeRelations }) => {
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [relationForModal, setRelationForModal] = useState({})
+  const [parttypeId, setParttypeId] = useState('')
+
+  const queryClient = useQueryClient();
+
+  const addRelation = useMutation({
+    queryKey: ['part', 'relation'],
+    mutationFn: (relation) => relatePart(relation.part.id, relation),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['parttype', 'detail', parttypeId] }) }
+  })
+
+  const addPartPartTypeRelation = (relation) => {
+    setParttypeId(relation.partTypeId)
+    addRelation.mutate(relation)
+  }
 
   const columns = useMemo(
     () => [
@@ -21,19 +42,48 @@ const PartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelations
     ],
     []
   )
+
+  const table = useMantineReactTable({
+    columns,
+    data: partTypeRelations ?? [],
+    initialState: {
+      density: 'sm',
+      sorting: [
+        { id: 'Valid From', asc: true }
+      ],
+    },
+    displayColumnDefOptions: {
+      'mrt-row-actions': {
+        Cell: ({ cell, row, table }) => (
+          <ActionIcon
+            onClick={() => {
+              setRelationForModal(row.original)
+              setCreateModalOpen(true)
+            }}><IconSquareRoundedPlusFilled />
+          </ActionIcon>
+        )
+      }
+    },
+    enablePagination: false,
+    enableRowActions: true,
+    enableEditing: false,
+    renderRowActionMenuItems: ({ row }) => [ ],
+  });
     return (
-      <MantineReactTable
-        columns={columns}
-        data={partTypeRelations ?? []}
-        enablePagination={false}
-        enableEditing={false}
-        initialState={{
-          density: 'sm',
-          sorting: [
-            { id: 'Valid From', asc: true }
-          ],
-        }}
-      />
+      <>
+        <RelationEditDialog
+          open={createModalOpen}
+          variant={'add'}
+          onClose={() => {
+            setRelationForModal((partTypeRelations && partTypeRelations.length > 0) ?
+                    partTypeRelations[partTypeRelations.length - 1] : {})
+            setCreateModalOpen(false)
+          }}
+          onSubmit={addPartPartTypeRelation}
+          initialRelation={relationForModal}
+        />
+        <MantineReactTable table={table} />
+      </>
     )
 }
 
