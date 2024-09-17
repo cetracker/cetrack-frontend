@@ -35,7 +35,6 @@ const TourImport = () => {
       if (bikeId) {
         tours = tours.map( (tour) => ({ ...tour, 'bikeId': bikeId }))
       }
-      console.log(tours)
       addToursMutation.mutate(tours)
     }
   }

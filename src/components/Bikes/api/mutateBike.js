@@ -8,8 +8,6 @@ export const addBike = async (bike) => {
 }
 
 export const putBike = async (id, bike) => {
-  console.debug('ID:', id)
-  console.debug('Bike:', bike)
   const { data } = await axios.put(
     `/bikes/${id}`, bike
   );

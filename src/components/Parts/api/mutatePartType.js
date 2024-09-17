@@ -15,7 +15,6 @@ export const addPartType = async (partType) => {
 }
 
   export const deletePartType = async (id) => {
-  console.log('ID:', id)
   const { data } = await axios.delete(
     `/partTypes/${id}`
   );

@@ -7,7 +7,6 @@ const fetchParts = async () => {
   const { data } = await axios.get(
     `/api/parts/`
   );
-  console.log("DATA: " + data)
   return data;
 }
 

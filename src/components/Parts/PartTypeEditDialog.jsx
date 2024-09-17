@@ -12,21 +12,7 @@ const PartTypeEditDialog = ({ open, onClose, onSubmit, variant, initialPartType 
   }, [initialPartType, variant])
 
 
-    // let { bike: lastBike } = initialPartType
-    // const initialValues = variant === 'add' ? { bike: lastBike } : initialPartType
-
   const handleSubmit = () => {
-/*       const submitValues = { ...initialValues, ...values}
-      console.info('SubmitValues', submitValues)
-      if (!submitValues?.name || submitValues.name === '') {
-        setValidationErrorPartTypeName('Name is mandatory!')
-      } else {
-        setValidationErrorPartTypeName(null)
-        onSubmit(submitValues);
-        onClose();
-      }
-
-      */
     if(!values?.name || values.name === '') {
       setValidationErrorPartTypeName('Name is mandatory!')
     } else {

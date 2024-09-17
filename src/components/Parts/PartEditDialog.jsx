@@ -20,10 +20,6 @@ const PartEditDialog = ({ open, onClose, onSubmit, variant, initialPart }) => {
       }
     };
 
-    console.debug('Variant', variant)
-    console.debug('initialPart', initialPart)
-    console.debug('name', (variant === 'modify' && initialPart?.name) ? initialPart.name : null)
-
     return(
       <Modal opened={open} withCloseButton={false} onClose={onClose}>
         <Title ta="center">{variant === 'new'? "Add New" : "Edit"} Part</Title>

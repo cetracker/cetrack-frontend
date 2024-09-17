@@ -42,7 +42,6 @@ export const loader = (queryClient) =>
     return usage;
   }
 
-  // ToDo relation list need to be sorted
   const validateRelations = (relations) => {
     var lastRelation = null
     var isValid = false

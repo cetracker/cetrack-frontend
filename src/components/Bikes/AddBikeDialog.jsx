@@ -9,13 +9,9 @@ const AddBikeDialog = ({ open, onClose, onSubmit, initialBike, variant }) => {
     const [validationErrorManufacturer, setValidationErrorManufacturer] = useState(null)
     const [validationErrorModel, setValidationErrorModel] = useState(null)
 
-    console.debug('IBike',initialBike)
-    console.debug('Variant', variant)
-
     const handleSubmit = () => {
       let hasAnyErrors = false;
       const submitValues = { ...initialBike, ...values }
-      console.debug('SubmitValues', submitValues)
       if (!submitValues.manufacturer || submitValues.manufacturer === '') {
         setValidationErrorManufacturer('Manufacturer is mandatory!')
         hasAnyErrors = true

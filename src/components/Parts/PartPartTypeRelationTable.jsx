@@ -18,26 +18,22 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
     } if(relationDialogVariant === 'modify') {
       handleModifyRelation(values)
     }
-
   }
 
   const handleRemoveRelation = (rowId) => {
     const reducedRelations = table.getRowModel().rows.filter( (row) =>(
       row.id !== rowId
     )).map((row) => row.original)
-    console.debug('ReducedRelations', reducedRelations)
     modifyRelations(reducedRelations)
-
   }
 
   const handleModifyRelation = (values) => {
-
-      const modifiedRelations = table.getRowModel().rows.map( (row) => (
-            row.id !== rowIdCurrentlyModifying ? row.original : (values)
-      ))
-      modifyRelations(modifiedRelations)
-      setRowIdCurrentlyModifying(-1)
-  };
+    const modifiedRelations = table.getRowModel().rows.map( (row) => (
+          row.id !== rowIdCurrentlyModifying ? row.original : (values)
+    ))
+    modifyRelations(modifiedRelations)
+    setRowIdCurrentlyModifying(-1)
+  }
 
   const columns = useMemo(
     () => [
