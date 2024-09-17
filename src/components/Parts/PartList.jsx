@@ -148,7 +148,8 @@ const PartList = () => {
       },
       {
         accessorFn: (row) => lastUsedOn(row.partTypeRelations),
-        header: 'Last Used @'
+        header: 'Last Used @',
+        id: 'lastUsed'
       },
     ],
     []
@@ -159,6 +160,7 @@ const PartList = () => {
     data: parts ?? [],
     enableGrouping: true,
     enablePagination: false,
+    enableMultiSort: true,
     enableStickyHeader: true,
     mantineTableProps: { striped: true },
     mantineToolbarAlertBannerProps: isError
@@ -172,6 +174,10 @@ const PartList = () => {
       isLoading,
       showAlertBanner: isError,
       showProgressBars: isFetching,
+      sorting: [
+          { id: 'lastUsed', asc: true},
+          { id: 'name', asc: true}
+        ]
     },
     mantineTableBodyRowProps: ({ row }) => ({
       onClick: () => { navigate("/parts/"+row.original.id) },

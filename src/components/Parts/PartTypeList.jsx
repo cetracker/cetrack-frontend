@@ -127,7 +127,8 @@ export const loader = (queryClient) =>
       () => [
         {
           accessorKey: 'name',
-          header: 'Part Type'
+          header: 'Part Type',
+          id: 'name'
         },
         {
           accessorKey: 'mandatory',
@@ -181,6 +182,7 @@ export const loader = (queryClient) =>
           data={partTypes ?? []}
           enablePagination={false}
           enableStickyHeader
+          enableMultiSort
           mantineTableProps={{
             striped: true
           }}
@@ -209,6 +211,10 @@ export const loader = (queryClient) =>
             isLoading,
             showAlertBanner: isError,
             showProgressBars: isFetching,
+            sorting: [
+              { id: 'Bike', asc: true},
+              { id: 'name', asc: true}
+            ]
           }}
           mantineTableBodyRowProps={({ row }) => ({
             onClick: () => { navigate("/parttypes/"+row.original.id) },
@@ -216,6 +222,8 @@ export const loader = (queryClient) =>
               cursor: 'pointer',
             },
           })}
+          initialState={{
+          }}
           enableRowActions
           displayColumnDefOptions={{
               'mrt-row-actions': {
