@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { bikeName } from '../Bikes/helper';
 import PartEditDialog from './PartEditDialog';
 import { fetchPartsQuery } from "./api/fetchParts";
 import { addPart, putPart, removePart } from "./api/mutatePart";
@@ -20,24 +21,61 @@ export const loader = (queryClient) =>
     )
   }
 
-const inUseAs = (relations) => {
-  let usage = ''
-  relations && relations.forEach(relation => {
-    // when relation is open ended (null),
-    // the part is currently in use
+const currentRelation = (relations) => {
 
+  let currentRelation = null
+  // when relation is open ended (null),
+  // the part is currently in use, it should be the
+  // most recent relation too
+
+  relations && relations.forEach(relation => {
     if (!relation.validUntil) {
-      usage = relation.partType.name
+      currentRelation = relation
+      return
     } else {
       var from = new Date(relation.validFrom)
       var until = new Date(relation.validUntil)
       var today = new Date()
       if (today >= from && today <= until) {
-        usage = relation.partType.name
+        currentRelation = relation
       }
     }
   });
-  return usage;
+  return currentRelation
+}
+
+const inUseAs = (relations) => {
+  let relation = currentRelation(relations)
+  return relation ? relation.partType.name : ''
+}
+
+const mostRecentRelation = (relations) => {
+
+  let mostRecentRelation = null
+  let mostRecentFrom = new Date('1970-01-01')
+  // when relation is open ended (null),
+  // the part is currently in use, it should be the
+  // most recent relation too
+
+  relations && relations.forEach(relation => {
+    if (!relation.validUntil) {
+      mostRecentRelation = relation
+      return
+    } else {
+      var from = new Date(relation.validFrom)
+
+      if (from > mostRecentFrom) {
+        mostRecentRelation = relation
+        mostRecentFrom = from
+      }
+    }
+  });
+  return mostRecentRelation
+}
+
+const lastUsedOn = (relations) => {
+  let relation = mostRecentRelation(relations)
+  return relation ? bikeName(relation.partType.bike) : ''
 }
 
 const PartList = () => {
@@ -107,7 +145,11 @@ const PartList = () => {
       {
         accessorFn: (row) => inUseAs(row.partTypeRelations),
         header: 'Currently In Use As'
-      }
+      },
+      {
+        accessorFn: (row) => lastUsedOn(row.partTypeRelations),
+        header: 'Last Used @'
+      },
     ],
     []
   )
@@ -115,6 +157,7 @@ const PartList = () => {
   const table = useMantineReactTable({
     columns,
     data: parts ?? [],
+    enableGrouping: true,
     enablePagination: false,
     enableStickyHeader: true,
     mantineTableProps: { striped: true },
