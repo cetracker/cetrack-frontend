@@ -44,7 +44,7 @@ const ReportList = () => {
         },
         size: 100,
         maxSize: 140,
-        sortingFn: (rowA, rowB, columnId) => rowA.original.distance < rowB.original.distance ? 1 : -1,
+        sortingFn: (rowA, rowB) => rowA.original.distance < rowB.original.distance ? 1 : -1,
       },
       {
         accessorFn: (row) => row.durationMoving? formatDuration(row.durationMoving): '',

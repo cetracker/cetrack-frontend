@@ -1,6 +1,9 @@
 # local history
 .history
 
+# Cache
+.eslintcache
+
 # docker compose example
 deploy/example/*
 docker-compose.yaml

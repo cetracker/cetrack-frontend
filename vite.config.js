@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from "url";
 import { defineConfig } from 'vite';
-import eslint from 'vite-plugin-eslint';
+import eslint from 'vite-plugin-eslint2';
 import mockDevServerPlugin from 'vite-plugin-mock-dev-server'; // https://github.com/pengzhanbo/vite-plugin-mock-dev-server
 
 // https://vitejs.dev/config/
@@ -27,11 +27,7 @@ export default defineConfig({
       ...eslint(),
       apply: 'build',
     },
-    { // do not fail on serve (i.e. local development)
-      ...eslint({
-        failOnWarning: false,
-        failOnError: false,
-      }),
+    { 
       apply: 'serve',
       enforce: 'post'
     },

@@ -134,7 +134,7 @@ const RelationEditDialog = ({ open, onClose, onSubmit, initialRelation, variant 
             <Popover.Dropdown sx={{ pointerEvents: 'none' }}>
               <Text size="sm">
                 Currently active relation of a different part with this part type will be terminated automatically
-                at Midnight on the day before "Valid From" above.
+                at Midnight on the day before &#34;Valid From&#34; above.
               </Text>
             </Popover.Dropdown>
           </Popover>
