@@ -3,6 +3,7 @@ import { IconEdit, IconSquareRoundedPlusFilled, IconTrash } from "@tabler/icons-
 import dayjs from "dayjs";
 import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { useMemo, useState } from "react";
+import { compareDates } from "../../helper/dateCompare";
 import { bikeName } from "../Bikes/helper";
 import RelationEditDialog from "./RelationEditDialog";
 
@@ -47,10 +48,12 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
         },
         {
           accessorFn: (row) => dayjs(row.validFrom).format('YYYY-MM-DD'),
+          sortingFn: 'datetime',
           header: 'Valid From'
         },
         {
           accessorFn: (row) => (row.validUntil ? dayjs(row.validUntil).format('YYYY-MM-DD HH:mm') : ''),
+          sortingFn: 'dateSorting',
           header: 'Valid Until'
         }
     ],
@@ -60,6 +63,9 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
   const table = useMantineReactTable({
     columns,
     data: partTypeRelations ?? [],
+    sortingFns: {
+        dateSorting: (rowA, rowB, columnId) => compareDates(rowA.getValue(columnId), rowB.getValue(columnId))
+    },
     initialState: {
       density: 'sm',
       sorting: [
@@ -99,6 +105,7 @@ const PartPartTypeRelationTable = ({ partTypeRelations, addRelation, modifyRelat
         )
       }
     },
+    enableSorting: true,
     enablePagination: false,
     enableRowActions: true,
     enableEditing: false,

@@ -2,7 +2,7 @@ import { Box, Flex, Stack } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { MantineReactTable } from "mantine-react-table";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table";
 import { useMemo } from 'react';
 import { formatDuration, formatJaskWh } from '../../helper/durationFormatter';
 import { bikeName } from '../Bikes/helper';
@@ -66,7 +66,7 @@ const TourList = () => {
       },
       {
         accessorFn: (row) => (row.startedAt ? dayjs(row.startedAt).format('YYYY-MM-DD HH:mm') : ''),
-        sortingFn: (rowA, rowB, columnId) => dayjs(rowA.getValue(columnId)).isBefore(dayjs(rowB.getValue(columnId))),
+        sortingFn: 'datetime',
         header: 'Started',
         mantineTableHeadCellProps: {
           align: 'right',
@@ -206,43 +206,42 @@ const TourList = () => {
     [sumDistance, sumMoving, sumAltUp, sumAltDown, sumPower]
   )
 
+  const table = useMantineReactTable({
+    columns,
+    data: tours ?? [],
+    enableGrouping: true,
+    enablePagination: false,
+    enableBottomToolbar: false,
+    enableFacetedValues: true,
+    mantineTableProps: {
+      striped: true,
+      highlightOnHover: false,
+    },
+    mantineToolbarAlertBannerProps: isError
+        ? {
+            color: 'error',
+            children: 'Error loading data',
+          }
+        : undefined,
+    state: {
+      isLoading,
+      showAlertBanner: isError,
+      showProgressBars: isFetching,
+      // showSkeletons: isFetching,
+    },
+    initialState: {
+      density: 'sm',
+      sorting: [
+        { id: 'Started', desc: true }
+      ],
+      columnVisibility: {startYear: false, startMonth: false}
+    },
+    enableStickyHeader: true,
+    mantineTableContainerProps: { sx: { maxHeight: '800px' } }
+  });
   return (
     <>
-      <MantineReactTable
-        columns={columns}
-        data={tours ?? []}
-        enableGrouping
-        enablePagination={false}
-        enableBottomToolbar={false}
-        enableFacetedValues={true}
-        mantineTableProps={{
-          striped: true,
-          highlightOnHover: false,
-        }}
-        mantineToolbarAlertBannerProps={
-        isError
-          ? {
-              color: 'error',
-              children: 'Error loading data',
-            }
-          : undefined
-        }
-        state={{
-          isLoading,
-          showAlertBanner: isError,
-          showProgressBars: isFetching,
-          // showSkeletons: isFetching,
-        }}
-        initialState={{
-          density: 'sm',
-          sorting: [
-            { id: 'Started', desc: true }
-          ],
-          columnVisibility: {startYear: false, startMonth: false}
-        }}
-        enableStickyHeader
-        mantineTableContainerProps={{ sx: { maxHeight: '800px' } }}
-      />
+      <MantineReactTable table={table} />
     </>
   )
 }
