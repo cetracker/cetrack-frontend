@@ -20,6 +20,7 @@ export default defineConfig({
         target: ''
       },
     },
+    logLevel: 'debug',
   },
   plugins: [
     react(),
@@ -27,7 +28,7 @@ export default defineConfig({
       ...eslint(),
       apply: 'build',
     },
-    { 
+    {
       apply: 'serve',
       enforce: 'post'
     },
