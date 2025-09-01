@@ -30,7 +30,7 @@ jobs:
 
     steps:
       # Checkout
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # Build for production
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
