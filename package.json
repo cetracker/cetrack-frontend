@@ -29,7 +29,7 @@
     "@tanstack/react-query-devtools": "^4.24.9",
     "@types/react": "^18.3.7",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^5.0.3",
     "eslint": "^9.32.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.37.5",
