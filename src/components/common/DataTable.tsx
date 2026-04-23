@@ -22,6 +22,8 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import ViewColumnIcon from '@mui/icons-material/ViewColumn'
@@ -39,9 +41,18 @@ import {
   type ColumnFiltersState,
   type GroupingState,
   type OnChangeFn,
+  type RowData,
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table'
+
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    align?: 'left' | 'right'
+    hideOnMobile?: boolean
+  }
+}
 
 export interface DataTableProps<TData> {
   columns: ColumnDef<TData, any>[] // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -115,6 +126,26 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const [internalColumnVisibility, setInternalColumnVisibility] =
     useState<VisibilityState>({})
 
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+
+  const mobileHiddenOverrides = useMemo<VisibilityState>(() => {
+    if (!isMobile) return {}
+    const overrides: VisibilityState = {}
+    for (const col of columns) {
+      if (col.meta?.hideOnMobile) {
+        const key = (col as ColumnDef<TData, unknown> & { accessorKey?: string }).accessorKey ?? col.id
+        if (key) overrides[key] = false
+      }
+    }
+    return overrides
+  }, [isMobile, columns])
+
+  const effectiveColumnVisibility = useMemo<VisibilityState>(
+    () => ({ ...mobileHiddenOverrides, ...(columnVisibility ?? internalColumnVisibility) }),
+    [mobileHiddenOverrides, columnVisibility, internalColumnVisibility],
+  )
+
   const table = useReactTable({
     data,
     columns,
@@ -123,7 +154,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
       columnFilters: columnFilters ?? internalColumnFilters,
       sorting: sorting ?? internalSorting,
       grouping: grouping ?? internalGrouping,
-      columnVisibility: columnVisibility ?? internalColumnVisibility,
+      columnVisibility: effectiveColumnVisibility,
     },
     onGlobalFilterChange: onGlobalFilterChange ?? setInternalGlobalFilter,
     onColumnFiltersChange: onColumnFiltersChange ?? setInternalColumnFilters,
@@ -264,8 +295,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                   const canSort = header.column.getCanSort()
                   const dir = header.column.getIsSorted()
                   const align =
-                    (header.column.columnDef.meta as { align?: 'right' | 'left' } | undefined)
-                      ?.align ?? 'left'
+                    header.column.columnDef.meta?.align ?? 'left'
                   return (
                     <TableCell
                       key={header.id}
@@ -363,8 +393,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
                   >
                     {row.getVisibleCells().map((cell) => {
                       const align =
-                        (cell.column.columnDef.meta as { align?: 'right' | 'left' } | undefined)
-                          ?.align ?? 'left'
+                        cell.column.columnDef.meta?.align ?? 'left'
                       if (cell.getIsGrouped()) {
                         return (
                           <TableCell

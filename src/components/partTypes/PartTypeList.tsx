@@ -62,6 +62,7 @@ export const PartTypeList = () => {
         header: 'Mandatory',
         accessorFn: (pt) => pt.mandatory,
         enableGlobalFilter: false,
+        meta: { hideOnMobile: true },
         cell: ({ row }) => {
           const pt = row.original
           const hasActive = pt.partTypeRelations?.some((r) => !r.validUntil)
@@ -90,6 +91,7 @@ export const PartTypeList = () => {
         id: 'currentPart',
         header: 'Currently Used Part',
         accessorFn: currentPartName,
+        meta: { hideOnMobile: true },
         cell: ({ row }) => {
           const pt = row.original
           const name = currentPartName(pt)

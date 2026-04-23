@@ -69,11 +69,13 @@ export const PartList = () => {
         accessorKey: 'boughtAt',
         header: 'Purchase Date',
         cell: (c) => formatDate(c.getValue<string | null>()),
+        meta: { hideOnMobile: true },
       },
       {
         accessorKey: 'retiredAt',
         header: 'Retired Date',
         cell: (c) => formatDate(c.getValue<string | null>()),
+        meta: { hideOnMobile: true },
       },
       {
         id: 'currentUse',
@@ -84,6 +86,7 @@ export const PartList = () => {
         id: 'lastUsedAt',
         header: 'Last Used @',
         accessorFn: lastUsedAt,
+        meta: { hideOnMobile: true },
       },
       {
         id: 'actions',
