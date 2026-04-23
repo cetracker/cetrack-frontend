@@ -26,7 +26,6 @@ import {
   partTypeQuery,
   partTypeQueryKey,
   partsQueryKey,
-  relatePart,
   updatePart,
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation, PartType } from '@/types/api'
@@ -35,6 +34,7 @@ import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { RelationForm } from '@/components/parts/RelationForm'
 import { AddPartToTypeDialog } from './AddPartToTypeDialog'
+import { ReusePartDialog } from './ReusePartDialog'
 
 interface PartTypeDetailProps {
   open: boolean
@@ -62,6 +62,7 @@ export const PartTypeDetail = ({
   const [editPart, setEditPart] = useState<Part | null>(null)
   const [toDelete, setToDelete] = useState<PartPartTypeRelation | null>(null)
   const [addDialogOpen, setAddDialogOpen] = useState(false)
+  const [reuseRelation, setReuseRelation] = useState<PartPartTypeRelation | null>(null)
 
   // For the edit case we need the full part (backend sometimes returns nested parts without full data)
   const { data: editTargetPart } = useQuery({
@@ -73,27 +74,6 @@ export const PartTypeDetail = ({
     qc.invalidateQueries({ queryKey: partsQueryKey })
     if (partTypeId) qc.invalidateQueries({ queryKey: partTypeQueryKey(partTypeId) })
   }
-
-  const reuseMut = useApiMutation(
-    async (relation: PartPartTypeRelation) => {
-      if (!pt) throw new Error('Part type not loaded')
-      return relatePart(relation.partId, {
-        partId: relation.partId,
-        partTypeId: pt.id,
-        validFrom: new Date().toISOString(),
-        validUntil: null,
-        part: { id: relation.partId, name: relation.part.name },
-        partType: { id: pt.id, name: pt.name, mandatory: pt.mandatory },
-      })
-    },
-    {
-      successMessage: 'Part re-used as active',
-      onSuccess: (_data, relation) => {
-        invalidate()
-        qc.invalidateQueries({ queryKey: partQueryKey(relation.partId) })
-      },
-    },
-  )
 
   const deleteMut = useApiMutation(
     async (relation: PartPartTypeRelation) => {
@@ -189,8 +169,7 @@ export const PartTypeDetail = ({
                             <IconButton
                               size="small"
                               color="primary"
-                              onClick={() => reuseMut.mutate(r)}
-                              disabled={reuseMut.isPending}
+                              onClick={() => setReuseRelation(r)}
                             >
                               <ContentCopyIcon fontSize="small" />
                             </IconButton>
@@ -251,6 +230,15 @@ export const PartTypeDetail = ({
             open={addDialogOpen}
             onClose={() => setAddDialogOpen(false)}
             partType={pt}
+          />
+        )}
+
+        {pt && (
+          <ReusePartDialog
+            open={!!reuseRelation}
+            onClose={() => setReuseRelation(null)}
+            partType={pt}
+            relation={reuseRelation}
           />
         )}
 
