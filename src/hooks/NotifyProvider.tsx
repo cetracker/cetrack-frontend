@@ -82,6 +82,7 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
       <Snackbar
         open={items.length > 0}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        ClickAwayListenerProps={{ mouseEvent: false, touchEvent: false }}
       >
         <SnackbarStack>
           {items.map((n) => (
