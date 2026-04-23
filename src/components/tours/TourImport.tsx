@@ -94,6 +94,7 @@ export const TourImport = () => {
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
   const [bikeId, setBikeId] = useState<string | null>(null)
+  const [bikeError, setBikeError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const importMut = useApiMutation(importTours, {
@@ -109,6 +110,7 @@ export const TourImport = () => {
     setFileName(null)
     setError(null)
     setBikeId(null)
+    setBikeError(false)
     if (inputRef.current) inputRef.current.value = ''
   }
 
@@ -140,8 +142,11 @@ export const TourImport = () => {
 
   const submit = () => {
     if (!tours) return
-    const payload = bikeId ? tours.map((t) => ({ ...t, bikeId })) : tours
-    importMut.mutate(payload)
+    if (!bikeId) {
+      setBikeError(true)
+      return
+    }
+    importMut.mutate(tours.map((t) => ({ ...t, bikeId })))
   }
 
   return (
@@ -227,9 +232,12 @@ export const TourImport = () => {
             <Box sx={{ minWidth: 240 }}>
               <BikeSelect
                 value={bikeId}
-                onChange={setBikeId}
-                label="Assign to bike (optional)"
-                noneLabel="— no assignment —"
+                onChange={(id) => { setBikeId(id); setBikeError(false) }}
+                includeNone={false}
+                label="Bike"
+                required
+                error={bikeError}
+                helperText={bikeError ? 'Please select a bike' : undefined}
               />
             </Box>
             <Box sx={{ flexGrow: 1 }} />
@@ -246,7 +254,7 @@ export const TourImport = () => {
               variant="contained"
               startIcon={<CloudUploadIcon />}
               onClick={submit}
-              disabled={importMut.isPending || tours.length === 0}
+              disabled={importMut.isPending || tours.length === 0 || !bikeId}
             >
               Upload {tours.length} tour{tours.length === 1 ? '' : 's'}
             </Button>
