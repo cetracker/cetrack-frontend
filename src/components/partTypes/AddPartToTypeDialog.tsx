@@ -8,10 +8,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
-  partQueryKey,
-  partTypeQueryKey,
   partsQuery,
   partsQueryKey,
+  partTypesQueryKey,
   relatePart,
 } from '@/api/parts'
 import type { PartType } from '@/types/api'
@@ -74,10 +73,9 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
     },
     {
       successMessage: 'Relation added',
-      onSuccess: (_data, v) => {
+      onSuccess: () => {
         qc.invalidateQueries({ queryKey: partsQueryKey })
-        qc.invalidateQueries({ queryKey: partTypeQueryKey(partType.id) })
-        qc.invalidateQueries({ queryKey: partQueryKey(v.partId) })
+        qc.invalidateQueries({ queryKey: partTypesQueryKey })
         onClose()
       },
     },
