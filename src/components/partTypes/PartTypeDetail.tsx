@@ -218,7 +218,10 @@ export const PartTypeDetail = ({
           <Button
             variant="contained"
             startIcon={<AddIcon />}
-            onClick={() => setAddDialogOpen(true)}
+            onClick={(e) => {
+              e.currentTarget.blur()
+              setAddDialogOpen(true)
+            }}
             disabled={!pt}
             fullWidth
           >
