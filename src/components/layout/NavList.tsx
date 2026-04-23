@@ -28,13 +28,18 @@ const entries: NavEntry[] = [
   { to: '/report', label: 'Report', icon: <AssessmentIcon /> },
 ]
 
-export const NavList = () => (
+interface NavListProps {
+  onNavigate?: () => void
+}
+
+export const NavList = ({ onNavigate }: NavListProps) => (
   <List disablePadding>
     {entries.map(({ to, label, icon }) => (
       <ListItemButton
         key={to}
         component={NavLink}
         to={to}
+        onClick={onNavigate}
         sx={{
           '&.active': (theme) => ({
             bgcolor: theme.palette.action.selected,

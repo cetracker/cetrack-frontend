@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   AppBar,
   Box,
@@ -6,9 +7,12 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
+import MenuIcon from '@mui/icons-material/Menu'
 import PedalBikeIcon from '@mui/icons-material/PedalBike'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
 import { NavList } from './NavList'
@@ -18,22 +22,31 @@ const DRAWER_WIDTH = 220
 
 export const AppShell = () => {
   const { mode, toggle } = useColorMode()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AppBar
         position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
+        sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}
       >
         <Toolbar>
           <IconButton
             edge="start"
             color="inherit"
+            onClick={() => setMobileNavOpen(true)}
+            sx={{ mr: 1, display: { md: 'none' } }}
+            aria-label="open navigation"
+          >
+            <MenuIcon />
+          </IconButton>
+          <IconButton
+            color="inherit"
             component={RouterLink}
             to="/"
-            sx={{ mr: 2 }}
+            sx={{ mr: 2, display: { xs: 'none', md: 'inline-flex' } }}
             aria-label="home"
           >
             <PedalBikeIcon />
@@ -50,7 +63,9 @@ export const AppShell = () => {
       </AppBar>
 
       <Drawer
-        variant="permanent"
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? mobileNavOpen : true}
+        onClose={() => setMobileNavOpen(false)}
         sx={{
           width: DRAWER_WIDTH,
           flexShrink: 0,
@@ -62,7 +77,7 @@ export const AppShell = () => {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          <NavList />
+          <NavList onNavigate={isMobile ? () => setMobileNavOpen(false) : undefined} />
         </Box>
       </Drawer>
 
@@ -70,8 +85,7 @@ export const AppShell = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: `calc(100% - ${DRAWER_WIDTH}px)`,
+          p: { xs: 2, sm: 3 },
           minWidth: 0,
         }}
       >

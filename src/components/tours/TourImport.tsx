@@ -14,6 +14,8 @@ import {
   TableHead,
   TableRow,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
@@ -26,12 +28,12 @@ import { BikeSelect } from '@/components/common/BikeSelect'
 import { formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
-const DropZone = styled.label<{ $active: boolean; $error: boolean }>`
+const DropZone = styled.label<{ $active: boolean; $error: boolean; $compact?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 36px 24px;
+  padding: ${({ $compact }) => ($compact ? '16px 12px' : '36px 24px')};
   border: 2px dashed
     ${({ $active, $error }) =>
       $error ? '#d32f2f' : $active ? '#00897B' : '#90a4ae'};
@@ -89,6 +91,8 @@ const previewDate = (t: MTTour): string =>
 
 export const TourImport = () => {
   const qc = useQueryClient()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [fileName, setFileName] = useState<string | null>(null)
   const [tours, setTours] = useState<MTTour[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -183,6 +187,7 @@ export const TourImport = () => {
       <DropZone
         $active={dragging}
         $error={!!error}
+        $compact={isMobile}
         onDragOver={(e) => {
           e.preventDefault()
           setDragging(true)

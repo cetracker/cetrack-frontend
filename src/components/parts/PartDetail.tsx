@@ -49,7 +49,7 @@ export const PartDetail = ({ open, onClose, partId }: PartDetailProps) => {
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: DRAWER_WIDTH, maxWidth: '100vw' } }}
+      PaperProps={{ sx: { width: { xs: '100vw', sm: DRAWER_WIDTH }, maxWidth: '100vw' } }}
     >
       <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>

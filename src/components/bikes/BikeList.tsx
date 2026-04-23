@@ -42,6 +42,7 @@ export const BikeList = () => {
         accessorKey: 'boughtAt',
         header: 'Purchase Date',
         cell: (c) => formatDate(c.getValue<string | null>()),
+        meta: { hideOnMobile: true },
       },
       {
         id: 'actions',
