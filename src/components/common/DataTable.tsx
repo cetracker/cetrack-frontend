@@ -107,20 +107,24 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const [colMenuEl, setColMenuEl] = useState<HTMLElement | null>(null)
   const [groupMenuEl, setGroupMenuEl] = useState<HTMLElement | null>(null)
 
+  const [internalGrouping, setInternalGrouping] = useState<GroupingState>([])
+  const effectiveGrouping = grouping ?? internalGrouping
+  const effectiveOnGroupingChange = onGroupingChange ?? setInternalGrouping
+
   const table = useReactTable({
     data,
     columns,
     state: {
-      globalFilter,
-      columnFilters,
-      sorting,
-      grouping,
-      columnVisibility,
+      globalFilter: globalFilter ?? '',
+      columnFilters: columnFilters ?? [],
+      sorting: sorting ?? [],
+      grouping: effectiveGrouping,
+      columnVisibility: columnVisibility ?? {},
     },
     onGlobalFilterChange,
     onColumnFiltersChange,
     onSortingChange,
-    onGroupingChange,
+    onGroupingChange: effectiveOnGroupingChange,
     onColumnVisibilityChange,
     enableGrouping,
     getCoreRowModel: getCoreRowModel(),
