@@ -1,0 +1,282 @@
+import { useState } from 'react'
+import {
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  partQuery,
+  partQueryKey,
+  partTypeQuery,
+  partTypeQueryKey,
+  partsQueryKey,
+  relatePart,
+  updatePart,
+} from '@/api/parts'
+import type { Part, PartPartTypeRelation, PartType } from '@/types/api'
+import { bikeName, formatDate } from '@/utils/formatters'
+import { useApiMutation } from '@/hooks/useApiMutation'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
+import { RelationForm } from '@/components/parts/RelationForm'
+import { AddPartToTypeDialog } from './AddPartToTypeDialog'
+
+interface PartTypeDetailProps {
+  open: boolean
+  onClose: () => void
+  partTypeId: string | null
+}
+
+const DRAWER_WIDTH = 620
+
+const keyEq = (a: PartPartTypeRelation, b: PartPartTypeRelation) =>
+  a.partTypeId === b.partTypeId && a.validFrom === b.validFrom
+
+export const PartTypeDetail = ({
+  open,
+  onClose,
+  partTypeId,
+}: PartTypeDetailProps) => {
+  const qc = useQueryClient()
+  const { data: pt, isLoading } = useQuery({
+    ...partTypeQuery(partTypeId ?? ''),
+    enabled: !!partTypeId && open,
+  })
+
+  const [editRelation, setEditRelation] = useState<PartPartTypeRelation | null>(null)
+  const [editPart, setEditPart] = useState<Part | null>(null)
+  const [toDelete, setToDelete] = useState<PartPartTypeRelation | null>(null)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
+
+  // For the edit case we need the full part (backend sometimes returns nested parts without full data)
+  const { data: editTargetPart } = useQuery({
+    ...partQuery(editRelation?.partId ?? ''),
+    enabled: !!editRelation?.partId,
+  })
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: partsQueryKey })
+    if (partTypeId) qc.invalidateQueries({ queryKey: partTypeQueryKey(partTypeId) })
+  }
+
+  const reuseMut = useApiMutation(
+    async (relation: PartPartTypeRelation) => {
+      if (!pt) throw new Error('Part type not loaded')
+      return relatePart(relation.partId, {
+        partId: relation.partId,
+        partTypeId: pt.id,
+        validFrom: new Date().toISOString(),
+        validUntil: null,
+        part: { id: relation.partId, name: relation.part.name },
+        partType: { id: pt.id, name: pt.name, mandatory: pt.mandatory },
+      })
+    },
+    {
+      successMessage: 'Part re-used as active',
+      onSuccess: (_data, relation) => {
+        invalidate()
+        qc.invalidateQueries({ queryKey: partQueryKey(relation.partId) })
+      },
+    },
+  )
+
+  const deleteMut = useApiMutation(
+    async (relation: PartPartTypeRelation) => {
+      // Fetch the owning part then PUT with the relation removed
+      const owning = await qc.fetchQuery(partQuery(relation.partId))
+      const next: Part = {
+        ...owning,
+        partTypeRelations: (owning.partTypeRelations ?? []).filter(
+          (r) => !keyEq(r, relation),
+        ),
+      }
+      return updatePart(owning.id, next)
+    },
+    {
+      successMessage: 'Relation removed',
+      onSuccess: (_data, relation) => {
+        invalidate()
+        qc.invalidateQueries({ queryKey: partQueryKey(relation.partId) })
+        setToDelete(null)
+      },
+    },
+  )
+
+  const relations = (pt?.partTypeRelations ?? [])
+    .slice()
+    .sort((a, b) => b.validFrom.localeCompare(a.validFrom))
+
+  const openEditRelation = async (r: PartPartTypeRelation) => {
+    setEditRelation(r)
+    const p = await qc.fetchQuery(partQuery(r.partId))
+    setEditPart(p)
+  }
+
+  const closeEditRelation = () => {
+    setEditRelation(null)
+    setEditPart(null)
+  }
+
+  return (
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      PaperProps={{ sx: { width: DRAWER_WIDTH, maxWidth: '100vw' } }}
+    >
+      <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {pt?.name ?? (isLoading ? 'Loading…' : 'Part Type')}
+          </Typography>
+          <IconButton onClick={onClose} aria-label="Close drawer">
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+
+        {pt && (
+          <Typography color="text.secondary" sx={{ mb: 2 }}>
+            {pt.bike ? bikeName(pt.bike) : 'No bike assigned'}
+            {pt.mandatory && ' · mandatory'}
+          </Typography>
+        )}
+
+        <Divider />
+
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', mt: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Parts used as this type
+          </Typography>
+          {relations.length === 0 && (
+            <Typography color="text.secondary" sx={{ py: 2 }}>
+              No parts assigned to this type yet.
+            </Typography>
+          )}
+          {relations.length > 0 && (
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell padding="none" sx={{ width: 48 }} />
+                  <TableCell>Part</TableCell>
+                  <TableCell>Valid From</TableCell>
+                  <TableCell>Valid Until</TableCell>
+                  <TableCell align="right" />
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {relations.map((r) => {
+                  const isActive = !r.validUntil
+                  return (
+                    <TableRow key={`${r.partId}-${r.validFrom}`}>
+                      <TableCell padding="none" sx={{ pl: 1 }}>
+                        {isActive ? null : (
+                          <Tooltip title="Re-use this part (terminates current active part)">
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => reuseMut.mutate(r)}
+                              disabled={reuseMut.isPending}
+                            >
+                              <ContentCopyIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                      </TableCell>
+                      <TableCell>{r.part.name}</TableCell>
+                      <TableCell>{formatDate(r.validFrom)}</TableCell>
+                      <TableCell>
+                        {isActive ? (
+                          <Typography component="span" color="success.main">
+                            active
+                          </Typography>
+                        ) : (
+                          formatDate(r.validUntil)
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Stack direction="row" justifyContent="flex-end">
+                          <Tooltip title="Edit relation">
+                            <IconButton size="small" onClick={() => openEditRelation(r)}>
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete relation">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={() => setToDelete(r)}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </Box>
+
+        <Box sx={{ pt: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setAddDialogOpen(true)}
+            disabled={!pt}
+            fullWidth
+          >
+            Add new relation
+          </Button>
+        </Box>
+
+        {pt && (
+          <AddPartToTypeDialog
+            open={addDialogOpen}
+            onClose={() => setAddDialogOpen(false)}
+            partType={pt}
+          />
+        )}
+
+        {editRelation && editTargetPart && editPart && (
+          <RelationForm
+            open={true}
+            onClose={closeEditRelation}
+            part={editPart}
+            initial={editRelation}
+            lockedPartTypeId={pt?.id}
+          />
+        )}
+
+        <ConfirmDialog
+          open={!!toDelete}
+          title="Delete relation"
+          message="Remove this relation? This cannot be undone."
+          onCancel={() => setToDelete(null)}
+          onConfirm={() => toDelete && deleteMut.mutate(toDelete)}
+          confirmLabel="Delete"
+          destructive
+          busy={deleteMut.isPending}
+        />
+      </Box>
+    </Drawer>
+  )
+}
+
+export type { PartType }
