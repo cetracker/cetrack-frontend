@@ -1,7 +1,29 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
-import { Alert, Snackbar, Stack } from '@mui/material'
+import { forwardRef, useCallback, useMemo, useState, type ReactNode } from 'react'
+import { Alert, Box, Snackbar } from '@mui/material'
 import type { AlertColor } from '@mui/material'
 import { NotifyContext, type Notification } from './useNotify'
+
+// Snackbar clones its child and forwards transition props (including `direction`
+// when the transition is Slide). A plain styled Box with forwardRef absorbs
+// those props harmlessly — Stack/Grid2 would reject `direction: 'up' | ...`.
+const SnackbarStack = forwardRef<HTMLDivElement, { children: ReactNode }>(
+  function SnackbarStack({ children }, ref) {
+    return (
+      <Box
+        ref={ref}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+          width: '100%',
+          maxWidth: 480,
+        }}
+      >
+        {children}
+      </Box>
+    )
+  },
+)
 
 let seq = 0
 const nextId = () => ++seq
@@ -32,7 +54,7 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
         open={items.length > 0}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Stack spacing={1} sx={{ width: '100%', maxWidth: 480 }}>
+        <SnackbarStack>
           {items.map((n) => (
             <Alert
               key={n.id}
@@ -44,7 +66,7 @@ export const NotifyProvider = ({ children }: { children: ReactNode }) => {
               {n.message}
             </Alert>
           ))}
-        </Stack>
+        </SnackbarStack>
       </Snackbar>
     </NotifyContext.Provider>
   )
