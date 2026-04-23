@@ -56,7 +56,7 @@ export const App = () => (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <QueryClientProvider client={queryClient}>
         <NotifyProvider>
-          <RouterProvider router={router} />
+          <RouterProvider router={router} future={{ v7_startTransition: true }} />
         </NotifyProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
