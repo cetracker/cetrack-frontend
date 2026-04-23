@@ -107,25 +107,30 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
   const [colMenuEl, setColMenuEl] = useState<HTMLElement | null>(null)
   const [groupMenuEl, setGroupMenuEl] = useState<HTMLElement | null>(null)
 
+  const [internalGlobalFilter, setInternalGlobalFilter] = useState('')
+  const [internalColumnFilters, setInternalColumnFilters] =
+    useState<ColumnFiltersState>([])
+  const [internalSorting, setInternalSorting] = useState<SortingState>([])
   const [internalGrouping, setInternalGrouping] = useState<GroupingState>([])
-  const effectiveGrouping = grouping ?? internalGrouping
-  const effectiveOnGroupingChange = onGroupingChange ?? setInternalGrouping
+  const [internalColumnVisibility, setInternalColumnVisibility] =
+    useState<VisibilityState>({})
 
   const table = useReactTable({
     data,
     columns,
     state: {
-      globalFilter: globalFilter ?? '',
-      columnFilters: columnFilters ?? [],
-      sorting: sorting ?? [],
-      grouping: effectiveGrouping,
-      columnVisibility: columnVisibility ?? {},
+      globalFilter: globalFilter ?? internalGlobalFilter,
+      columnFilters: columnFilters ?? internalColumnFilters,
+      sorting: sorting ?? internalSorting,
+      grouping: grouping ?? internalGrouping,
+      columnVisibility: columnVisibility ?? internalColumnVisibility,
     },
-    onGlobalFilterChange,
-    onColumnFiltersChange,
-    onSortingChange,
-    onGroupingChange: effectiveOnGroupingChange,
-    onColumnVisibilityChange,
+    onGlobalFilterChange: onGlobalFilterChange ?? setInternalGlobalFilter,
+    onColumnFiltersChange: onColumnFiltersChange ?? setInternalColumnFilters,
+    onSortingChange: onSortingChange ?? setInternalSorting,
+    onGroupingChange: onGroupingChange ?? setInternalGrouping,
+    onColumnVisibilityChange:
+      onColumnVisibilityChange ?? setInternalColumnVisibility,
     enableGrouping,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
