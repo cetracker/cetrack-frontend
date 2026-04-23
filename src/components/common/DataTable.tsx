@@ -141,10 +141,17 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
     return overrides
   }, [isMobile, columns])
 
-  const effectiveColumnVisibility = useMemo<VisibilityState>(
-    () => ({ ...mobileHiddenOverrides, ...(columnVisibility ?? internalColumnVisibility) }),
-    [mobileHiddenOverrides, columnVisibility, internalColumnVisibility],
-  )
+  const activeGrouping = grouping ?? internalGrouping
+
+  const effectiveColumnVisibility = useMemo<VisibilityState>(() => {
+    // Grouped columns must always be visible regardless of other overrides
+    const groupingForced = Object.fromEntries(activeGrouping.map((id) => [id, true]))
+    return {
+      ...mobileHiddenOverrides,
+      ...(columnVisibility ?? internalColumnVisibility),
+      ...groupingForced,
+    }
+  }, [mobileHiddenOverrides, columnVisibility, internalColumnVisibility, activeGrouping])
 
   const table = useReactTable({
     data,
