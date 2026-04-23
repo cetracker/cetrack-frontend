@@ -167,7 +167,10 @@ export const PartTypeDetail = ({
                             <IconButton
                               size="small"
                               color="primary"
-                              onClick={() => setReuseRelation(r)}
+                              onClick={(e) => {
+                                e.currentTarget.blur()
+                                setReuseRelation(r)
+                              }}
                             >
                               <ContentCopyIcon fontSize="small" />
                             </IconButton>
