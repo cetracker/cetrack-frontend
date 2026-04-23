@@ -8,9 +8,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
-  partQueryKey,
-  partTypeQueryKey,
   partsQueryKey,
+  partTypesQueryKey,
   relatePart,
 } from '@/api/parts'
 import type { PartPartTypeRelation, PartType } from '@/types/api'
@@ -64,11 +63,8 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
     {
       successMessage: 'Part re-used as active',
       onSuccess: () => {
-        if (relation) {
-          qc.invalidateQueries({ queryKey: partQueryKey(relation.partId) })
-        }
         qc.invalidateQueries({ queryKey: partsQueryKey })
-        qc.invalidateQueries({ queryKey: partTypeQueryKey(partType.id) })
+        qc.invalidateQueries({ queryKey: partTypesQueryKey })
         onClose()
       },
     },

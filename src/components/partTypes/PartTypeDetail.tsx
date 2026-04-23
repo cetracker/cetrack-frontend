@@ -22,10 +22,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   partQuery,
-  partQueryKey,
   partTypeQuery,
-  partTypeQueryKey,
   partsQueryKey,
+  partTypesQueryKey,
   updatePart,
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation, PartType } from '@/types/api'
@@ -72,7 +71,7 @@ export const PartTypeDetail = ({
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: partsQueryKey })
-    if (partTypeId) qc.invalidateQueries({ queryKey: partTypeQueryKey(partTypeId) })
+    qc.invalidateQueries({ queryKey: partTypesQueryKey })
   }
 
   const deleteMut = useApiMutation(
@@ -89,9 +88,8 @@ export const PartTypeDetail = ({
     },
     {
       successMessage: 'Relation removed',
-      onSuccess: (_data, relation) => {
+      onSuccess: () => {
         invalidate()
-        qc.invalidateQueries({ queryKey: partQueryKey(relation.partId) })
         setToDelete(null)
       },
     },
