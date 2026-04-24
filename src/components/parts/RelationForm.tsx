@@ -29,6 +29,7 @@ import type {
   PartType,
 } from '@/types/api'
 import { bikeName } from '@/utils/formatters'
+import { toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z
   .object({
@@ -47,7 +48,6 @@ const schema = z
 
 type Values = z.infer<typeof schema>
 
-const toISO = (d: Date | null | undefined) => (d ? d.toISOString() : null)
 const fromISO = (s: string | null | undefined) => (s ? new Date(s) : null)
 
 interface RelationFormProps {
@@ -145,8 +145,8 @@ export const RelationForm = ({
             ? {
                 ...r,
                 partTypeId: values.partTypeId,
-                validFrom: toISO(values.validFrom)!,
-                validUntil: toISO(values.validUntil),
+                validFrom: toLocalDayStartISO(values.validFrom)!,
+                validUntil: toLocalDayEndISO(values.validUntil),
                 partType: pt,
               }
             : r,
@@ -157,8 +157,8 @@ export const RelationForm = ({
       addMut.mutate({
         partId: part.id,
         partTypeId: values.partTypeId,
-        validFrom: toISO(values.validFrom)!,
-        validUntil: toISO(values.validUntil),
+        validFrom: toLocalDayStartISO(values.validFrom)!,
+        validUntil: toLocalDayEndISO(values.validUntil),
         part: { id: part.id, name: part.name },
         partType: {
           id: pt.id,

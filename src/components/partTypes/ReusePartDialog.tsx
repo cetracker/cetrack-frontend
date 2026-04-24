@@ -13,6 +13,7 @@ import {
   relatePart,
 } from '@/api/parts'
 import type { PartPartTypeRelation, PartType } from '@/types/api'
+import { toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z.object({
   validFrom: z.date({ required_error: 'Valid From is required' }),
@@ -50,7 +51,7 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
       return relatePart(relation.partId, {
         partId: relation.partId,
         partTypeId: partType.id,
-        validFrom: v.validFrom.toISOString(),
+        validFrom: toLocalDayStartISO(v.validFrom)!,
         validUntil: null,
         part: { id: relation.partId, name: relation.part.name },
         partType: {

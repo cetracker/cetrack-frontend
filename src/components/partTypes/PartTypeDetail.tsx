@@ -28,7 +28,7 @@ import {
   updatePart,
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation, PartType } from '@/types/api'
-import { bikeName, formatDate } from '@/utils/formatters'
+import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { RelationForm } from '@/components/parts/RelationForm'
@@ -185,7 +185,7 @@ export const PartTypeDetail = ({
                             active
                           </Typography>
                         ) : (
-                          formatDate(r.validUntil)
+                          formatDateTime(r.validUntil)
                         )}
                       </TableCell>
                       <TableCell align="right">
