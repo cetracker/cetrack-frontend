@@ -19,6 +19,47 @@ export const formatDateTime = (iso?: string | null): string => {
   }
 }
 
+/**
+ * Convert a local-calendar `Date` (e.g. from a date picker where the user
+ * picked a day) to an ISO-8601 string that represents the *start of that day
+ * in the browser's local timezone*, preserving the local offset.
+ *
+ * Example (Europe/Berlin, DST): picking 2026-04-22 yields
+ * `2026-04-22T00:00:00.000+02:00` — which the backend can parse into an
+ * OffsetDateTime whose `truncatedTo(DAYS).minus(1s)` correctly gives the
+ * local end-of-previous-day (i.e. `2026-04-21T23:59:59+02:00`, 21:59:59Z).
+ */
+export const toLocalDayStartISO = (d: Date | null | undefined): string | null => {
+  if (!d) return null
+  const local = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0)
+  return withLocalOffset(local)
+}
+
+/** Like {@link toLocalDayStartISO} but for the end of the selected day
+ *  (`23:59:59.999` local). */
+export const toLocalDayEndISO = (d: Date | null | undefined): string | null => {
+  if (!d) return null
+  const local = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999)
+  return withLocalOffset(local)
+}
+
+const withLocalOffset = (date: Date): string => {
+  const pad = (n: number, w = 2) => String(n).padStart(w, '0')
+  const yyyy = date.getFullYear()
+  const MM = pad(date.getMonth() + 1)
+  const dd = pad(date.getDate())
+  const hh = pad(date.getHours())
+  const mm = pad(date.getMinutes())
+  const ss = pad(date.getSeconds())
+  const ms = pad(date.getMilliseconds(), 3)
+  // getTimezoneOffset returns minutes WEST of UTC, so invert for ISO offset
+  const offsetMin = -date.getTimezoneOffset()
+  const sign = offsetMin >= 0 ? '+' : '-'
+  const offH = pad(Math.floor(Math.abs(offsetMin) / 60))
+  const offM = pad(Math.abs(offsetMin) % 60)
+  return `${yyyy}-${MM}-${dd}T${hh}:${mm}:${ss}.${ms}${sign}${offH}:${offM}`
+}
+
 /** Seconds → "H:MM:SS" */
 export const formatDuration = (seconds: number | null | undefined): string => {
   if (seconds == null) return ''

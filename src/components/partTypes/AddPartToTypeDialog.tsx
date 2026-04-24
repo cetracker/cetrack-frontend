@@ -14,6 +14,7 @@ import {
   relatePart,
 } from '@/api/parts'
 import type { PartType } from '@/types/api'
+import { toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z
   .object({
@@ -28,7 +29,6 @@ const schema = z
 
 type Values = z.infer<typeof schema>
 
-const toISO = (d: Date | null | undefined) => (d ? d.toISOString() : null)
 
 interface Props {
   open: boolean
@@ -61,8 +61,8 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
       return relatePart(part.id, {
         partId: part.id,
         partTypeId: partType.id,
-        validFrom: toISO(v.validFrom)!,
-        validUntil: toISO(v.validUntil),
+        validFrom: toLocalDayStartISO(v.validFrom)!,
+        validUntil: toLocalDayEndISO(v.validUntil),
         part: { id: part.id, name: part.name },
         partType: {
           id: partType.id,
