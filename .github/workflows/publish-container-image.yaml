@@ -36,9 +36,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
-      - run: yarn build
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
 
       # Container image related steps
       # https://github.com/marketplace/actions/docker-login
