@@ -218,6 +218,7 @@ export const RelationForm = ({
           render={({ field }) => (
             <DatePicker
               label="Valid From"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{
@@ -237,6 +238,7 @@ export const RelationForm = ({
           render={({ field }) => (
             <DatePicker
               label="Valid Until"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{

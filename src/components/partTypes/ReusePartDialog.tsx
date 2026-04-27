@@ -93,6 +93,7 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
           render={({ field }) => (
             <DatePicker
               label="Valid From"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{

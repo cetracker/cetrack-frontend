@@ -119,6 +119,7 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
           render={({ field }) => (
             <DatePicker
               label="Valid From"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{
@@ -138,6 +139,7 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
           render={({ field }) => (
             <DatePicker
               label="Valid Until"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{

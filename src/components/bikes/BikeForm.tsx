@@ -136,6 +136,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
           render={({ field }) => (
             <DatePicker
               label="Purchase Date"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{ textField: { fullWidth: true } }}
@@ -148,6 +149,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
           render={({ field }) => (
             <DatePicker
               label="Retired Date"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{ textField: { fullWidth: true } }}

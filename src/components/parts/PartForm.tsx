@@ -123,6 +123,7 @@ export const PartForm = ({ open, onClose, initial }: PartFormProps) => {
           render={({ field }) => (
             <DatePicker
               label="Purchase Date"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{ textField: { fullWidth: true } }}
@@ -135,6 +136,7 @@ export const PartForm = ({ open, onClose, initial }: PartFormProps) => {
           render={({ field }) => (
             <DatePicker
               label="Retired Date"
+              displayWeekNumber
               value={field.value}
               onChange={field.onChange}
               slotProps={{ textField: { fullWidth: true } }}
