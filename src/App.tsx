@@ -2,9 +2,11 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { deDE } from '@mui/x-date-pickers/locales'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { RouterProvider } from 'react-router-dom'
+import { de } from 'date-fns/locale/de'
 import { router } from './router'
 import { darkTheme, lightTheme } from './theme'
 import { NotifyProvider } from './hooks/NotifyProvider'
@@ -53,7 +55,11 @@ const ColorModeProvider = ({ children }: { children: ReactNode }) => {
 
 export const App = () => (
   <ColorModeProvider>
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider
+      dateAdapter={AdapterDateFns}
+      adapterLocale={de}
+      localeText={deDE.components.MuiLocalizationProvider.defaultProps.localeText}
+    >
       <QueryClientProvider client={queryClient}>
         <NotifyProvider>
           <RouterProvider router={router} future={{ v7_startTransition: true }} />
