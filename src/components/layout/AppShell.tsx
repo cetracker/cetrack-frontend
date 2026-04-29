@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import {
   AppBar,
   Box,
+  CircularProgress,
   Drawer,
   IconButton,
   Toolbar,
@@ -90,7 +91,15 @@ export const AppShell = () => {
         }}
       >
         <Toolbar />
-        <Outlet />
+        <Suspense
+          fallback={
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+              <CircularProgress />
+            </Box>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </Box>
     </Box>
   )

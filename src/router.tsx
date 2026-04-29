@@ -1,13 +1,30 @@
+/* eslint-disable react-refresh/only-export-components */
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { AppShell } from './components/layout/AppShell'
-import { Index } from './components/Index'
 import { NotFound } from './components/NotFound'
-import { PartList } from './components/parts/PartList'
-import { PartTypeList } from './components/partTypes/PartTypeList'
-import { BikeList } from './components/bikes/BikeList'
-import { TourList } from './components/tours/TourList'
-import { TourImport } from './components/tours/TourImport'
-import { ReportList } from './components/report/ReportList'
+
+const Index = lazy(() =>
+  import('./components/Index').then((m) => ({ default: m.Index })),
+)
+const PartList = lazy(() =>
+  import('./components/parts/PartList').then((m) => ({ default: m.PartList })),
+)
+const PartTypeList = lazy(() =>
+  import('./components/partTypes/PartTypeList').then((m) => ({ default: m.PartTypeList })),
+)
+const BikeList = lazy(() =>
+  import('./components/bikes/BikeList').then((m) => ({ default: m.BikeList })),
+)
+const TourList = lazy(() =>
+  import('./components/tours/TourList').then((m) => ({ default: m.TourList })),
+)
+const TourImport = lazy(() =>
+  import('./components/tours/TourImport').then((m) => ({ default: m.TourImport })),
+)
+const ReportList = lazy(() =>
+  import('./components/report/ReportList').then((m) => ({ default: m.ReportList })),
+)
 
 export const router = createBrowserRouter([
   {
