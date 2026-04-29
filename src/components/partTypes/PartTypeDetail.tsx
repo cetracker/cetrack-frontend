@@ -70,9 +70,9 @@ export const PartTypeDetail = ({
     enabled: !!editRelation?.partId,
   })
 
-  const invalidate = () => {
-    qc.invalidateQueries({ queryKey: partsQueryKey })
-    qc.invalidateQueries({ queryKey: partTypesQueryKey })
+  const invalidate = async () => {
+    await qc.invalidateQueries({ queryKey: partsQueryKey })
+    await qc.invalidateQueries({ queryKey: partTypesQueryKey })
   }
 
   const deleteMut = useApiMutation(
@@ -132,14 +132,14 @@ export const PartTypeDetail = ({
           },
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+        <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {pt?.name ?? (isLoading ? 'Loading…' : 'Part Type')}
-          </Typography>
-          <IconButton onClick={onClose} aria-label="Close drawer">
-            <CloseIcon />
-          </IconButton>
-        </Stack>
+             {pt?.name ?? (isLoading ? 'Loading…' : 'Part Type')}
+           </Typography>
+           <IconButton onClick={onClose} aria-label="Close drawer">
+             <CloseIcon />
+           </IconButton>
+         </Stack>
 
         {pt && (
           <Typography color="text.secondary" sx={{ mb: 2 }}>
@@ -202,9 +202,9 @@ export const PartTypeDetail = ({
                           formatDateTime(r.validUntil)
                         )}
                       </TableCell>
-                      <TableCell align="right">
-                        <Stack direction="row" justifyContent="flex-end">
-                          <Tooltip title="Edit relation">
+                       <TableCell align="right">
+                         <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                           <Tooltip title="Edit relation">
                             <IconButton size="small" onClick={() => openEditRelation(r)}>
                               <EditIcon fontSize="small" />
                             </IconButton>

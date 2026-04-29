@@ -19,7 +19,7 @@ import { toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
 const schema = z
   .object({
     partId: z.string().uuid('Pick a part'),
-    validFrom: z.date({ required_error: 'Valid From is required' }),
+    validFrom: z.date(),
     validUntil: z.date().nullable(),
   })
   .refine((d) => !d.validUntil || d.validUntil > d.validFrom, {
@@ -73,9 +73,9 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
     },
     {
       successMessage: 'Relation added',
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: partsQueryKey })
-        qc.invalidateQueries({ queryKey: partTypesQueryKey })
+      onSuccess: async () => {
+        await qc.invalidateQueries({ queryKey: partsQueryKey })
+        await qc.invalidateQueries({ queryKey: partTypesQueryKey })
         onClose()
       },
     },
@@ -122,14 +122,14 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  required: true,
-                  error: !!errors.validFrom,
-                  helperText: errors.validFrom?.message,
-                },
-              }}
+               slotProps={{
+                 textField: {
+                   fullWidth: true,
+                   required: true,
+                   error: !!errors.validFrom,
+                   helperText: errors.validFrom?.message ? String(errors.validFrom.message) : undefined,
+                 },
+               }}
             />
           )}
         />
@@ -142,15 +142,15 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.validUntil,
-                  helperText:
-                    errors.validUntil?.message ??
-                    'Leave empty if the part is currently in use',
-                },
-              }}
+                slotProps={{
+                 textField: {
+                   fullWidth: true,
+                   error: !!errors.validUntil,
+                   helperText:
+                     (errors.validUntil?.message ? String(errors.validUntil.message) : undefined) ??
+                     'Leave empty if the part is currently in use',
+                 },
+               }}
             />
           )}
         />

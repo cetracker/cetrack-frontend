@@ -8,7 +8,7 @@ import {
   useTheme,
   type DialogProps,
 } from '@mui/material'
-import type { ReactNode } from 'react'
+import { type FormEvent, type ReactNode } from 'react'
 
 interface FormDialogProps {
   open: boolean
@@ -39,23 +39,22 @@ export const FormDialog = ({
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
 
   return (
-  <Dialog
-    open={open}
-    onClose={submitting ? undefined : onCancel}
-    fullWidth
-    fullScreen={fullScreen}
-    maxWidth={maxWidth}
-    disableEscapeKeyDown={submitting}
-    slotProps={{
-      paper: {
-        component: 'form',
-        onSubmit: (e: React.FormEvent) => {
-          e.preventDefault()
-          onSubmit()
+   <Dialog
+     open={open}
+     onClose={submitting ? undefined : onCancel}
+     fullWidth
+     fullScreen={fullScreen}
+     maxWidth={maxWidth}
+     slotProps={{
+        paper: {
+          component: 'form',
+          onSubmit: (e: FormEvent) => {
+            e.preventDefault()
+            onSubmit()
+          },
         },
-      },
-    }}
-  >
+     }}
+   >
     <DialogTitle>{title}</DialogTitle>
     <DialogContent dividers>{children}</DialogContent>
     <DialogActions>

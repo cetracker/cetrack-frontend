@@ -59,9 +59,9 @@ export const PartTypeForm = ({ open, onClose, initial }: PartTypeFormProps) => {
     }
   }, [open, initial, reset])
 
-  const invalidate = () => {
-    qc.invalidateQueries({ queryKey: partTypesQueryKey })
-    if (initial) qc.invalidateQueries({ queryKey: partTypeQueryKey(initial.id) })
+  const invalidate = async () => {
+    await qc.invalidateQueries({ queryKey: partTypesQueryKey })
+    if (initial) await qc.invalidateQueries({ queryKey: partTypeQueryKey(initial.id) })
   }
 
   const createMut = useApiMutation(createPartType, {

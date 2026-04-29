@@ -60,13 +60,13 @@ export const BikeList = () => {
   const [editBike, setEditBike] = useState<Bike | null>(null)
   const [toDelete, setToDelete] = useState<Bike | null>(null)
 
-  const deleteMut = useApiMutation(deleteBike, {
-    successMessage: 'Bike deleted',
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: bikesQueryKey })
-      setToDelete(null)
-    },
-  })
+   const deleteMut = useApiMutation(deleteBike, {
+     successMessage: 'Bike deleted',
+     onSuccess: async () => {
+       await qc.invalidateQueries({ queryKey: bikesQueryKey })
+       setToDelete(null)
+     },
+   })
 
   const handleEdit = (bike: Bike) => {
     setEditBike(bike)
@@ -75,15 +75,15 @@ export const BikeList = () => {
 
   const columns = useMemo(
     () => buildColumns(handleEdit, setToDelete),
-     
+
     [],
   )
 
-  return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Bikes</Box>
-        <Button
+   return (
+     <Box>
+       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+         <Box sx={{ typography: 'h5' }}>Bikes</Box>
+         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => {

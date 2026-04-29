@@ -123,13 +123,13 @@ export const PartTypeList = () => {
   const [detailOpen, setDetailOpen] = useState(false)
   const [detailId, setDetailId] = useState<string | null>(null)
 
-  const deleteMut = useApiMutation(deletePartType, {
-    successMessage: 'Part type deleted',
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: partTypesQueryKey })
-      setToDelete(null)
-    },
-  })
+   const deleteMut = useApiMutation(deletePartType, {
+     successMessage: 'Part type deleted',
+     onSuccess: async () => {
+       await qc.invalidateQueries({ queryKey: partTypesQueryKey })
+       setToDelete(null)
+     },
+   })
 
   const openEdit = (pt: PartType) => {
     setEditPt(pt)
@@ -143,15 +143,15 @@ export const PartTypeList = () => {
 
   const columns = useMemo(
     () => buildColumns(openEdit, setToDelete, openRelations),
-     
+
     [],
   )
 
-  return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Part Types</Box>
-        <Button
+   return (
+     <Box>
+       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+         <Box sx={{ typography: 'h5' }}>Part Types</Box>
+         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => {

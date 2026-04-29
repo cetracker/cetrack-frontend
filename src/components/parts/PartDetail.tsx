@@ -66,14 +66,14 @@ export const PartDetail = ({ open, onClose, partId }: PartDetailProps) => {
           },
         }}
       >
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+        <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {part?.name ?? (isLoading ? 'Loading…' : 'Part')}
-          </Typography>
-          <IconButton onClick={onClose} aria-label="Close drawer">
-            <CloseIcon />
-          </IconButton>
-        </Stack>
+             {part?.name ?? (isLoading ? 'Loading…' : 'Part')}
+           </Typography>
+           <IconButton onClick={onClose} aria-label="Close drawer">
+             <CloseIcon />
+           </IconButton>
+         </Stack>
 
         {part && (
           <Typography color="text.secondary" sx={{ mb: 2 }}>

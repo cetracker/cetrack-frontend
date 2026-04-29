@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type DragEvent, type ChangeEvent } from 'react'
 import {
   Accordion,
   AccordionDetails,
@@ -106,13 +106,13 @@ export const TourImport = () => {
   const [bikeError, setBikeError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const importMut = useApiMutation(importTours, {
-    successMessage: 'Tours imported',
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: toursQueryKey })
-      reset()
-    },
-  })
+   const importMut = useApiMutation(importTours, {
+     successMessage: 'Tours imported',
+     onSuccess: async () => {
+       await qc.invalidateQueries({ queryKey: toursQueryKey })
+       reset()
+     },
+   })
 
   const reset = () => {
     setTours(null)
@@ -137,14 +137,14 @@ export const TourImport = () => {
     }
   }
 
-  const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+  const onDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault()
     setDragging(false)
     const file = e.dataTransfer.files?.[0]
     if (file) void readFile(file)
   }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) void readFile(file)
   }
@@ -231,14 +231,16 @@ export const TourImport = () => {
         </Alert>
       )}
 
-      {tours && (
-        <Box sx={{ mt: 3 }}>
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            spacing={2}
-            alignItems={{ xs: 'stretch', sm: 'center' }}
-            sx={{ mb: 2 }}
-          >
+       {tours && (
+         <Box sx={{ mt: 3 }}>
+           <Stack
+             sx={{
+               flexDirection: { xs: 'column', sm: 'row' },
+               gap: 2,
+               alignItems: { xs: 'stretch', sm: 'center' },
+               mb: 2,
+             }}
+           >
             <Box sx={{ minWidth: 240 }}>
               <BikeSelect
                 value={bikeId}

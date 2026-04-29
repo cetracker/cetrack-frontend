@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { deDE } from '@mui/x-date-pickers/locales'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -60,12 +60,12 @@ export const App = () => (
       adapterLocale={de}
       localeText={deDE.components.MuiLocalizationProvider.defaultProps.localeText}
     >
-      <QueryClientProvider client={queryClient}>
-        <NotifyProvider>
-          <RouterProvider router={router} future={{ v7_startTransition: true }} />
-        </NotifyProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
+       <QueryClientProvider client={queryClient}>
+         <NotifyProvider>
+           <RouterProvider router={router} />
+         </NotifyProvider>
+         <ReactQueryDevtools initialIsOpen={false} />
+       </QueryClientProvider>
     </LocalizationProvider>
   </ColorModeProvider>
 )
