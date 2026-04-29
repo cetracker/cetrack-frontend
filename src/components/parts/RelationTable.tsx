@@ -13,7 +13,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
-import { formatDate, formatDateTime } from '@/utils/formatters'
+import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
 import type { Part, PartPartTypeRelation } from '@/types/api'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -22,7 +22,6 @@ import {
   updatePart,
 } from '@/api/parts'
 import { useQueryClient } from '@tanstack/react-query'
-import { bikeName } from '@/utils/formatters'
 
 interface RelationTableProps {
   part: Part

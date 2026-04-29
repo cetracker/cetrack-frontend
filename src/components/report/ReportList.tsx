@@ -10,6 +10,7 @@ import {
   formatDuration,
   formatKWh,
 } from '@/utils/formatters'
+import { createErrorDisplay } from '@/utils/errors'
 
 const sum = (rows: ReportItem[], key: keyof ReportItem): number =>
   rows.reduce((acc, r) => acc + ((r[key] as number | undefined) ?? 0), 0)
@@ -86,7 +87,7 @@ export const ReportList = () => {
         columns={columns}
         data={data ?? []}
         isLoading={isLoading}
-        error={error ? { message: (error as { message?: string }).message ?? 'Failed to load' } : null}
+        error={createErrorDisplay(error)}
         onRetry={() => refetch()}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}

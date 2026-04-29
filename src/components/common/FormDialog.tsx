@@ -46,11 +46,13 @@ export const FormDialog = ({
     fullScreen={fullScreen}
     maxWidth={maxWidth}
     disableEscapeKeyDown={submitting}
-    PaperProps={{
-      component: 'form',
-      onSubmit: (e: React.FormEvent) => {
-        e.preventDefault()
-        onSubmit()
+    slotProps={{
+      paper: {
+        component: 'form',
+        onSubmit: (e: React.FormEvent) => {
+          e.preventDefault()
+          onSubmit()
+        },
       },
     }}
   >

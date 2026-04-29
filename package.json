@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:sonar": "npm run build && npm run sonar",
     "preview": "vite preview",
     "lint": "eslint --max-warnings=0 \"src/**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sonar": "sonar-scanner"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -40,6 +42,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.5.2",
     "globals": "15.15.0",
+    "sonar-scanner": "^3.1.0",
     "typescript": "5.7.3",
     "typescript-eslint": "8.59.0",
     "vite": "6.4.2"

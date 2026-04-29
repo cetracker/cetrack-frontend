@@ -10,6 +10,7 @@ import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { BikeForm } from './BikeForm'
 import { formatDate } from '@/utils/formatters'
+import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
 export const BikeList = () => {
@@ -83,7 +84,7 @@ export const BikeList = () => {
         columns={columns}
         data={data ?? []}
         isLoading={isLoading}
-        error={error ? { message: (error as { message?: string }).message ?? 'Failed to load' } : null}
+        error={createErrorDisplay(error)}
         onRetry={() => refetch()}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}

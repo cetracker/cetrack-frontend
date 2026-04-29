@@ -28,8 +28,7 @@ import type {
   PartPartTypeRelation,
   PartType,
 } from '@/types/api'
-import { bikeName } from '@/utils/formatters'
-import { toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
+import { bikeName, toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z
   .object({
@@ -195,12 +194,14 @@ export const RelationForm = ({
               error={!!errors.partTypeId}
               helperText={errors.partTypeId?.message}
               disabled={!!lockedPartTypeId}
-              InputProps={{
-                endAdornment: selectedPartType?.bike ? (
-                  <InputAdornment position="end" sx={{ mr: 3 }}>
-                    {bikeName(selectedPartType.bike)}
-                  </InputAdornment>
-                ) : undefined,
+              slotProps={{
+                input: {
+                  endAdornment: selectedPartType?.bike ? (
+                    <InputAdornment position="end" sx={{ mr: 3 }}>
+                      {bikeName(selectedPartType.bike)}
+                    </InputAdornment>
+                  ) : undefined,
+                },
               }}
             >
               {(partTypes ?? []).map((pt) => (

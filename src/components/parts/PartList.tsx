@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartForm } from './PartForm'
 import { PartDetail } from './PartDetail'
 import { formatDate, bikeName } from '@/utils/formatters'
+import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
 const currentUseAs = (p: Part): string => {
@@ -125,7 +126,7 @@ export const PartList = () => {
         columns={columns}
         data={data ?? []}
         isLoading={isLoading}
-        error={error ? { message: (error as { message?: string }).message ?? 'Failed to load' } : null}
+        error={createErrorDisplay(error)}
         onRetry={() => refetch()}
         globalFilter={globalFilter}
         onGlobalFilterChange={setGlobalFilter}

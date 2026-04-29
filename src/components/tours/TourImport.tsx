@@ -164,7 +164,7 @@ export const TourImport = () => {
           <Typography>Export Instructions</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             Open the MyTourBook Derby database in DBeaver and run the following
             query. Export the result as JSON, then drop the file below.
           </Typography>
@@ -203,7 +203,7 @@ export const TourImport = () => {
         />
         <CloudUploadIcon sx={{ fontSize: 44, color: 'text.secondary' }} />
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {fileName ? fileName : 'Drop a JSON file here or click to select'}
+          {fileName || 'Drop a JSON file here or click to select'}
         </Typography>
         {fileName && !error && tours && (
           <Typography variant="body2" color="success.main">

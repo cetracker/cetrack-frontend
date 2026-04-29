@@ -3,6 +3,7 @@ import {
   Box,
   Alert,
   Button,
+  InputAdornment,
   IconButton,
   Menu,
   MenuItem,
@@ -47,6 +48,7 @@ import {
 } from '@tanstack/react-table'
 
 declare module '@tanstack/react-table' {
+  // Generic parameter names must stay aligned with upstream declaration.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     align?: 'left' | 'right'
@@ -54,8 +56,10 @@ declare module '@tanstack/react-table' {
   }
 }
 
+const SKELETON_ROW_KEYS = ['sk-1', 'sk-2', 'sk-3', 'sk-4', 'sk-5'] as const
+
 export interface DataTableProps<TData> {
-  columns: ColumnDef<TData, any>[] // eslint-disable-line @typescript-eslint/no-explicit-any
+  columns: ColumnDef<TData, unknown>[]
   data: TData[]
   isLoading?: boolean
   error?: { message: string } | null
@@ -85,7 +89,7 @@ export interface DataTableProps<TData> {
   toolbarExtras?: ReactNode
 }
 
-export function DataTable<TData>(props: DataTableProps<TData>) {
+export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
   const {
     columns,
     data,
@@ -210,7 +214,15 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
             onChange={(e) => onGlobalFilterChange(e.target.value)}
             placeholder="Search…"
             size="small"
-            InputProps={{ startAdornment: <SearchIcon fontSize="small" sx={{ mr: 1 }} /> }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
             sx={{ minWidth: 200 }}
           />
         )}
@@ -354,8 +366,8 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
           </TableHead>
           <TableBody>
             {isLoading &&
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={`sk-${i}`}>
+              SKELETON_ROW_KEYS.map((rowKey) => (
+                <TableRow key={rowKey}>
                   {table.getAllLeafColumns().map((col) =>
                     col.getIsVisible() ? (
                       <TableCell key={col.id}>
@@ -453,9 +465,7 @@ export function DataTable<TData>(props: DataTableProps<TData>) {
               {table.getFooterGroups().map((fg) => (
                 <TableRow key={fg.id}>
                   {fg.headers.map((header) => {
-                    const align =
-                      (header.column.columnDef.meta as { align?: 'right' | 'left' } | undefined)
-                        ?.align ?? 'left'
+                    const align = header.column.columnDef.meta?.align ?? 'left'
                     return (
                       <TableCell
                         key={header.id}

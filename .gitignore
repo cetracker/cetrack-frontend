@@ -4,6 +4,10 @@
 # Cache
 .eslintcache
 
+# SonarQube
+.sonarqube/
+.scannerwork/
+
 # docker compose example
 deploy/example/*
 docker-compose.yaml

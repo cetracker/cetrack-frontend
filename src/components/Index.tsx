@@ -6,7 +6,7 @@ export const Index = () => (
       Cycling Equipment Usage Tracker
     </Typography>
     <Paper sx={{ p: 3 }} elevation={1}>
-      <Typography variant="body1" paragraph>
+      <Typography variant="body1" sx={{ mb: 2 }}>
         Track parts, bikes, and tours to monitor equipment wear and plan maintenance.
       </Typography>
       <Typography variant="h6" sx={{ mt: 2 }}>

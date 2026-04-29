@@ -27,19 +27,22 @@ export const useApiMutation = <TData, TVars>(
 
   return useMutation<TData, ApiError, TVars>({
     mutationFn,
-    onSuccess: (...args) => {
-      if (successMessage) notify(successMessage, 'success')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(onSuccess as any)?.(...args)
+    onSuccess: (data, variables, onMutateResult, context) => {
+      if (successMessage) {
+        notify(successMessage, 'success')
+      }
+      if (onSuccess) {
+        onSuccess(data, variables, onMutateResult, context)
+      }
     },
-    onError: (...args) => {
+    onError: (error, variables, onMutateResult, context) => {
       if (notifyOnError) {
-        const [err] = args
-        const msg = isApiError(err) ? err.message : 'Unexpected error'
+        const msg = isApiError(error) ? error.message : 'Unexpected error'
         notify(msg, 'error')
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(onError as any)?.(...args)
+      if (onError) {
+        onError(error, variables, onMutateResult, context)
+      }
     },
     ...rest,
   })
