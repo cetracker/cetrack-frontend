@@ -7,9 +7,9 @@ For more information about the project see the [project's homepage](https://cetr
 
 This is a ground-up rewrite of the original frontend. The previous version used Mantine + mantine-react-table, which no longer has a release compatible with current Mantine versions. The new frontend is built on a stack without that coupling:
 
-- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - [Vite](https://vitejs.dev/) as the dev / build tool
-- [MUI v6](https://mui.com/material-ui/) component library (CSS-in-JS via [Emotion](https://emotion.sh/))
+- [MUI v9](https://mui.com/material-ui/) component library (CSS-in-JS via [Emotion](https://emotion.sh/))
 - [TanStack Table v8](https://tanstack.com/table) — headless table, wraps into a single reusable `DataTable` component
 - [TanStack Query v5](https://tanstack.com/query) for server-state
 - [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) for forms and validation
@@ -19,7 +19,7 @@ It consumes the same REST API as the previous frontend (no backend changes).
 
 ## Running locally
 
-Requires Node.js ≥ 20.
+Requires Node.js ≥ 24.
 
 ```bash
 npm install
@@ -42,13 +42,13 @@ A container image will be available at `https://ghcr.io/cetracker/cetrack-fronte
 #### Docker
 
 ```bash
-docker build -t ghcr.io/cetracker/cetrack-frontend:0.3.0-SNAPSHOT .
+docker build -t ghcr.io/cetracker/cetrack-frontend:2.1.0-SNAPSHOT .
 ```
 
 #### Podman / Buildah
 
 ```bash
-buildah build -t ghcr.io/cetracker/cetrack-frontend:0.3.0-SNAPSHOT
+buildah build -t ghcr.io/cetracker/cetrack-frontend:2.1.0-SNAPSHOT
 ```
 
 ## Further reading
