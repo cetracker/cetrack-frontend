@@ -75,7 +75,7 @@ export const BikeList = () => {
 
   const columns = useMemo(
     () => buildColumns(handleEdit, setToDelete),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [],
   )
 

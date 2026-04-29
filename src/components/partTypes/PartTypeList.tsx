@@ -143,7 +143,7 @@ export const PartTypeList = () => {
 
   const columns = useMemo(
     () => buildColumns(openEdit, setToDelete, openRelations),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
     [],
   )
 
