@@ -52,14 +52,14 @@ export const RelationTable = ({ part, onEdit, mode = 'part' }: RelationTableProp
       }
       return updatePart(part.id, next)
     },
-    {
-      successMessage: 'Relation removed',
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: partsQueryKey })
-        qc.invalidateQueries({ queryKey: partQueryKey(part.id) })
-        setToDelete(null)
-      },
-    },
+     {
+       successMessage: 'Relation removed',
+       onSuccess: async () => {
+         await qc.invalidateQueries({ queryKey: partsQueryKey })
+         await qc.invalidateQueries({ queryKey: partQueryKey(part.id) })
+         setToDelete(null)
+       },
+     },
   )
 
   const relations = (part.partTypeRelations ?? []).slice().sort((a, b) =>
@@ -101,9 +101,9 @@ export const RelationTable = ({ part, onEdit, mode = 'part' }: RelationTableProp
                   <Typography component="span" color="success.main">active</Typography>
                 )}
               </TableCell>
-              <TableCell align="right">
-                <Stack direction="row" justifyContent="flex-end">
-                  <Tooltip title="Edit">
+               <TableCell align="right">
+                 <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                   <Tooltip title="Edit">
                     <IconButton size="small" onClick={() => onEdit(r)}>
                       <EditIcon fontSize="small" />
                     </IconButton>

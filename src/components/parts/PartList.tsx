@@ -106,13 +106,13 @@ export const PartList = () => {
   const [detailOpen, setDetailOpen] = useState(false)
   const [detailId, setDetailId] = useState<string | null>(null)
 
-  const deleteMut = useApiMutation(deletePart, {
-    successMessage: 'Part deleted',
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: partsQueryKey })
-      setToDelete(null)
-    },
-  })
+   const deleteMut = useApiMutation(deletePart, {
+     successMessage: 'Part deleted',
+     onSuccess: async () => {
+       await qc.invalidateQueries({ queryKey: partsQueryKey })
+       setToDelete(null)
+     },
+   })
 
   const openEdit = (part: Part) => {
     setEditPart(part)
@@ -128,11 +128,11 @@ export const PartList = () => {
     [],
   )
 
-  return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Parts</Box>
-        <Button
+   return (
+     <Box>
+       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+         <Box sx={{ typography: 'h5' }}>Parts</Box>
+         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => {

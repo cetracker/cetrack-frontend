@@ -195,14 +195,14 @@ export const TourList = () => {
     [data, totals],
   )
 
-  return (
-    <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Tours</Box>
-        <Typography variant="body2" color="text.secondary">
-          Use the grouping icon in the toolbar to group by Year, Month, or Bike.
-        </Typography>
-      </Stack>
+   return (
+     <Box>
+       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+         <Box sx={{ typography: 'h5' }}>Tours</Box>
+         <Typography variant="body2" color="text.secondary">
+           Use the grouping icon in the toolbar to group by Year, Month, or Bike.
+         </Typography>
+       </Stack>
 
       <DataTable<Tour>
         columns={columns}
@@ -243,11 +243,11 @@ export const TourList = () => {
             }}
           >
             <Tooltip title={bikeName(b)} placement="left">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <DirectionsBikeIcon fontSize="small" />
-                <span>{bikeName(b)}</span>
-              </Stack>
-            </Tooltip>
+               <Stack sx={{ flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+                 <DirectionsBikeIcon fontSize="small" />
+                 <span>{bikeName(b)}</span>
+               </Stack>
+             </Tooltip>
           </MenuItem>
         ))}
         {(bikes ?? []).length === 0 && (

@@ -16,7 +16,7 @@ import type { PartPartTypeRelation, PartType } from '@/types/api'
 import { toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z.object({
-  validFrom: z.date({ required_error: 'Valid From is required' }),
+  validFrom: z.date(),
 })
 
 type Values = z.infer<typeof schema>
@@ -63,9 +63,9 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
     },
     {
       successMessage: 'Part re-used as active',
-      onSuccess: () => {
-        qc.invalidateQueries({ queryKey: partsQueryKey })
-        qc.invalidateQueries({ queryKey: partTypesQueryKey })
+      onSuccess: async () => {
+        await qc.invalidateQueries({ queryKey: partsQueryKey })
+        await qc.invalidateQueries({ queryKey: partTypesQueryKey })
         onClose()
       },
     },
@@ -96,14 +96,14 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  required: true,
-                  error: !!errors.validFrom,
-                  helperText: errors.validFrom?.message,
-                },
-              }}
+               slotProps={{
+                 textField: {
+                   fullWidth: true,
+                   required: true,
+                   error: !!errors.validFrom,
+                   helperText: errors.validFrom?.message ? String(errors.validFrom.message) : undefined,
+                 },
+               }}
             />
           )}
         />

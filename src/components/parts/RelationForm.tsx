@@ -34,7 +34,7 @@ const schema = z
   .object({
     partId: z.string().uuid(),
     partTypeId: z.string().uuid('Part type is required'),
-    validFrom: z.date({ required_error: 'Valid From is required' }),
+    validFrom: z.date(),
     validUntil: z.date().nullable(),
   })
   .refine(
@@ -99,11 +99,11 @@ export const RelationForm = ({
     }
   }, [open, initial, part.id, lockedPartTypeId, reset])
 
-  const invalidate = () => {
-    qc.invalidateQueries({ queryKey: partsQueryKey })
-    qc.invalidateQueries({ queryKey: partQueryKey(part.id) })
+  const invalidate = async () => {
+    await qc.invalidateQueries({ queryKey: partsQueryKey })
+    await qc.invalidateQueries({ queryKey: partQueryKey(part.id) })
     const ptId = watch('partTypeId')
-    if (ptId) qc.invalidateQueries({ queryKey: partTypeQueryKey(ptId) })
+    if (ptId) await qc.invalidateQueries({ queryKey: partTypeQueryKey(ptId) })
   }
 
   const addMut = useApiMutation(
@@ -222,14 +222,14 @@ export const RelationForm = ({
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  required: true,
-                  error: !!errors.validFrom,
-                  helperText: errors.validFrom?.message,
-                },
-              }}
+                slotProps={{
+                 textField: {
+                   fullWidth: true,
+                   required: true,
+                   error: !!errors.validFrom,
+                   helperText: errors.validFrom?.message ? String(errors.validFrom.message) : undefined,
+                 },
+               }}
             />
           )}
         />
@@ -242,31 +242,31 @@ export const RelationForm = ({
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  error: !!errors.validUntil,
-                  helperText:
-                    errors.validUntil?.message ??
-                    'Leave empty if the part is currently in use',
-                },
-              }}
+                slotProps={{
+                 textField: {
+                   fullWidth: true,
+                   error: !!errors.validUntil,
+                   helperText:
+                     (errors.validUntil?.message ? String(errors.validUntil.message) : undefined) ??
+                     'Leave empty if the part is currently in use',
+                 },
+               }}
             />
           )}
         />
         {!initial && (
-          <Tooltip
-            title="An active relation for a different part with this part type will be terminated automatically at midnight before 'Valid From'."
-            placement="top"
-          >
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ color: 'text.secondary' }}>
-              <IconButton size="small" tabIndex={-1}>
-                <InfoOutlinedIcon fontSize="small" />
-              </IconButton>
-              <span>Previous active relation is terminated automatically.</span>
-            </Stack>
-          </Tooltip>
-        )}
+           <Tooltip
+             title="An active relation for a different part with this part type will be terminated automatically at midnight before 'Valid From'."
+             placement="top"
+           >
+             <Stack sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', spacing: 1, color: 'text.secondary' }}>
+               <IconButton size="small" tabIndex={-1}>
+                 <InfoOutlinedIcon fontSize="small" />
+               </IconButton>
+               <span>Previous active relation is terminated automatically.</span>
+             </Stack>
+           </Tooltip>
+         )}
       </Stack>
     </FormDialog>
   )

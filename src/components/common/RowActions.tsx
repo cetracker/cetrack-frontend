@@ -28,7 +28,7 @@ export const RowActions = ({
   relationsLabel = 'Show relations',
   extra,
 }: RowActionsProps) => (
-  <Stack direction="row" spacing={0} justifyContent="flex-end">
+  <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
     {onOpenRelations && (
       <Tooltip title={relationsLabel}>
         <IconButton size="small" onClick={stop(onOpenRelations)}>

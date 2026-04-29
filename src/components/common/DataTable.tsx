@@ -49,7 +49,6 @@ import {
 
 declare module '@tanstack/react-table' {
   // Generic parameter names must stay aligned with upstream declaration.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     align?: 'left' | 'right'
     hideOnMobile?: boolean
@@ -195,12 +194,9 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
 
   return (
     <Paper elevation={1} sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Stack
-        direction="row"
-        spacing={1}
-        alignItems="center"
-        sx={{ px: 2, py: 1.5, flexWrap: 'wrap', gap: 1 }}
-      >
+       <Stack
+         sx={{ flexDirection: 'row', gap: 1, alignItems: 'center', px: 2, py: 1.5, flexWrap: 'wrap' }}
+       >
         {title && (
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {title}

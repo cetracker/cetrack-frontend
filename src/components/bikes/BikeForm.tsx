@@ -57,7 +57,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
     }
   }, [open, initial, reset])
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: bikesQueryKey })
+  const invalidate = async () => qc.invalidateQueries({ queryKey: bikesQueryKey })
 
   const createMut = useApiMutation(createBike, {
     successMessage: 'Bike created',
