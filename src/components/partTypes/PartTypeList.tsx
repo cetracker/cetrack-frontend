@@ -20,6 +20,93 @@ import { useApiMutation } from '@/hooks/useApiMutation'
 const currentPartName = (pt: PartType): string =>
   pt.partTypeRelations?.find((r) => !r.validUntil)?.part.name ?? ''
 
+const MandatoryCell = ({ pt }: { pt: PartType }) => {
+  const hasActive = pt.partTypeRelations?.some((r) => !r.validUntil)
+  const missing = pt.mandatory && !hasActive
+  return (
+    <Checkbox
+      checked={pt.mandatory}
+      disabled
+      size="small"
+      sx={{
+        p: 0,
+        color: missing ? 'error.main' : undefined,
+        '&.Mui-checked': missing ? { color: 'error.main' } : undefined,
+      }}
+    />
+  )
+}
+
+const CurrentPartCell = ({ pt }: { pt: PartType }) => {
+  const name = currentPartName(pt)
+  if (name) return <>{name}</>
+  if (pt.mandatory)
+    return (
+      <Typography component="span" color="error.main">
+        — none —
+      </Typography>
+    )
+  return null
+}
+
+interface PartTypeActionsCellProps {
+  pt: PartType
+  onEdit: (pt: PartType) => void
+  onDelete: (pt: PartType) => void
+  onOpenRelations: (pt: PartType) => void
+}
+
+const PartTypeActionsCell = ({ pt, onEdit, onDelete, onOpenRelations }: PartTypeActionsCellProps) => (
+  <RowActions
+    onOpenRelations={() => onOpenRelations(pt)}
+    onEdit={() => onEdit(pt)}
+    onDelete={() => onDelete(pt)}
+  />
+)
+
+const buildColumns = (
+  onEdit: (pt: PartType) => void,
+  onDelete: (pt: PartType) => void,
+  onOpenRelations: (pt: PartType) => void,
+): ColumnDef<PartType>[] => [
+  { accessorKey: 'name', header: 'Name' },
+  {
+    id: 'mandatory',
+    header: 'Mandatory',
+    accessorFn: (pt) => pt.mandatory,
+    enableGlobalFilter: false,
+    meta: { hideOnMobile: true },
+    cell: ({ row }) => <MandatoryCell pt={row.original} />,
+  },
+  {
+    id: 'bike',
+    header: 'Bike',
+    accessorFn: (pt) => bikeName(pt.bike),
+    enableGrouping: true,
+  },
+  {
+    id: 'currentPart',
+    header: 'Currently Used Part',
+    accessorFn: currentPartName,
+    meta: { hideOnMobile: true },
+    cell: ({ row }) => <CurrentPartCell pt={row.original} />,
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <PartTypeActionsCell
+        pt={row.original}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onOpenRelations={onOpenRelations}
+      />
+    ),
+  },
+]
+
 export const PartTypeList = () => {
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(partTypesQuery())
@@ -54,71 +141,9 @@ export const PartTypeList = () => {
     setDetailOpen(true)
   }
 
-  const columns = useMemo<ColumnDef<PartType>[]>(
-    () => [
-      { accessorKey: 'name', header: 'Name' },
-      {
-        id: 'mandatory',
-        header: 'Mandatory',
-        accessorFn: (pt) => pt.mandatory,
-        enableGlobalFilter: false,
-        meta: { hideOnMobile: true },
-        cell: ({ row }) => {
-          const pt = row.original
-          const hasActive = pt.partTypeRelations?.some((r) => !r.validUntil)
-          const missing = pt.mandatory && !hasActive
-          return (
-            <Checkbox
-              checked={pt.mandatory}
-              disabled
-              size="small"
-              sx={{
-                p: 0,
-                color: missing ? 'error.main' : undefined,
-                '&.Mui-checked': missing ? { color: 'error.main' } : undefined,
-              }}
-            />
-          )
-        },
-      },
-      {
-        id: 'bike',
-        header: 'Bike',
-        accessorFn: (pt) => bikeName(pt.bike),
-        enableGrouping: true,
-      },
-      {
-        id: 'currentPart',
-        header: 'Currently Used Part',
-        accessorFn: currentPartName,
-        meta: { hideOnMobile: true },
-        cell: ({ row }) => {
-          const pt = row.original
-          const name = currentPartName(pt)
-          if (name) return name
-          if (pt.mandatory)
-            return (
-              <Typography component="span" color="error.main">
-                — none —
-              </Typography>
-            )
-          return ''
-        },
-      },
-      {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <RowActions
-            onOpenRelations={() => openRelations(row.original)}
-            onEdit={() => openEdit(row.original)}
-            onDelete={() => setToDelete(row.original)}
-          />
-        ),
-      },
-    ],
+  const columns = useMemo(
+    () => buildColumns(openEdit, setToDelete, openRelations),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 

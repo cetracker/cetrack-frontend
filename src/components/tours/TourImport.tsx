@@ -28,6 +28,12 @@ import { BikeSelect } from '@/components/common/BikeSelect'
 import { formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
+const dropZoneBorderColor = (active: boolean, error: boolean): string => {
+  if (error) return '#d32f2f'
+  if (active) return '#00897B'
+  return '#90a4ae'
+}
+
 const DropZone = styled.label<{ $active: boolean; $error: boolean; $compact?: boolean }>`
   display: flex;
   flex-direction: column;
@@ -35,8 +41,7 @@ const DropZone = styled.label<{ $active: boolean; $error: boolean; $compact?: bo
   justify-content: center;
   padding: ${({ $compact }) => ($compact ? '16px 12px' : '36px 24px')};
   border: 2px dashed
-    ${({ $active, $error }) =>
-      $error ? '#d32f2f' : $active ? '#00897B' : '#90a4ae'};
+    ${({ $active, $error }) => dropZoneBorderColor($active, $error)};
   background: ${({ $active }) =>
     $active ? 'rgba(0, 137, 123, 0.08)' : 'transparent'};
   border-radius: 8px;
@@ -58,7 +63,7 @@ WHERE STARTYEAR=2024 AND TOURPERSON_PERSONID=0 AND TOURTYPE_TYPEID=0`
 
 const validateTours = (parsed: unknown): MTTour[] => {
   if (!Array.isArray(parsed)) {
-    throw new Error('Expected a JSON array of tours.')
+    throw new TypeError('Expected a JSON array of tours.')
   }
   parsed.forEach((t, i) => {
     if (!t || typeof t !== 'object')

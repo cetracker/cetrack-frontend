@@ -30,6 +30,66 @@ const lastUsedAt = (p: Part): string => {
   return formatDate(sorted?.[0]?.validUntil ?? sorted?.[0]?.validFrom)
 }
 
+interface PartActionsCellProps {
+  part: Part
+  onEdit: (part: Part) => void
+  onDelete: (part: Part) => void
+  onOpenRelations: (part: Part) => void
+}
+
+const PartActionsCell = ({ part, onEdit, onDelete, onOpenRelations }: PartActionsCellProps) => (
+  <RowActions
+    onOpenRelations={() => onOpenRelations(part)}
+    onEdit={() => onEdit(part)}
+    onDelete={() => onDelete(part)}
+  />
+)
+
+const buildColumns = (
+  onEdit: (part: Part) => void,
+  onDelete: (part: Part) => void,
+  onOpenRelations: (part: Part) => void,
+): ColumnDef<Part>[] => [
+  { accessorKey: 'name', header: 'Name' },
+  {
+    accessorKey: 'boughtAt',
+    header: 'Purchase Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    accessorKey: 'retiredAt',
+    header: 'Retired Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    id: 'currentUse',
+    header: 'Currently In Use As',
+    accessorFn: currentUseAs,
+  },
+  {
+    id: 'lastUsedAt',
+    header: 'Last Used @',
+    accessorFn: lastUsedAt,
+    meta: { hideOnMobile: true },
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <PartActionsCell
+        part={row.original}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onOpenRelations={onOpenRelations}
+      />
+    ),
+  },
+]
+
 export const PartList = () => {
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(partsQuery())
@@ -63,46 +123,8 @@ export const PartList = () => {
     setDetailOpen(true)
   }
 
-  const columns = useMemo<ColumnDef<Part>[]>(
-    () => [
-      { accessorKey: 'name', header: 'Name' },
-      {
-        accessorKey: 'boughtAt',
-        header: 'Purchase Date',
-        cell: (c) => formatDate(c.getValue<string | null>()),
-        meta: { hideOnMobile: true },
-      },
-      {
-        accessorKey: 'retiredAt',
-        header: 'Retired Date',
-        cell: (c) => formatDate(c.getValue<string | null>()),
-        meta: { hideOnMobile: true },
-      },
-      {
-        id: 'currentUse',
-        header: 'Currently In Use As',
-        accessorFn: currentUseAs,
-      },
-      {
-        id: 'lastUsedAt',
-        header: 'Last Used @',
-        accessorFn: lastUsedAt,
-        meta: { hideOnMobile: true },
-      },
-      {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <RowActions
-            onOpenRelations={() => openRelations(row.original)}
-            onEdit={() => openEdit(row.original)}
-            onDelete={() => setToDelete(row.original)}
-          />
-        ),
-      },
-    ],
+  const columns = useMemo(
+    () => buildColumns(openEdit, setToDelete, openRelations),
     [],
   )
 

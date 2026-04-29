@@ -34,6 +34,118 @@ import { useApiMutation } from '@/hooks/useApiMutation'
 const sum = (rows: Tour[], key: keyof Tour): number =>
   rows.reduce((acc, r) => acc + ((r[key] as number | undefined) ?? 0), 0)
 
+interface TourActionsCellProps {
+  tour: Tour
+  onOpenMenu: (tour: Tour, el: HTMLElement) => void
+}
+
+const TourActionsCell = ({ tour, onOpenMenu }: TourActionsCellProps) => (
+  <IconButton
+    size="small"
+    onClick={(e) => {
+      e.stopPropagation()
+      onOpenMenu(tour, e.currentTarget)
+    }}
+  >
+    <MoreVertIcon fontSize="small" />
+  </IconButton>
+)
+
+interface TourColumnExtras {
+  data: Tour[] | undefined
+  totals: { distance: number; durationMoving: number; altUp: number; altDown: number; powerTotal: number }
+  onOpenMenu: (tour: Tour, el: HTMLElement) => void
+}
+
+const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef<Tour>[] => [
+  {
+    accessorKey: 'title',
+    header: 'Title',
+    enableGrouping: false,
+    footer: () => `${(data ?? []).length} tours`,
+  },
+  {
+    accessorKey: 'startYear',
+    header: 'Year',
+    enableGrouping: true,
+    meta: { align: 'right' },
+  },
+  {
+    accessorKey: 'startMonth',
+    header: 'Month',
+    enableGrouping: true,
+    meta: { align: 'right' },
+  },
+  {
+    accessorKey: 'startedAt',
+    header: 'Started',
+    enableGrouping: false,
+    cell: (c) => formatDateTime(c.getValue<string>()),
+    meta: { align: 'right' },
+  },
+  {
+    accessorKey: 'distance',
+    header: 'Distance (km)',
+    enableGrouping: false,
+    cell: (c) => formatDistanceKm(c.getValue<number>()),
+    aggregatedCell: (c) => formatDistanceKm(c.getValue<number>()),
+    footer: () => formatDistanceKm(totals.distance),
+    meta: { align: 'right' },
+  },
+  {
+    accessorKey: 'durationMoving',
+    header: 'Duration Moving',
+    enableGrouping: false,
+    cell: (c) => formatDuration(c.getValue<number>()),
+    aggregatedCell: (c) => formatDuration(c.getValue<number>()),
+    footer: () => formatDuration(totals.durationMoving),
+    meta: { align: 'right', hideOnMobile: true },
+  },
+  {
+    accessorKey: 'altUp',
+    header: 'Up (m)',
+    enableGrouping: false,
+    cell: (c) => c.getValue<number>().toLocaleString(),
+    aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
+    footer: () => totals.altUp.toLocaleString(),
+    meta: { align: 'right', hideOnMobile: true },
+  },
+  {
+    accessorKey: 'altDown',
+    header: 'Down (m)',
+    enableGrouping: false,
+    cell: (c) => c.getValue<number>().toLocaleString(),
+    aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
+    footer: () => totals.altDown.toLocaleString(),
+    meta: { align: 'right', hideOnMobile: true },
+  },
+  {
+    accessorKey: 'powerTotal',
+    header: 'Power (kWh)',
+    enableGrouping: false,
+    cell: (c) => formatKWh(c.getValue<number>()),
+    aggregatedCell: (c) => formatKWh(c.getValue<number>()),
+    footer: () => formatKWh(totals.powerTotal),
+    meta: { align: 'right', hideOnMobile: true },
+  },
+  {
+    id: 'bike',
+    header: 'Bike',
+    accessorFn: (t) => bikeName(t.bike),
+    enableGrouping: true,
+    filterFn: 'equalsString',
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <TourActionsCell tour={row.original} onOpenMenu={onOpenMenu} />
+    ),
+  },
+]
+
 export const TourList = () => {
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(toursQuery())
@@ -73,104 +185,13 @@ export const TourList = () => {
     }
   }, [data])
 
-  const columns = useMemo<ColumnDef<Tour>[]>(
-    () => [
-      {
-        accessorKey: 'title',
-        header: 'Title',
-        enableGrouping: false,
-        footer: () => `${(data ?? []).length} tours`,
-      },
-      {
-        accessorKey: 'startYear',
-        header: 'Year',
-        enableGrouping: true,
-        meta: { align: 'right' },
-      },
-      {
-        accessorKey: 'startMonth',
-        header: 'Month',
-        enableGrouping: true,
-        meta: { align: 'right' },
-      },
-      {
-        accessorKey: 'startedAt',
-        header: 'Started',
-        enableGrouping: false,
-        cell: (c) => formatDateTime(c.getValue<string>()),
-        meta: { align: 'right' },
-      },
-      {
-        accessorKey: 'distance',
-        header: 'Distance (km)',
-        enableGrouping: false,
-        cell: (c) => formatDistanceKm(c.getValue<number>()),
-        aggregatedCell: (c) => formatDistanceKm(c.getValue<number>()),
-        footer: () => formatDistanceKm(totals.distance),
-        meta: { align: 'right' },
-      },
-      {
-        accessorKey: 'durationMoving',
-        header: 'Duration Moving',
-        enableGrouping: false,
-        cell: (c) => formatDuration(c.getValue<number>()),
-        aggregatedCell: (c) => formatDuration(c.getValue<number>()),
-        footer: () => formatDuration(totals.durationMoving),
-        meta: { align: 'right', hideOnMobile: true },
-      },
-      {
-        accessorKey: 'altUp',
-        header: 'Up (m)',
-        enableGrouping: false,
-        cell: (c) => c.getValue<number>().toLocaleString(),
-        aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-        footer: () => totals.altUp.toLocaleString(),
-        meta: { align: 'right', hideOnMobile: true },
-      },
-      {
-        accessorKey: 'altDown',
-        header: 'Down (m)',
-        enableGrouping: false,
-        cell: (c) => c.getValue<number>().toLocaleString(),
-        aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-        footer: () => totals.altDown.toLocaleString(),
-        meta: { align: 'right', hideOnMobile: true },
-      },
-      {
-        accessorKey: 'powerTotal',
-        header: 'Power (kWh)',
-        enableGrouping: false,
-        cell: (c) => formatKWh(c.getValue<number>()),
-        aggregatedCell: (c) => formatKWh(c.getValue<number>()),
-        footer: () => formatKWh(totals.powerTotal),
-        meta: { align: 'right', hideOnMobile: true },
-      },
-      {
-        id: 'bike',
-        header: 'Bike',
-        accessorFn: (t) => bikeName(t.bike),
-        enableGrouping: true,
-        filterFn: 'equalsString',
-      },
-      {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation()
-              setMenuTour(row.original)
-              setMenuEl(e.currentTarget)
-            }}
-          >
-            <MoreVertIcon fontSize="small" />
-          </IconButton>
-        ),
-      },
-    ],
+  const handleOpenMenu = (tour: Tour, el: HTMLElement) => {
+    setMenuTour(tour)
+    setMenuEl(el)
+  }
+
+  const columns = useMemo(
+    () => buildColumns({ data, totals, onOpenMenu: handleOpenMenu }),
     [data, totals],
   )
 

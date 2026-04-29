@@ -13,6 +13,39 @@ import { formatDate } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
+interface ActionsCellProps {
+  bike: Bike
+  onEdit: (bike: Bike) => void
+  onDelete: (bike: Bike) => void
+}
+
+const ActionsCell = ({ bike, onEdit, onDelete }: ActionsCellProps) => (
+  <RowActions onEdit={() => onEdit(bike)} onDelete={() => onDelete(bike)} />
+)
+
+const buildColumns = (
+  onEdit: (bike: Bike) => void,
+  onDelete: (bike: Bike) => void,
+): ColumnDef<Bike>[] => [
+  { accessorKey: 'manufacturer', header: 'Manufacturer' },
+  { accessorKey: 'model', header: 'Model' },
+  {
+    accessorKey: 'boughtAt',
+    header: 'Purchase Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <ActionsCell bike={row.original} onEdit={onEdit} onDelete={onDelete} />
+    ),
+  },
+]
+
 export const BikeList = () => {
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(bikesQuery())
@@ -35,32 +68,14 @@ export const BikeList = () => {
     },
   })
 
-  const columns = useMemo<ColumnDef<Bike>[]>(
-    () => [
-      { accessorKey: 'manufacturer', header: 'Manufacturer' },
-      { accessorKey: 'model', header: 'Model' },
-      {
-        accessorKey: 'boughtAt',
-        header: 'Purchase Date',
-        cell: (c) => formatDate(c.getValue<string | null>()),
-        meta: { hideOnMobile: true },
-      },
-      {
-        id: 'actions',
-        header: '',
-        enableSorting: false,
-        enableGlobalFilter: false,
-        cell: ({ row }) => (
-          <RowActions
-            onEdit={() => {
-              setEditBike(row.original)
-              setEditOpen(true)
-            }}
-            onDelete={() => setToDelete(row.original)}
-          />
-        ),
-      },
-    ],
+  const handleEdit = (bike: Bike) => {
+    setEditBike(bike)
+    setEditOpen(true)
+  }
+
+  const columns = useMemo(
+    () => buildColumns(handleEdit, setToDelete),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 

@@ -6,6 +6,18 @@ export interface ApiError {
   details?: string[]
 }
 
+export class ApiException extends Error implements ApiError {
+  status: number
+  details?: string[]
+
+  constructor(apiError: ApiError) {
+    super(apiError.message)
+    this.name = 'ApiException'
+    this.status = apiError.status
+    this.details = apiError.details
+  }
+}
+
 export const isApiError = (err: unknown): err is ApiError =>
   typeof err === 'object' && err !== null && 'status' in err && 'message' in err
 
@@ -23,16 +35,31 @@ type BackendErrorShape = {
   errors?: unknown
 }
 
+const stringifyUnknown = (val: unknown): string => {
+  if (typeof val === 'string') return val
+  if (val instanceof Error) return val.message
+  try {
+    return JSON.stringify(val) ?? String(val)
+  } catch {
+    return String(val)
+  }
+}
+
 const parseDetails = (errors: unknown): string[] | undefined => {
   if (!errors) return undefined
   if (Array.isArray(errors)) {
     return errors
-      .map((e) => (typeof e === 'string' ? e : e?.message ?? JSON.stringify(e)))
+      .map((e: unknown) => {
+        if (typeof e === 'string') return e
+        if ((e as Record<string, unknown> | null)?.message != null)
+          return String((e as Record<string, unknown>).message)
+        return stringifyUnknown(e)
+      })
       .filter(Boolean)
   }
   if (typeof errors === 'object') {
     return Object.entries(errors as Record<string, unknown>).map(
-      ([k, v]) => `${k}: ${typeof v === 'string' ? v : JSON.stringify(v)}`,
+      ([k, v]) => `${k}: ${stringifyUnknown(v)}`,
     )
   }
   return [String(errors)]
@@ -54,6 +81,6 @@ client.interceptors.response.use(
       message,
       details: parseDetails(body?.errors),
     }
-    return Promise.reject(apiError)
+    throw new ApiException(apiError)
   },
 )
