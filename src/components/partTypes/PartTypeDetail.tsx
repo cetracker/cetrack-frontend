@@ -11,6 +11,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -27,7 +28,7 @@ import {
   partTypesQueryKey,
   updatePart,
 } from '@/api/parts'
-import type { Part, PartPartTypeRelation, PartType } from '@/types/api'
+import type { Part, PartPartTypeRelation } from '@/types/api'
 import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -115,9 +116,22 @@ export const PartTypeDetail = ({
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: { xs: '100vw', sm: DRAWER_WIDTH }, maxWidth: '100vw' } }}
+      slotProps={{
+        paper: { sx: { width: { xs: '100vw', sm: DRAWER_WIDTH }, maxWidth: '100vw' } },
+      }}
     >
-      <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Toolbar />
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          height: {
+            xs: 'calc(100% - 56px)',
+            sm: 'calc(100% - 64px)',
+          },
+        }}
+      >
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {pt?.name ?? (isLoading ? 'Loading…' : 'Part Type')}
@@ -270,5 +284,3 @@ export const PartTypeDetail = ({
     </Drawer>
   )
 }
-
-export type { PartType }

@@ -6,6 +6,7 @@ import {
   Drawer,
   IconButton,
   Stack,
+  Toolbar,
   Typography,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
@@ -49,9 +50,22 @@ export const PartDetail = ({ open, onClose, partId }: PartDetailProps) => {
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: { xs: '100vw', sm: DRAWER_WIDTH }, maxWidth: '100vw' } }}
+      slotProps={{
+        paper: { sx: { width: { xs: '100vw', sm: DRAWER_WIDTH }, maxWidth: '100vw' } },
+      }}
     >
-      <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Toolbar />
+      <Box
+        sx={{
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
+          height: {
+            xs: 'calc(100% - 56px)',
+            sm: 'calc(100% - 64px)',
+          },
+        }}
+      >
         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {part?.name ?? (isLoading ? 'Loading…' : 'Part')}
