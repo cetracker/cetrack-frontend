@@ -105,7 +105,10 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
               error={!!errors.partId}
               helperText={errors.partId?.message}
             >
-              {(parts ?? []).map((p) => (
+              {(parts ?? [])
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((p) => (
                 <MenuItem key={p.id} value={p.id}>
                   {p.name}
                 </MenuItem>
