@@ -204,7 +204,14 @@ export const RelationForm = ({
                 },
               }}
             >
-              {(partTypes ?? []).map((pt) => (
+              {(partTypes ?? [])
+                .slice()
+                .sort(
+                  (a, b) =>
+                    a.name.localeCompare(b.name) ||
+                    bikeName(a.bike).localeCompare(bikeName(b.bike)),
+                )
+                .map((pt) => (
                 <MenuItem key={pt.id} value={pt.id}>
                   {pt.name}
                   {pt.bike ? ` — ${bikeName(pt.bike)}` : ''}
