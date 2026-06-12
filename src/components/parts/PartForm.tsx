@@ -38,6 +38,10 @@ const schema = z
     message: 'Provide at least a label or a model',
     path: ['label'],
   })
+  .refine(
+    (d) => !!d.purchasePrice.trim() === !!d.purchasePriceCurrency.trim(),
+    { message: 'Currency is required when a price is set (and vice versa)', path: ['purchasePriceCurrency'] },
+  )
 
 export type PartFormValues = z.infer<typeof schema>
 
