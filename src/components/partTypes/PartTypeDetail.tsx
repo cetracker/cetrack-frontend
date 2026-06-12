@@ -29,7 +29,7 @@ import {
   updatePart,
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation } from '@/types/api'
-import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
+import { bikeName, formatDate, formatDateTime, partIdentity } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { RelationForm } from '@/components/parts/RelationForm'
@@ -191,7 +191,7 @@ export const PartTypeDetail = ({
                           </Tooltip>
                         )}
                       </TableCell>
-                      <TableCell>{r.part.name}</TableCell>
+                      <TableCell>{partIdentity(r.part)}</TableCell>
                       <TableCell>{formatDate(r.validFrom)}</TableCell>
                       <TableCell>
                         {isActive ? (

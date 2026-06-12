@@ -16,7 +16,7 @@ import { partQuery } from '@/api/parts'
 import { RelationTable } from './RelationTable'
 import { RelationForm } from './RelationForm'
 import type { PartPartTypeRelation } from '@/types/api'
-import { formatDate } from '@/utils/formatters'
+import { formatDate, partIdentity } from '@/utils/formatters'
 
 interface PartDetailProps {
   open: boolean
@@ -68,7 +68,7 @@ export const PartDetail = ({ open, onClose, partId }: PartDetailProps) => {
       >
         <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-             {part?.name ?? (isLoading ? 'Loading…' : 'Part')}
+             {partIdentity(part) || (isLoading ? 'Loading…' : 'Part')}
            </Typography>
            <IconButton onClick={onClose} aria-label="Close drawer">
              <CloseIcon />
@@ -76,11 +76,37 @@ export const PartDetail = ({ open, onClose, partId }: PartDetailProps) => {
          </Stack>
 
         {part && (
-          <Typography color="text.secondary" sx={{ mb: 2 }}>
-            {part.boughtAt && `Purchased ${formatDate(part.boughtAt)}`}
-            {part.boughtAt && part.retiredAt && ' · '}
-            {part.retiredAt && `Retired ${formatDate(part.retiredAt)}`}
-          </Typography>
+          <Box sx={{ mb: 2 }}>
+            {(
+              [
+                ['Manufacturer', part.manufacturer ?? ''],
+                ['Model', part.model ?? ''],
+                ['Serial', part.serialNumber ?? ''],
+                ['Vendor', part.vendor ?? ''],
+                [
+                  'Price',
+                  part.purchasePrice
+                    ? `${part.purchasePrice} ${part.purchasePriceCurrency ?? ''}`.trim()
+                    : '',
+                ],
+                ['First used', formatDate(part.firstUsedDate)],
+                ['Purchased', formatDate(part.boughtAt)],
+                ['Retired', formatDate(part.retiredAt)],
+              ] as [string, string][]
+            )
+              .filter(([, v]) => v)
+              .map(([k, v]) => (
+                <Stack
+                  key={k}
+                  sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between' }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    {k}
+                  </Typography>
+                  <Typography variant="body2">{v}</Typography>
+                </Stack>
+              ))}
+          </Box>
         )}
 
         <Divider />

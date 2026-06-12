@@ -18,7 +18,16 @@ export type BikeInput = Omit<Bike, 'id' | 'createdAt'>
 
 export interface Part {
   id: UUID
-  name: string
+  label?: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+  vendor?: string
+  /** Decimal-formatted string, e.g. "10.57" (display-only). */
+  purchasePrice?: string
+  /** ISO 4217 currency code, e.g. "EUR". */
+  purchasePriceCurrency?: string
+  firstUsedDate?: ISODateTime | null
   boughtAt?: ISODateTime | null
   retiredAt?: ISODateTime | null
   partTypeRelations?: PartPartTypeRelation[]
@@ -51,7 +60,7 @@ export type PartPartTypeRelationInput = Pick<
   PartPartTypeRelation,
   'partId' | 'partTypeId' | 'validFrom' | 'validUntil'
 > & {
-  part: Pick<Part, 'id' | 'name'>
+  part: Pick<Part, 'id' | 'label'>
   partType: Pick<PartType, 'id' | 'name' | 'mandatory'>
 }
 
@@ -91,7 +100,10 @@ export interface MTTour {
 export type MTTours = MTTour[]
 
 export interface ReportItem {
-  part: string
+  label?: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
   distance: number
   durationMoving: number
   altUp: number

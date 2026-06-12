@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
-import { Box, Button, Stack } from '@mui/material'
+import { Box, Button, IconButton, Popover, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { partsQuery, partsQueryKey, deletePart } from '@/api/parts'
@@ -10,7 +11,7 @@ import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartForm } from './PartForm'
 import { PartDetail } from './PartDetail'
-import { formatDate, bikeName } from '@/utils/formatters'
+import { formatDate, bikeName, partIdentity } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -28,6 +29,68 @@ const lastUsedAt = (p: Part): string => {
       (b.validUntil ?? b.validFrom).localeCompare(a.validUntil ?? a.validFrom),
     )
   return formatDate(sorted?.[0]?.validUntil ?? sorted?.[0]?.validFrom)
+}
+
+/** Part identity plus an info popover with the disambiguating detail.
+ *  The popover opens on click/tap, so the detail is reachable on mobile too. */
+const PartInfoCell = ({ part }: { part: Part }) => {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const price = part.purchasePrice
+    ? `${part.purchasePrice} ${part.purchasePriceCurrency ?? ''}`.trim()
+    : ''
+  const details: [string, string][] = (
+    [
+      ['Manufacturer', part.manufacturer ?? ''],
+      ['Model', part.model ?? ''],
+      ['Serial', part.serialNumber ?? ''],
+      ['Vendor', part.vendor ?? ''],
+      ['Price', price],
+      ['First used', formatDate(part.firstUsedDate)],
+      ['Bought', formatDate(part.boughtAt)],
+      ['Retired', formatDate(part.retiredAt)],
+    ] as [string, string][]
+  ).filter(([, v]) => v)
+
+  return (
+    <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5 }}>
+      <span>{partIdentity(part)}</span>
+      {details.length > 0 && (
+        <>
+          <IconButton
+            size="small"
+            aria-label="Part details"
+            onClick={(e) => {
+              e.stopPropagation()
+              setAnchor(e.currentTarget)
+            }}
+          >
+            <InfoOutlinedIcon fontSize="inherit" />
+          </IconButton>
+          <Popover
+            open={!!anchor}
+            anchorEl={anchor}
+            onClose={() => setAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Box sx={{ p: 1.5, minWidth: 200 }}>
+              {details.map(([k, v]) => (
+                <Stack
+                  key={k}
+                  sx={{ flexDirection: 'row', justifyContent: 'space-between', gap: 2 }}
+                >
+                  <Typography variant="caption" color="text.secondary">
+                    {k}
+                  </Typography>
+                  <Typography variant="caption">{v}</Typography>
+                </Stack>
+              ))}
+            </Box>
+          </Popover>
+        </>
+      )}
+    </Stack>
+  )
 }
 
 interface PartActionsCellProps {
@@ -50,10 +113,21 @@ const buildColumns = (
   onDelete: (part: Part) => void,
   onOpenRelations: (part: Part) => void,
 ): ColumnDef<Part>[] => [
-  { accessorKey: 'name', header: 'Name' },
+  {
+    id: 'identity',
+    header: 'Part',
+    accessorFn: (p) => partIdentity(p),
+    cell: ({ row }) => <PartInfoCell part={row.original} />,
+  },
   {
     accessorKey: 'boughtAt',
     header: 'Purchase Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    accessorKey: 'firstUsedDate',
+    header: 'First Used',
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -97,7 +171,7 @@ export const PartList = () => {
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'lastUsedAt', desc: false },
-    { id: 'name', desc: false },
+    { id: 'identity', desc: false },
   ])
 
   const [editOpen, setEditOpen] = useState(false)
@@ -169,7 +243,7 @@ export const PartList = () => {
       <ConfirmDialog
         open={!!toDelete}
         title="Delete part"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        message={toDelete ? `Delete "${partIdentity(toDelete)}"? This cannot be undone.` : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
         confirmLabel="Delete"

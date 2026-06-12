@@ -14,11 +14,11 @@ import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartTypeForm } from './PartTypeForm'
 import { PartTypeDetail } from './PartTypeDetail'
-import { bikeName } from '@/utils/formatters'
+import { bikeName, partIdentity } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
 const currentPartName = (pt: PartType): string =>
-  pt.partTypeRelations?.find((r) => !r.validUntil)?.part.name ?? ''
+  partIdentity(pt.partTypeRelations?.find((r) => !r.validUntil)?.part)
 
 const MandatoryCell = ({ pt }: { pt: PartType }) => {
   const hasActive = pt.partTypeRelations?.some((r) => !r.validUntil)
