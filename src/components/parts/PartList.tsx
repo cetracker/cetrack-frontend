@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Box, Button, IconButton, Popover, Stack, Typography } from '@mui/material'
+import { Box, Button, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartForm } from './PartForm'
 import { PartDetail } from './PartDetail'
-import { formatDate, bikeName, partIdentity } from '@/utils/formatters'
+import { formatDate, bikeName, partDisambiguator, partIdentity } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -31,10 +31,9 @@ const lastUsedAt = (p: Part): string => {
   return formatDate(sorted?.[0]?.validUntil ?? sorted?.[0]?.validFrom)
 }
 
-/** Part identity plus an info popover with the disambiguating detail.
- *  The popover opens on click/tap, so the detail is reachable on mobile too. */
+/** Part identity with a muted secondary disambiguation line and a hover/tap
+ *  tooltip that shows the full detail (serial, vendor, price, dates). */
 const PartInfoCell = ({ part }: { part: Part }) => {
-  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
   const price = part.purchasePrice
     ? `${part.purchasePrice} ${part.purchasePriceCurrency ?? ''}`.trim()
     : ''
@@ -51,29 +50,22 @@ const PartInfoCell = ({ part }: { part: Part }) => {
     ] as [string, string][]
   ).filter(([, v]) => v)
 
+  const disambig = partDisambiguator(part)
+
   return (
     <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5 }}>
-      <span>{partIdentity(part)}</span>
+      <Stack>
+        <span>{partIdentity(part)}</span>
+        {disambig && (
+          <Typography variant="caption" color="text.secondary">
+            {disambig}
+          </Typography>
+        )}
+      </Stack>
       {details.length > 0 && (
-        <>
-          <IconButton
-            size="small"
-            aria-label="Part details"
-            onClick={(e) => {
-              e.stopPropagation()
-              setAnchor(e.currentTarget)
-            }}
-          >
-            <InfoOutlinedIcon fontSize="inherit" />
-          </IconButton>
-          <Popover
-            open={!!anchor}
-            anchorEl={anchor}
-            onClose={() => setAnchor(null)}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Box sx={{ p: 1.5, minWidth: 200 }}>
+        <Tooltip
+          title={
+            <Box sx={{ p: 0.5 }}>
               {details.map(([k, v]) => (
                 <Stack
                   key={k}
@@ -86,8 +78,30 @@ const PartInfoCell = ({ part }: { part: Part }) => {
                 </Stack>
               ))}
             </Box>
-          </Popover>
-        </>
+          }
+          placement="right"
+          enterTouchDelay={0}
+          leaveTouchDelay={2000}
+          slotProps={{
+            tooltip: {
+              sx: {
+                bgcolor: 'background.paper',
+                color: 'text.primary',
+                boxShadow: 3,
+                minWidth: 200,
+                p: 1,
+              },
+            },
+          }}
+        >
+          <IconButton
+            size="small"
+            aria-label="Part details"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <InfoOutlinedIcon fontSize="inherit" />
+          </IconButton>
+        </Tooltip>
       )}
     </Stack>
   )
