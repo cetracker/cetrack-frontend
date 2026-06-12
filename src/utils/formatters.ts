@@ -114,17 +114,22 @@ export const partIdentity = (part?: PartIdentityFields | null): string => {
 }
 
 /**
- * Secondary, muted line shown in pickers to tell two otherwise-identical
- * parts apart: serial number first, else first-used date, else purchase
- * date, else vendor.
+ * Secondary, muted line shown in pickers and the part list to tell two
+ * otherwise-identical parts apart. Shows all non-empty attributes in a
+ * fixed order: serial, model, manufacturer, purchase date, vendor.
+ * Price, currency, and first-used date are omitted.
  */
 export const partDisambiguator = (part?: Part | null): string => {
   if (!part) return ''
-  const serial = part.serialNumber?.trim()
-  if (serial) return `#${serial}`
-  if (part.firstUsedDate) return `first used ${formatDate(part.firstUsedDate)}`
-  if (part.boughtAt) return `bought ${formatDate(part.boughtAt)}`
-  return part.vendor?.trim() ?? ''
+  return [
+    part.serialNumber?.trim() ? `#${part.serialNumber.trim()}` : null,
+    part.model?.trim() || null,
+    part.manufacturer?.trim() || null,
+    part.boughtAt ? formatDate(part.boughtAt) : null,
+    part.vendor?.trim() || null,
+  ]
+    .filter(Boolean)
+    .join(', ')
 }
 
 /** Find the currently-active (validUntil null) relation for a part or part type. */
