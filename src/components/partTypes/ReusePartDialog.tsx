@@ -13,7 +13,7 @@ import {
   relatePart,
 } from '@/api/parts'
 import type { PartPartTypeRelation, PartType } from '@/types/api'
-import { toLocalDayStartISO } from '@/utils/formatters'
+import { partIdentity, toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z.object({
   validFrom: z.date(),
@@ -53,7 +53,7 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
         partTypeId: partType.id,
         validFrom: toLocalDayStartISO(v.validFrom)!,
         validUntil: null,
-        part: { id: relation.partId, name: relation.part.name },
+        part: { id: relation.partId, label: relation.part.label },
         partType: {
           id: partType.id,
           name: partType.name,
@@ -76,7 +76,7 @@ export const ReusePartDialog = ({ open, onClose, partType, relation }: Props) =>
   return (
     <FormDialog
       open={open}
-      title={`Re-use "${relation?.part.name ?? ''}"`}
+      title={`Re-use "${partIdentity(relation?.part)}"`}
       onCancel={onClose}
       onSubmit={submit}
       submitting={reuseMut.isPending}

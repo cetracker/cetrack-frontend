@@ -158,7 +158,7 @@ export const RelationForm = ({
         partTypeId: values.partTypeId,
         validFrom: toLocalDayStartISO(values.validFrom)!,
         validUntil: toLocalDayEndISO(values.validUntil),
-        part: { id: part.id, name: part.name },
+        part: { id: part.id, label: part.label },
         partType: {
           id: pt.id,
           name: pt.name,

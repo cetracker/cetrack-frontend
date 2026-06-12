@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { MenuItem, Stack, TextField } from '@mui/material'
+import { MenuItem, Stack, TextField, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,7 +14,12 @@ import {
   relatePart,
 } from '@/api/parts'
 import type { PartType } from '@/types/api'
-import { toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
+import {
+  partDisambiguator,
+  partIdentity,
+  toLocalDayEndISO,
+  toLocalDayStartISO,
+} from '@/utils/formatters'
 
 const schema = z
   .object({
@@ -63,7 +68,7 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
         partTypeId: partType.id,
         validFrom: toLocalDayStartISO(v.validFrom)!,
         validUntil: toLocalDayEndISO(v.validUntil),
-        part: { id: part.id, name: part.name },
+        part: { id: part.id, label: part.label },
         partType: {
           id: partType.id,
           name: partType.name,
@@ -107,12 +112,22 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
             >
               {(parts ?? [])
                 .slice()
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((p) => (
-                <MenuItem key={p.id} value={p.id}>
-                  {p.name}
-                </MenuItem>
-              ))}
+                .sort((a, b) => partIdentity(a).localeCompare(partIdentity(b)))
+                .map((p) => {
+                  const detail = partDisambiguator(p)
+                  return (
+                    <MenuItem key={p.id} value={p.id}>
+                      <Stack>
+                        <span>{partIdentity(p)}</span>
+                        {detail && (
+                          <Typography variant="caption" color="text.secondary">
+                            {detail}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </MenuItem>
+                  )
+                })}
             </TextField>
           )}
         />

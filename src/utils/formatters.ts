@@ -90,6 +90,43 @@ export const bikeName = (bike?: Bike | null): string => {
   return mfr ? `${mfr} ${bike.model}` : bike.model
 }
 
+/** The raw identity fields shared by `Part` and a report row. */
+type PartIdentityFields = Pick<
+  Part,
+  'label' | 'manufacturer' | 'model' | 'serialNumber'
+>
+
+/**
+ * The single rule for a part's displayed identity, used by list, pickers,
+ * detail and report: the user's label if given, otherwise the structured
+ * make/model plus serial number. Deliberately mount-independent (no part type).
+ */
+export const partIdentity = (part?: PartIdentityFields | null): string => {
+  if (!part) return ''
+  const label = part.label?.trim()
+  if (label) return label
+  const makeModel = [part.manufacturer?.trim(), part.model?.trim()]
+    .filter(Boolean)
+    .join(' ')
+  const serial = part.serialNumber?.trim()
+  if (makeModel && serial) return `${makeModel} #${serial}`
+  return makeModel || (serial ? `#${serial}` : '')
+}
+
+/**
+ * Secondary, muted line shown in pickers to tell two otherwise-identical
+ * parts apart: serial number first, else first-used date, else purchase
+ * date, else vendor.
+ */
+export const partDisambiguator = (part?: Part | null): string => {
+  if (!part) return ''
+  const serial = part.serialNumber?.trim()
+  if (serial) return `#${serial}`
+  if (part.firstUsedDate) return `first used ${formatDate(part.firstUsedDate)}`
+  if (part.boughtAt) return `bought ${formatDate(part.boughtAt)}`
+  return part.vendor?.trim() ?? ''
+}
+
 /** Find the currently-active (validUntil null) relation for a part or part type. */
 export const findActiveRelation = (
   entity: Part | PartType | undefined | null,

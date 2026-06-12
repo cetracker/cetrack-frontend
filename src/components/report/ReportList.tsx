@@ -9,6 +9,7 @@ import {
   formatDistanceKm,
   formatDuration,
   formatKWh,
+  partIdentity,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 
@@ -37,8 +38,9 @@ export const ReportList = () => {
   const columns = useMemo<ColumnDef<ReportItem>[]>(
     () => [
       {
-        accessorKey: 'part',
+        id: 'part',
         header: 'Part',
+        accessorFn: (r) => partIdentity(r),
         footer: () => `${(data ?? []).length} parts`,
       },
       {
