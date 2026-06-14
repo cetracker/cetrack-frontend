@@ -12,6 +12,7 @@ import type { PartType } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
 import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
+import { PartInfoCell } from '@/components/parts/PartInfoCell'
 import { PartTypeForm } from './PartTypeForm'
 import { PartTypeDetail } from './PartTypeDetail'
 import { bikeName, partIdentity } from '@/utils/formatters'
@@ -38,8 +39,8 @@ const MandatoryCell = ({ pt }: { pt: PartType }) => {
 }
 
 const CurrentPartCell = ({ pt }: { pt: PartType }) => {
-  const name = currentPartName(pt)
-  if (name) return <>{name}</>
+  const activePart = pt.partTypeRelations?.find((r) => !r.validUntil)?.part
+  if (activePart && partIdentity(activePart)) return <PartInfoCell part={activePart} />
   if (pt.mandatory)
     return (
       <Typography component="span" color="error.main">

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Box, Button, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { partsQuery, partsQueryKey, deletePart } from '@/api/parts'
@@ -11,7 +10,8 @@ import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartForm } from './PartForm'
 import { PartDetail } from './PartDetail'
-import { formatDate, bikeName, partDisambiguator, partIdentity } from '@/utils/formatters'
+import { PartInfoCell } from './PartInfoCell'
+import { formatDate, bikeName, partIdentity } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -31,81 +31,6 @@ const lastUsedAt = (p: Part): string => {
   return formatDate(sorted?.[0]?.validUntil ?? sorted?.[0]?.validFrom)
 }
 
-/** Part identity with a muted secondary disambiguation line and a hover/tap
- *  tooltip that shows the full detail (serial, vendor, price, dates). */
-const PartInfoCell = ({ part }: { part: Part }) => {
-  const price = part.purchasePrice
-    ? `${part.purchasePrice} ${part.purchasePriceCurrency ?? ''}`.trim()
-    : ''
-  const details: [string, string][] = (
-    [
-      ['Manufacturer', part.manufacturer ?? ''],
-      ['Model', part.model ?? ''],
-      ['Serial', part.serialNumber ?? ''],
-      ['Vendor', part.vendor ?? ''],
-      ['Price', price],
-      ['First used', formatDate(part.firstUsedDate)],
-      ['Bought', formatDate(part.boughtAt)],
-      ['Retired', formatDate(part.retiredAt)],
-    ] as [string, string][]
-  ).filter(([, v]) => v)
-
-  const disambig = partDisambiguator(part)
-
-  return (
-    <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5 }}>
-      <Stack>
-        <span>{partIdentity(part)}</span>
-        {disambig && (
-          <Typography variant="caption" color="text.secondary">
-            {disambig}
-          </Typography>
-        )}
-      </Stack>
-      {details.length > 0 && (
-        <Tooltip
-          title={
-            <Box sx={{ p: 0.5 }}>
-              {details.map(([k, v]) => (
-                <Stack
-                  key={k}
-                  sx={{ flexDirection: 'row', justifyContent: 'space-between', gap: 2 }}
-                >
-                  <Typography variant="caption" color="text.secondary">
-                    {k}
-                  </Typography>
-                  <Typography variant="caption">{v}</Typography>
-                </Stack>
-              ))}
-            </Box>
-          }
-          placement="right"
-          enterTouchDelay={0}
-          leaveTouchDelay={2000}
-          slotProps={{
-            tooltip: {
-              sx: {
-                bgcolor: 'background.paper',
-                color: 'text.primary',
-                boxShadow: 3,
-                minWidth: 200,
-                p: 1,
-              },
-            },
-          }}
-        >
-          <IconButton
-            size="small"
-            aria-label="Part details"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <InfoOutlinedIcon fontSize="inherit" />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Stack>
-  )
-}
 
 interface PartActionsCellProps {
   part: Part
