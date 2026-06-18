@@ -5,6 +5,7 @@ import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { reportQuery } from '@/api/parts'
 import type { ReportItem } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
+import { ReportItemInfoCell } from '@/components/report/ReportItemInfoCell'
 import {
   formatDistanceKm,
   formatDuration,
@@ -41,6 +42,7 @@ export const ReportList = () => {
         id: 'part',
         header: 'Part',
         accessorFn: (r) => partIdentity(r),
+        cell: ({ row }) => <ReportItemInfoCell item={row.original} />,
         footer: () => `${(data ?? []).length} parts`,
       },
       {
