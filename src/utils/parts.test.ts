@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isPartSelectableOn, reuseIconKeys } from './parts'
+import { isPartRetired, isPartSelectableOn, reuseIconKeys } from './parts'
 import type { Part, PartPartTypeRelation } from '@/types/api'
 
 const makePart = (retiredAt?: string | null): Part => ({ id: 'p1', retiredAt })
@@ -28,6 +28,22 @@ describe('isPartSelectableOn', () => {
 
   it('drops a part retired before validFrom', () => {
     expect(isPartSelectableOn(makePart('2026-04-21T00:00:00.000+02:00'), validFrom)).toBe(false)
+  })
+})
+
+describe('isPartRetired', () => {
+  const asOf = new Date('2026-06-19T00:00:00.000+02:00')
+
+  it('is false when no retiredAt', () => {
+    expect(isPartRetired(makePart(), asOf)).toBe(false)
+  })
+
+  it('is true when retired before asOf', () => {
+    expect(isPartRetired(makePart('2026-01-01T00:00:00.000+02:00'), asOf)).toBe(true)
+  })
+
+  it('is false when retirement is scheduled after asOf', () => {
+    expect(isPartRetired(makePart('2026-12-01T00:00:00.000+02:00'), asOf)).toBe(false)
   })
 })
 

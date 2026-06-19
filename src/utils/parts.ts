@@ -6,6 +6,12 @@ export function isPartSelectableOn(part: Part, validFrom: Date): boolean {
   return parseISO(part.retiredAt).getTime() > validFrom.getTime()
 }
 
+// True when the part has a retiredAt at or before `asOf` (default: now).
+export function isPartRetired(part: Part, asOf: Date = new Date()): boolean {
+  if (!part.retiredAt) return false
+  return parseISO(part.retiredAt).getTime() <= asOf.getTime()
+}
+
 // Returns the set of row keys (`${partId}-${validFrom}`) that should show the
 // re-use icon. Expects relations sorted validFrom descending (most recent first).
 // Each unique inactive part gets an icon on its most-recent row only; parts that

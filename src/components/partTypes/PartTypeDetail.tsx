@@ -30,7 +30,7 @@ import {
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation } from '@/types/api'
 import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
-import { reuseIconKeys } from '@/utils/parts'
+import { isPartRetired, reuseIconKeys } from '@/utils/parts'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartInfoCell } from '@/components/parts/PartInfoCell'
@@ -181,18 +181,30 @@ export const PartTypeDetail = ({
                     <TableRow key={`${r.partId}-${r.validFrom}`}>
                       <TableCell padding="none" sx={{ pl: 1 }}>
                         {reuseKeys.has(`${r.partId}-${r.validFrom}`) ? (
-                          <Tooltip title="Re-use this part (terminates current active part)">
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={(e) => {
-                                e.currentTarget.blur()
-                                setReuseRelation(r)
-                              }}
-                            >
-                              <ContentCopyIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
+                          (() => {
+                            const retired = isPartRetired(r.part)
+                            return (
+                              <Tooltip
+                                title={
+                                  retired
+                                    ? 'This part is retired — re-using it is unusual (terminates current active part)'
+                                    : 'Re-use this part (terminates current active part)'
+                                }
+                              >
+                                <IconButton
+                                  size="small"
+                                  color={retired ? 'default' : 'primary'}
+                                  sx={retired ? { color: 'text.disabled' } : undefined}
+                                  onClick={(e) => {
+                                    e.currentTarget.blur()
+                                    setReuseRelation(r)
+                                  }}
+                                >
+                                  <ContentCopyIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            )
+                          })()
                         ) : null}
                       </TableCell>
                       <TableCell><PartInfoCell part={r.part} /></TableCell>
