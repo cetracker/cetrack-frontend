@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { isPartSelectableOn } from './parts'
-import type { Part } from '@/types/api'
+import { isPartSelectableOn, reuseIconKeys } from './parts'
+import type { Part, PartPartTypeRelation } from '@/types/api'
 
 const makePart = (retiredAt?: string | null): Part => ({ id: 'p1', retiredAt })
+
+const makeRelation = (
+  partId: string,
+  validFrom: string,
+  validUntil?: string | null,
+): PartPartTypeRelation =>
+  ({ partId, validFrom, validUntil }) as unknown as PartPartTypeRelation
 
 describe('isPartSelectableOn', () => {
   const validFrom = new Date('2026-04-22T00:00:00.000+02:00')
@@ -21,5 +28,38 @@ describe('isPartSelectableOn', () => {
 
   it('drops a part retired before validFrom', () => {
     expect(isPartSelectableOn(makePart('2026-04-21T00:00:00.000+02:00'), validFrom)).toBe(false)
+  })
+})
+
+describe('reuseIconKeys', () => {
+  it('returns empty set for no relations', () => {
+    expect(reuseIconKeys([])).toEqual(new Set())
+  })
+
+  it('includes the row key for a single inactive part', () => {
+    const r = makeRelation('p1', '2026-01-01', '2026-06-01')
+    expect(reuseIconKeys([r])).toEqual(new Set(['p1-2026-01-01']))
+  })
+
+  it('includes only the most-recent inactive row when a part appears multiple times', () => {
+    // sorted descending: newer first
+    const newer = makeRelation('p1', '2026-03-01', '2026-05-01')
+    const older = makeRelation('p1', '2026-01-01', '2026-02-01')
+    const keys = reuseIconKeys([newer, older])
+    expect(keys.has('p1-2026-03-01')).toBe(true)
+    expect(keys.has('p1-2026-01-01')).toBe(false)
+  })
+
+  it('excludes a part that currently has an active relation', () => {
+    const active = makeRelation('p1', '2026-06-01', null)
+    const inactive = makeRelation('p1', '2026-01-01', '2026-05-31')
+    expect(reuseIconKeys([active, inactive])).toEqual(new Set())
+  })
+
+  it('includes each distinct inactive part once', () => {
+    const a = makeRelation('p1', '2026-03-01', '2026-05-01')
+    const b = makeRelation('p2', '2026-04-01', '2026-06-01')
+    const keys = reuseIconKeys([b, a])
+    expect(keys).toEqual(new Set(['p1-2026-03-01', 'p2-2026-04-01']))
   })
 })

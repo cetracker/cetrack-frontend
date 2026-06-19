@@ -30,6 +30,7 @@ import {
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation } from '@/types/api'
 import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
+import { reuseIconKeys } from '@/utils/parts'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartInfoCell } from '@/components/parts/PartInfoCell'
@@ -100,6 +101,8 @@ export const PartTypeDetail = ({
   const relations = (pt?.partTypeRelations ?? [])
     .slice()
     .sort((a, b) => b.validFrom.localeCompare(a.validFrom))
+
+  const reuseKeys = reuseIconKeys(relations)
 
   const openEditRelation = async (r: PartPartTypeRelation) => {
     setEditRelation(r)
@@ -177,7 +180,7 @@ export const PartTypeDetail = ({
                   return (
                     <TableRow key={`${r.partId}-${r.validFrom}`}>
                       <TableCell padding="none" sx={{ pl: 1 }}>
-                        {isActive ? null : (
+                        {reuseKeys.has(`${r.partId}-${r.validFrom}`) ? (
                           <Tooltip title="Re-use this part (terminates current active part)">
                             <IconButton
                               size="small"
@@ -190,7 +193,7 @@ export const PartTypeDetail = ({
                               <ContentCopyIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-                        )}
+                        ) : null}
                       </TableCell>
                       <TableCell><PartInfoCell part={r.part} /></TableCell>
                       <TableCell>{formatDate(r.validFrom)}</TableCell>
