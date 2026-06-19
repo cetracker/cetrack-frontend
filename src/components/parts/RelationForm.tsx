@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
 import {
+  Autocomplete,
   IconButton,
-  InputAdornment,
-  MenuItem,
   Stack,
   TextField,
   Tooltip,
@@ -129,10 +128,6 @@ export const RelationForm = ({
     },
   )
 
-  const selectedPartType: PartType | undefined = partTypes?.find(
-    (pt) => pt.id === watch('partTypeId'),
-  )
-
   const submit = handleSubmit((values) => {
     const pt = partTypes?.find((p) => p.id === values.partTypeId)
     if (!pt) return
@@ -185,40 +180,43 @@ export const RelationForm = ({
         <Controller
           control={control}
           name="partTypeId"
-          render={({ field }) => (
-            <TextField
-              {...field}
-              select
-              label="Part Type"
-              required
-              error={!!errors.partTypeId}
-              helperText={errors.partTypeId?.message}
-              disabled={!!lockedPartTypeId}
-              slotProps={{
-                input: {
-                  endAdornment: selectedPartType?.bike ? (
-                    <InputAdornment position="end" sx={{ mr: 3 }}>
-                      {bikeName(selectedPartType.bike)}
-                    </InputAdornment>
-                  ) : undefined,
-                },
-              }}
-            >
-              {(partTypes ?? [])
-                .slice()
-                .sort(
-                  (a, b) =>
-                    a.name.localeCompare(b.name) ||
-                    bikeName(a.bike).localeCompare(bikeName(b.bike)),
-                )
-                .map((pt) => (
-                <MenuItem key={pt.id} value={pt.id}>
-                  {pt.name}
-                  {pt.bike ? ` — ${bikeName(pt.bike)}` : ''}
-                </MenuItem>
-              ))}
-            </TextField>
-          )}
+          render={({ field }) => {
+            const sortedPartTypes = (partTypes ?? [])
+              .slice()
+              .sort(
+                (a, b) =>
+                  a.name.localeCompare(b.name) ||
+                  bikeName(a.bike).localeCompare(bikeName(b.bike)),
+              )
+            const selectedPT = sortedPartTypes.find((pt) => pt.id === field.value) ?? null
+            return (
+              <Autocomplete<PartType>
+                options={sortedPartTypes}
+                value={selectedPT}
+                onChange={(_, option) => field.onChange(option?.id ?? '')}
+                getOptionLabel={(pt) =>
+                  pt.bike ? `${pt.name} — ${bikeName(pt.bike)}` : pt.name
+                }
+                isOptionEqualToValue={(opt, val) => opt.id === val.id}
+                disabled={!!lockedPartTypeId}
+                renderOption={({ key, ...props }, pt) => (
+                  <li key={key} {...props}>
+                    {pt.name}{pt.bike ? ` — ${bikeName(pt.bike)}` : ''}
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Part Type"
+                    required
+                    error={!!errors.partTypeId}
+                    helperText={errors.partTypeId?.message}
+                    inputRef={field.ref}
+                  />
+                )}
+              />
+            )
+          }}
         />
         <Controller
           control={control}
