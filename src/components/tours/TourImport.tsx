@@ -141,7 +141,7 @@ export const TourImport = () => {
       const text = await file.text()
       const parsed = JSON.parse(text)
       const validated = validateTours(parsed)
-      setTours(validated)
+      setTours([...validated].sort((a, b) => a.STARTTIMESTAMP - b.STARTTIMESTAMP))
       if (validated.some((t) => !!t.BIKEID)) {
         setBikeId(FROM_FILE)
       }
@@ -177,7 +177,7 @@ export const TourImport = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 960 }}>
+    <Box>
       <Typography variant="h5" gutterBottom>
         Import Tours
       </Typography>
@@ -300,7 +300,7 @@ export const TourImport = () => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Date</TableCell>
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>Date</TableCell>
                   <TableCell>Title</TableCell>
                   <TableCell align="right">Distance (km)</TableCell>
                   {hasBikeIds && <TableCell>Bike (file)</TableCell>}
@@ -313,14 +313,14 @@ export const TourImport = () => {
                   const noMatch = hasBikeIds && !matched
                   return (
                     <TableRow key={t.MTTOURID}>
-                      <TableCell>{previewDate(t)}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{previewDate(t)}</TableCell>
                       <TableCell>{t.TITLE}</TableCell>
                       <TableCell align="right">
                         {formatDistanceKm(t.DISTANCE)}
                       </TableCell>
                       {hasBikeIds && (
                         <TableCell>
-                          {t.BIKENAME?.replace(/\s+/g, ' ').trim() ?? '—'}
+                          {t.BIKENAME?.split('\n')[0].trim() ?? '—'}
                         </TableCell>
                       )}
                       {hasBikeIds && (
