@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint --max-warnings=0 \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "sonar": "sonar-scanner"
+    "sonar": "sonar-scanner",
+    "test": "vitest run"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -45,6 +46,7 @@
     "sonar-scanner": "^3.1.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.59.1",
-    "vite": "8.0.16"
+    "vite": "8.0.16",
+    "vitest": "4.1.9"
   }
 }
