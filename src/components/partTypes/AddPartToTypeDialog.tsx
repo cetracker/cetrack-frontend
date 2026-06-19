@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { MenuItem, Stack, TextField, Typography } from '@mui/material'
+import { useEffect, useMemo, useState } from 'react'
+import { Autocomplete, Stack, TextField, Typography } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -20,6 +20,7 @@ import {
   toLocalDayEndISO,
   toLocalDayStartISO,
 } from '@/utils/formatters'
+import { isPartSelectableOn } from '@/utils/parts'
 
 const schema = z
   .object({
@@ -49,15 +50,51 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { partId: '', validFrom: new Date(), validUntil: null },
   })
 
+  const [staleHint, setStaleHint] = useState(false)
+
   useEffect(() => {
-    if (open) reset({ partId: '', validFrom: new Date(), validUntil: null })
+    if (open) {
+      reset({ partId: '', validFrom: new Date(), validUntil: null })
+      setStaleHint(false)
+    }
   }, [open, reset])
+
+  const partId = watch('partId')
+  const validFrom = watch('validFrom')
+  const validFromMs = validFrom.getTime()
+
+  const allSorted = useMemo(
+    () => (parts ?? []).slice().sort((a, b) => partIdentity(a).localeCompare(partIdentity(b))),
+    [parts],
+  )
+
+  const visibleParts = useMemo(
+    () => allSorted.filter((p) => isPartSelectableOn(p, new Date(validFromMs))),
+    [allSorted, validFromMs],
+  )
+
+  const selectedInVisible = Boolean(partId) && visibleParts.some((p) => p.id === partId)
+
+  useEffect(() => {
+    if (partId && !selectedInVisible) {
+      setValue('partId', '')
+      setStaleHint(true)
+    }
+  }, [partId, selectedInVisible, setValue])
+
+  useEffect(() => {
+    if (partId && selectedInVisible) {
+      setStaleHint(false)
+    }
+  }, [partId, selectedInVisible])
 
   const addMut = useApiMutation(
     (v: Values) => {
@@ -102,33 +139,47 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
           control={control}
           name="partId"
           render={({ field }) => (
-            <TextField
-              {...field}
-              select
-              label="Part"
-              required
-              error={!!errors.partId}
-              helperText={errors.partId?.message}
-            >
-              {(parts ?? [])
-                .slice()
-                .sort((a, b) => partIdentity(a).localeCompare(partIdentity(b)))
-                .map((p) => {
-                  const detail = partDisambiguator(p)
-                  return (
-                    <MenuItem key={p.id} value={p.id}>
-                      <Stack>
-                        <span>{partIdentity(p)}</span>
-                        {detail && (
-                          <Typography variant="caption" color="text.secondary">
-                            {detail}
-                          </Typography>
-                        )}
-                      </Stack>
-                    </MenuItem>
-                  )
-                })}
-            </TextField>
+            <Autocomplete
+              options={visibleParts}
+              value={parts?.find((p) => p.id === field.value) ?? null}
+              onChange={(_, option) => field.onChange(option?.id ?? '')}
+              getOptionLabel={partIdentity}
+              isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              noOptionsText={
+                visibleParts.length === 0
+                  ? 'No parts active as of the selected date'
+                  : 'No matching parts'
+              }
+              renderOption={({ key, ...props }, p) => {
+                const detail = partDisambiguator(p)
+                return (
+                  <li key={key} {...props}>
+                    <Stack>
+                      <span>{partIdentity(p)}</span>
+                      {detail && (
+                        <Typography variant="caption" color="text.secondary">
+                          {detail}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </li>
+                )
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Part"
+                  required
+                  error={!!errors.partId}
+                  helperText={
+                    staleHint
+                      ? 'Previously selected part is retired as of this date'
+                      : errors.partId?.message
+                  }
+                  inputRef={field.ref}
+                />
+              )}
+            />
           )}
         />
         <Controller
