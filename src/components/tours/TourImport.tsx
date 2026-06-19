@@ -21,12 +21,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import DeleteIcon from '@mui/icons-material/Delete'
 import styled from '@emotion/styled'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { importTours, toursQueryKey } from '@/api/tours'
-import type { MTTour } from '@/types/api'
-import { BikeSelect } from '@/components/common/BikeSelect'
-import { formatDistanceKm } from '@/utils/formatters'
+import type { Bike, MTTour } from '@/types/api'
+import { BikeSelect, FROM_FILE } from '@/components/common/BikeSelect'
+import { bikeName, formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
+import { bikesQuery } from '@/api/bikes'
 
 const dropZoneBorderColor = (active: boolean, error: boolean): string => {
   if (error) return '#d32f2f'
@@ -106,6 +107,13 @@ export const TourImport = () => {
   const [bikeError, setBikeError] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const { data: bikes } = useQuery(bikesQuery())
+  const bikeMap: Map<string, Bike> = new Map((bikes ?? []).map((b) => [b.id, b]))
+
+  const hasBikeIds = tours?.some((t) => !!t.BIKEID) ?? false
+  const allMatched =
+    hasBikeIds && (tours ?? []).every((t) => bikeMap.has(t.BIKEID ?? ''))
+
    const importMut = useApiMutation(importTours, {
      successMessage: 'Tours imported',
      onSuccess: async () => {
@@ -127,11 +135,16 @@ export const TourImport = () => {
     setFileName(file.name)
     setError(null)
     setTours(null)
+    setBikeId(null)
+    setBikeError(false)
     try {
       const text = await file.text()
       const parsed = JSON.parse(text)
       const validated = validateTours(parsed)
       setTours(validated)
+      if (validated.some((t) => !!t.BIKEID)) {
+        setBikeId(FROM_FILE)
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Invalid JSON')
     }
@@ -151,11 +164,16 @@ export const TourImport = () => {
 
   const submit = () => {
     if (!tours) return
-    if (!bikeId) {
-      setBikeError(true)
-      return
+    if (hasBikeIds) {
+      if (!allMatched) return
+      importMut.mutate(tours.map((t) => ({ ...t, bikeId: t.BIKEID })))
+    } else {
+      if (!bikeId) {
+        setBikeError(true)
+        return
+      }
+      importMut.mutate(tours.map((t) => ({ ...t, bikeId })))
     }
-    importMut.mutate(tours.map((t) => ({ ...t, bikeId })))
   }
 
   return (
@@ -243,11 +261,13 @@ export const TourImport = () => {
            >
             <Box sx={{ minWidth: 240 }}>
               <BikeSelect
-                value={bikeId}
+                value={hasBikeIds ? FROM_FILE : bikeId}
                 onChange={(id) => { setBikeId(id); setBikeError(false) }}
                 includeNone={false}
+                includeFromFile={hasBikeIds}
+                disabled={hasBikeIds}
                 label="Bike"
-                required
+                required={!hasBikeIds}
                 error={bikeError}
                 helperText={bikeError ? 'Please select a bike' : undefined}
               />
@@ -266,7 +286,11 @@ export const TourImport = () => {
               variant="contained"
               startIcon={<CloudUploadIcon />}
               onClick={submit}
-              disabled={importMut.isPending || tours.length === 0 || !bikeId}
+              disabled={
+                importMut.isPending ||
+                tours.length === 0 ||
+                (hasBikeIds ? !allMatched : !bikeId)
+              }
             >
               Upload {tours.length} tour{tours.length === 1 ? '' : 's'}
             </Button>
@@ -279,18 +303,36 @@ export const TourImport = () => {
                   <TableCell>Date</TableCell>
                   <TableCell>Title</TableCell>
                   <TableCell align="right">Distance (km)</TableCell>
+                  {hasBikeIds && <TableCell>Bike (file)</TableCell>}
+                  {hasBikeIds && <TableCell>Bike (CETracker)</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tours.map((t) => (
-                  <TableRow key={t.MTTOURID}>
-                    <TableCell>{previewDate(t)}</TableCell>
-                    <TableCell>{t.TITLE}</TableCell>
-                    <TableCell align="right">
-                      {formatDistanceKm(t.DISTANCE)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {tours.map((t) => {
+                  const matched = t.BIKEID ? bikeMap.get(t.BIKEID) : undefined
+                  const noMatch = hasBikeIds && !matched
+                  return (
+                    <TableRow key={t.MTTOURID}>
+                      <TableCell>{previewDate(t)}</TableCell>
+                      <TableCell>{t.TITLE}</TableCell>
+                      <TableCell align="right">
+                        {formatDistanceKm(t.DISTANCE)}
+                      </TableCell>
+                      {hasBikeIds && (
+                        <TableCell>
+                          {t.BIKENAME?.replace(/\s+/g, ' ').trim() ?? '—'}
+                        </TableCell>
+                      )}
+                      {hasBikeIds && (
+                        <TableCell
+                          sx={noMatch ? { color: 'error.main', fontWeight: 600 } : undefined}
+                        >
+                          {matched ? bikeName(matched) : 'No match'}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </Paper>

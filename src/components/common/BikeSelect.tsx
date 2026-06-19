@@ -3,11 +3,14 @@ import { useQuery } from '@tanstack/react-query'
 import { bikesQuery } from '@/api/bikes'
 import { bikeName } from '@/utils/formatters'
 
+export const FROM_FILE = '__from_file__'
+
 type Props = Omit<TextFieldProps, 'onChange' | 'value' | 'select'> & {
   value: string | null | undefined
   onChange: (id: string | null) => void
   includeNone?: boolean
   noneLabel?: string
+  includeFromFile?: boolean
 }
 
 export const BikeSelect = ({
@@ -15,6 +18,7 @@ export const BikeSelect = ({
   onChange,
   includeNone = true,
   noneLabel = '— None —',
+  includeFromFile = false,
   label = 'Bike',
   ...rest
 }: Props) => {
@@ -30,6 +34,9 @@ export const BikeSelect = ({
       fullWidth
       {...rest}
     >
+      {includeFromFile && (
+        <MenuItem value={FROM_FILE}>— Use bike from file —</MenuItem>
+      )}
       {includeNone && <MenuItem value="">{noneLabel}</MenuItem>}
       {(bikes ?? []).map((b) => (
         <MenuItem key={b.id} value={b.id}>

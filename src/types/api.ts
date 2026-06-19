@@ -94,6 +94,9 @@ export interface MTTour {
   TOURALTUP: number
   TOURALTDOWN: number
   POWERTOTAL: number
+  TYPE?: number
+  BIKEID?: string
+  BIKENAME?: string
   bikeId?: UUID
 }
 
