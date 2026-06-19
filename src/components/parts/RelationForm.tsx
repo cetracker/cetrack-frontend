@@ -199,8 +199,8 @@ export const RelationForm = ({
                 }
                 isOptionEqualToValue={(opt, val) => opt.id === val.id}
                 disabled={!!lockedPartTypeId}
-                renderOption={({ key, ...props }, pt) => (
-                  <li key={key} {...props}>
+                renderOption={({ key: _key, ...props }, pt) => (
+                  <li key={pt.id} {...props}>
                     {pt.name}{pt.bike ? ` — ${bikeName(pt.bike)}` : ''}
                   </li>
                 )}

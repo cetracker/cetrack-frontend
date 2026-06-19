@@ -150,10 +150,10 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
                   ? 'No parts active as of the selected date'
                   : 'No matching parts'
               }
-              renderOption={({ key, ...props }, p) => {
+              renderOption={({ key: _key, ...props }, p) => {
                 const detail = partDisambiguator(p)
                 return (
-                  <li key={key} {...props}>
+                  <li key={p.id} {...props}>
                     <Stack>
                       <span>{partIdentity(p)}</span>
                       {detail && (
