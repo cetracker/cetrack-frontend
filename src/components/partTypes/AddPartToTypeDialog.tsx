@@ -145,6 +145,7 @@ export const AddPartToTypeDialog = ({ open, onClose, partType }: Props) => {
               onChange={(_, option) => field.onChange(option?.id ?? '')}
               getOptionLabel={partIdentity}
               isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              clearOnBlur={false}
               noOptionsText={
                 visibleParts.length === 0
                   ? 'No parts active as of the selected date'
