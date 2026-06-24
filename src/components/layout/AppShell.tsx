@@ -26,7 +26,7 @@ import { useColorMode } from '@/hooks/useColorMode'
 
 const ImportAttentionIndicator = () => {
   const { data: session } = useQuery(pendingMyTourbookSessionQuery())
-  if (!session) return null
+  if (!session || (session.candidates.length === 0 && session.warnings.length === 0)) return null
 
   const hasLogicalDuplicate = session.warnings.some((w) => w.type === 'LOGICAL_DUPLICATE')
 

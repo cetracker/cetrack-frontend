@@ -243,6 +243,16 @@ export const MyTourbookImportReview = () => {
     )
   }
 
+  if (session.candidates.length === 0 && session.warnings.length === 0) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography variant="h6" color="text.secondary">
+          No new tours found in this upload
+        </Typography>
+      </Box>
+    )
+  }
+
   const unresolvedDuplicates = session.warnings.filter(
     (w) => w.type === 'LOGICAL_DUPLICATE' && !resolutionsByMtTourId[w.mtTourId!],
   )
