@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Alert,
   Box,
@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { bikesQuery } from '@/api/bikes'
 import {
   commitMyTourbookImport,
   pendingMyTourbookSessionQuery,
@@ -32,7 +33,7 @@ import type {
   ImportWarning,
   WarningResolutionAction,
 } from '@/types/api'
-import { formatDateTime, formatDistanceKm, formatDuration } from '@/utils/formatters'
+import { bikeName, formatDateTime, formatDistanceKm, formatDuration } from '@/utils/formatters'
 import { allowedActions, buildCommitRequest } from '@/utils/mytourbookImport'
 
 // --- CandidateList -----------------------------------------------------------
@@ -42,9 +43,10 @@ interface CandidateListProps {
   checked: Set<string>
   onToggle: (id: string) => void
   onToggleAll: () => void
+  bikeLabel: (id?: string) => string
 }
 
-const CandidateList = ({ candidates, checked, onToggle, onToggleAll }: CandidateListProps) => {
+const CandidateList = ({ candidates, checked, onToggle, onToggleAll, bikeLabel }: CandidateListProps) => {
   const allChecked = candidates.length > 0 && candidates.every((c) => checked.has(c.mtTourId))
   const someChecked = candidates.some((c) => checked.has(c.mtTourId))
 
@@ -68,6 +70,7 @@ const CandidateList = ({ candidates, checked, onToggle, onToggleAll }: Candidate
             <TableCell>Date</TableCell>
             <TableCell align="right">Distance</TableCell>
             <TableCell align="right">Duration</TableCell>
+            <TableCell>Bike</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -83,6 +86,7 @@ const CandidateList = ({ candidates, checked, onToggle, onToggleAll }: Candidate
               <TableCell>{formatDateTime(c.startedAt)}</TableCell>
               <TableCell align="right">{formatDistanceKm(c.distance)} km</TableCell>
               <TableCell align="right">{formatDuration(c.durationMoving)}</TableCell>
+              <TableCell>{bikeLabel(c.bikeId)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -96,9 +100,10 @@ const CandidateList = ({ candidates, checked, onToggle, onToggleAll }: Candidate
 interface TourComparisonTableProps {
   existing: ExistingTourSummary
   incoming: ImportCandidate
+  bikeLabel: (id?: string) => string
 }
 
-const TourComparisonTable = ({ existing, incoming }: TourComparisonTableProps) => (
+const TourComparisonTable = ({ existing, incoming, bikeLabel }: TourComparisonTableProps) => (
   <Table size="small">
     <TableHead>
       <TableRow>
@@ -128,6 +133,11 @@ const TourComparisonTable = ({ existing, incoming }: TourComparisonTableProps) =
         <TableCell>{formatDuration(existing.durationMoving)}</TableCell>
         <TableCell>{formatDuration(incoming.durationMoving)}</TableCell>
       </TableRow>
+      <TableRow>
+        <TableCell>Bike</TableCell>
+        <TableCell>{bikeLabel(existing.bikeId)}</TableCell>
+        <TableCell>{bikeLabel(incoming.bikeId)}</TableCell>
+      </TableRow>
     </TableBody>
   </Table>
 )
@@ -138,9 +148,10 @@ interface WarningCardProps {
   warning: ImportWarning
   resolution: WarningResolutionAction | undefined
   onResolve: (mtTourId: string, action: WarningResolutionAction) => void
+  bikeLabel: (id?: string) => string
 }
 
-const WarningCard = ({ warning, resolution, onResolve }: WarningCardProps) => {
+const WarningCard = ({ warning, resolution, onResolve, bikeLabel }: WarningCardProps) => {
   if (warning.type === 'AMBIGUOUS_BIKE') {
     return (
       <Alert severity="info">
@@ -163,7 +174,7 @@ const WarningCard = ({ warning, resolution, onResolve }: WarningCardProps) => {
           {warning.matchedTours!.length} existing tours matched — Replace is not available
         </Alert>
       )}
-      <TourComparisonTable existing={matched} incoming={incoming} />
+      <TourComparisonTable existing={matched} incoming={incoming} bikeLabel={bikeLabel} />
       <RadioGroup
         row
         value={resolution ?? ''}
@@ -188,8 +199,12 @@ const WarningCard = ({ warning, resolution, onResolve }: WarningCardProps) => {
 
 export const MyTourbookImportReview = () => {
   const { data: session, isLoading } = useQuery(pendingMyTourbookSessionQuery())
+  const { data: bikes } = useQuery(bikesQuery())
   const qc = useQueryClient()
   const { notify } = useNotify()
+
+  const bikeMap = useMemo(() => new Map((bikes ?? []).map((b) => [b.id, b])), [bikes])
+  const bikeLabel = (id?: string) => (id && bikeMap.get(id) ? bikeName(bikeMap.get(id)!) : '—')
 
   const [checkedMtTourIds, setCheckedMtTourIds] = useState<Set<string>>(new Set())
   const [resolutionsByMtTourId, setResolutionsByMtTourId] = useState<
@@ -300,6 +315,7 @@ export const MyTourbookImportReview = () => {
         checked={checkedMtTourIds}
         onToggle={handleToggle}
         onToggleAll={handleToggleAll}
+        bikeLabel={bikeLabel}
       />
 
       {session.warnings.length > 0 && (
@@ -313,6 +329,7 @@ export const MyTourbookImportReview = () => {
               onResolve={(id, action) =>
                 setResolutionsByMtTourId((prev) => ({ ...prev, [id]: action }))
               }
+              bikeLabel={bikeLabel}
             />
           ))}
         </Stack>
