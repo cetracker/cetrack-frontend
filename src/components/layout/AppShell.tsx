@@ -1,6 +1,7 @@
 import { Suspense, useState } from 'react'
 import {
   AppBar,
+  Badge,
   Box,
   CircularProgress,
   Drawer,
@@ -14,10 +15,41 @@ import {
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import MenuIcon from '@mui/icons-material/Menu'
+import NotificationImportantIcon from '@mui/icons-material/NotificationImportant'
+import NotificationsIcon from '@mui/icons-material/Notifications'
 import PedalBikeIcon from '@mui/icons-material/PedalBike'
+import { useQuery } from '@tanstack/react-query'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
+import { pendingMyTourbookSessionQuery } from '@/api/tours'
 import { NavList } from './NavList'
 import { useColorMode } from '@/hooks/useColorMode'
+
+const ImportAttentionIndicator = () => {
+  const { data: session } = useQuery(pendingMyTourbookSessionQuery())
+  if (!session) return null
+
+  const hasLogicalDuplicate = session.warnings.some((w) => w.type === 'LOGICAL_DUPLICATE')
+
+  if (hasLogicalDuplicate) {
+    return (
+      <Tooltip title="Import needs attention — duplicate tours detected">
+        <IconButton color="inherit" component={RouterLink} to="/mytourbookImport" aria-label="review import">
+          <NotificationImportantIcon color="error" />
+        </IconButton>
+      </Tooltip>
+    )
+  }
+
+  return (
+    <Tooltip title="Import pending review">
+      <IconButton color="inherit" component={RouterLink} to="/mytourbookImport" aria-label="review import">
+        <Badge variant="dot" color="default">
+          <NotificationsIcon />
+        </Badge>
+      </IconButton>
+    </Tooltip>
+  )
+}
 
 const DRAWER_WIDTH = 220
 
@@ -55,6 +87,7 @@ export const AppShell = () => {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
             Cycling Equipment Usage Tracker
           </Typography>
+          <ImportAttentionIndicator />
           <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
             <IconButton color="inherit" onClick={toggle}>
               {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
