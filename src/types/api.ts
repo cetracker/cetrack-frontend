@@ -102,6 +102,59 @@ export interface MTTour {
 
 export type MTTours = MTTour[]
 
+export type ImportSessionStatus = 'PENDING' | 'SUPERSEDED' | 'COMMITTED'
+
+export interface ImportCandidate {
+  mtTourId: string
+  title: string
+  startedAt: ISODateTime
+  distance: number
+  durationMoving: number
+  altUp?: number
+  altDown?: number
+  powerTotal?: number
+  bikeId?: UUID
+}
+
+export interface ExistingTourSummary {
+  tourId: UUID
+  title: string
+  startedAt: ISODateTime
+  distance: number
+  durationMoving: number
+  bikeId?: UUID
+}
+
+export interface ImportWarning {
+  type: 'LOGICAL_DUPLICATE' | 'AMBIGUOUS_BIKE'
+  mtTourId?: string
+  message: string
+  incomingCandidate?: ImportCandidate
+  matchedTours?: ExistingTourSummary[]
+  replaceDisabled?: boolean
+}
+
+export interface ImportSession {
+  sessionId: UUID
+  status: ImportSessionStatus
+  dbVersion: number
+  hasDrift: boolean
+  candidates: ImportCandidate[]
+  warnings: ImportWarning[]
+}
+
+export type WarningResolutionAction = 'REPLACE' | 'IMPORT_NEW' | 'SUPPRESS'
+
+export interface WarningResolution {
+  mtTourId: string
+  action: WarningResolutionAction
+}
+
+export interface CommitImportRequest {
+  approvedMtTourIds: string[]
+  warningResolutions?: WarningResolution[]
+}
+
 export interface ReportItem {
   label?: string
   manufacturer?: string
