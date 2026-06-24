@@ -24,6 +24,7 @@ export const pendingMyTourbookSessionQuery = () => ({
     return res.status === 204 ? null : (res.data || null)
   },
   refetchOnWindowFocus: true,
+  refetchInterval: 60_000,
 })
 
 export const commitMyTourbookImport = async (

@@ -285,13 +285,6 @@ export const MyTourbookImportReview = () => {
         </Alert>
       )}
 
-      {unresolvedDuplicates.length > 0 && (
-        <Alert severity="info">
-          {unresolvedDuplicates.length} duplicate
-          {unresolvedDuplicates.length > 1 ? 's' : ''} unresolved — will reappear next upload
-        </Alert>
-      )}
-
       <CandidateList
         candidates={session.candidates}
         checked={checkedMtTourIds}
@@ -313,6 +306,13 @@ export const MyTourbookImportReview = () => {
             />
           ))}
         </Stack>
+      )}
+
+      {unresolvedDuplicates.length > 0 && (
+        <Alert severity="info">
+          {unresolvedDuplicates.length} duplicate
+          {unresolvedDuplicates.length > 1 ? 's' : ''} unresolved — will reappear next upload
+        </Alert>
       )}
 
       <Box>
