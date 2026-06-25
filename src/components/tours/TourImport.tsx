@@ -54,7 +54,7 @@ const DropZone = styled.label<{ $active: boolean; $error: boolean; $compact?: bo
   }
 `
 
-const SQL_SAMPLE = `SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY,
+const SQL_SAMPLE = `Deprecated - Needs adoption! SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY,
   TOURTITLE AS TITLE, TOURSTARTTIME AS STARTTIMESTAMP,
   TOURDISTANCE AS DISTANCE, TOURALTUP, TOURALTDOWN,
   POWER_TOTALWORK AS POWERTOTAL, TOURDEVICETIME_ELAPSED AS TIMEELAPSEDDEVICE,
@@ -184,7 +184,7 @@ export const TourImport = () => {
 
       <Accordion sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Export Instructions</Typography>
+          <Typography>Export Instructions (MyTourbook Only!)</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body2" sx={{ mb: 2 }}>
