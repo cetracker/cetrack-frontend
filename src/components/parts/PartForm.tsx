@@ -30,7 +30,6 @@ const schema = z
       .string()
       .regex(/^[A-Z]{3}$/, 'ISO 4217 code, e.g. EUR')
       .or(z.literal('')),
-    firstUsedDate: z.date().nullable(),
     boughtAt: z.date().nullable(),
     retiredAt: z.date().nullable(),
   })
@@ -57,7 +56,6 @@ const emptyValues: PartFormValues = {
   vendor: '',
   purchasePrice: '',
   purchasePriceCurrency: '',
-  firstUsedDate: null,
   boughtAt: null,
   retiredAt: null,
 }
@@ -91,7 +89,6 @@ export const PartForm = ({ open, onClose, initial }: PartFormProps) => {
         vendor: initial?.vendor ?? '',
         purchasePrice: initial?.purchasePrice ?? '',
         purchasePriceCurrency: initial?.purchasePriceCurrency ?? '',
-        firstUsedDate: fromISO(initial?.firstUsedDate),
         boughtAt: fromISO(initial?.boughtAt),
         retiredAt: fromISO(initial?.retiredAt),
       })
@@ -131,7 +128,6 @@ export const PartForm = ({ open, onClose, initial }: PartFormProps) => {
       vendor: blankToUndef(values.vendor),
       purchasePrice: blankToUndef(values.purchasePrice),
       purchasePriceCurrency: blankToUndef(values.purchasePriceCurrency),
-      firstUsedDate: toISO(values.firstUsedDate),
       boughtAt: toISO(values.boughtAt),
       retiredAt: toISO(values.retiredAt),
     }
@@ -216,19 +212,6 @@ export const PartForm = ({ open, onClose, initial }: PartFormProps) => {
             )}
           />
         </Stack>
-        <Controller
-          control={control}
-          name="firstUsedDate"
-          render={({ field }) => (
-            <DatePicker
-              label="First Used Date"
-              displayWeekNumber
-              value={field.value}
-              onChange={field.onChange}
-              slotProps={{ textField: { fullWidth: true } }}
-            />
-          )}
-        />
         <Controller
           control={control}
           name="boughtAt"
