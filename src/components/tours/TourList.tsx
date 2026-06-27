@@ -26,7 +26,7 @@ import {
   formatDateTime,
   formatDistanceKm,
   formatDuration,
-  formatKWh,
+  formatKJ,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -121,11 +121,11 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     accessorKey: 'powerTotal',
-    header: 'Power (kWh)',
+    header: 'Work (kJ)',
     enableGrouping: false,
-    cell: (c) => formatKWh(c.getValue<number>()),
-    aggregatedCell: (c) => formatKWh(c.getValue<number>()),
-    footer: () => formatKWh(totals.powerTotal),
+    cell: (c) => formatKJ(c.getValue<number>()),
+    aggregatedCell: (c) => formatKJ(c.getValue<number>()),
+    footer: () => formatKJ(totals.powerTotal),
     meta: { align: 'right', hideOnMobile: true },
   },
   {

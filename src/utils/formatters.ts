@@ -76,12 +76,11 @@ export const formatDistanceKm = (meters: number | null | undefined): string => {
   return (meters / 1000).toFixed(1)
 }
 
-/** Watts (summed instantaneous) → kWh
- *  Conversion is unusual because backend stores cumulative Watts (W). Matches existing
- *  frontend behaviour: assume values are watt-seconds-equivalent and divide by 3_600_000. */
-export const formatKWh = (power: number | null | undefined): string => {
-  if (power == null) return ''
-  return (power / 3_600_000).toFixed(2)
+/** Accumulated mechanical work in Joules → kJ.
+ *  `powerTotal` stores the rider's pedal work in Joules (W·s); divide by 1000 for kJ. */
+export const formatKJ = (work: number | null | undefined): string => {
+  if (work == null) return ''
+  return Math.round(work / 1000).toString()
 }
 
 export const bikeName = (bike?: Bike | null): string => {

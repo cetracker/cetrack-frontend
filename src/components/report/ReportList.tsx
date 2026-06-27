@@ -9,7 +9,7 @@ import { ReportItemInfoCell } from '@/components/report/ReportItemInfoCell'
 import {
   formatDistanceKm,
   formatDuration,
-  formatKWh,
+  formatKJ,
   partIdentity,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
@@ -57,8 +57,8 @@ export const ReportList = () => {
       },
       {
         accessorKey: 'totalPower',
-        header: 'Sum Power (kWh)',
-        cell: (c) => formatKWh(c.getValue<number>()),
+        header: 'Sum Work (kJ)',
+        cell: (c) => formatKJ(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
     ],
