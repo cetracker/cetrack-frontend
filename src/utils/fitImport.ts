@@ -1,10 +1,11 @@
 import type { Bike, FitDraftTour, TourCreateRequest } from '@/types/api'
 
-// Extract local date-time from ISO string without timezone conversion:
-// "2026-06-26T08:13:00+02:00" or "2026-06-26T08:13:00Z" → "2026-06-26 08:13:00"
 export const suggestTitle = (startedAt: string, distanceMeters: number): string => {
-  const local = startedAt.slice(0, 19).replace('T', ' ')
-  return `${local} - ${(distanceMeters / 1000).toFixed(1)}km`
+  const d = new Date(startedAt)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  const time = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  return `${date} ${time} - ${(distanceMeters / 1000).toFixed(1)}km`
 }
 
 export const draftToCreateRequest = (

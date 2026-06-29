@@ -1,13 +1,18 @@
+// Pin timezone so local-time assertions are deterministic across environments.
+// The implementation uses getHours() etc. (local time), so in CEST (UTC+2)
+// "2026-06-27T03:00:57Z" would display as "2026-06-27 05:00:57".
+process.env.TZ = 'UTC'
+
 import { describe, expect, it } from 'vitest'
 import { suggestTitle, draftToCreateRequest } from './fitImport'
 import type { Bike, FitDraftTour } from '@/types/api'
 
 describe('suggestTitle', () => {
-  it('formats date and distance from a UTC timestamp', () => {
+  it('formats UTC startedAt as local wall-clock time (UTC in this env)', () => {
     expect(suggestTitle('2026-06-26T08:13:00Z', 120500)).toBe('2026-06-26 08:13:00 - 120.5km')
   })
 
-  it('rounds to one decimal place', () => {
+  it('rounds distance to one decimal place', () => {
     expect(suggestTitle('2026-01-01T00:00:00Z', 10000)).toBe('2026-01-01 00:00:00 - 10.0km')
   })
 })
