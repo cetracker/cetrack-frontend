@@ -1,5 +1,5 @@
 import { client } from './client'
-import type { CommitImportRequest, ImportSession, MTTours, Tour } from '@/types/api'
+import type { CommitImportRequest, FitDraftTour, ImportSession, MTTours, Tour, TourCreateRequest } from '@/types/api'
 
 export const toursQueryKey = ['tours'] as const
 
@@ -32,6 +32,18 @@ export const commitMyTourbookImport = async (
   body: CommitImportRequest,
 ): Promise<void> => {
   await client.post(`/tours/mytourbook/import-sessions/${sessionId}/commit`, body)
+}
+
+export const parseFit = async (file: File): Promise<FitDraftTour[]> => {
+  const res = await client.post<FitDraftTour[]>('/tours/fit/parse', file, {
+    headers: { 'Content-Type': 'application/octet-stream' },
+  })
+  return res.data
+}
+
+export const createTour = async (req: TourCreateRequest): Promise<Tour> => {
+  const res = await client.post<Tour>('/tours', req)
+  return res.data
 }
 
 export const assignTourBike = async (

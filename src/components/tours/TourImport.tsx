@@ -6,6 +6,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   Paper,
   Stack,
   Table,
@@ -19,15 +20,18 @@ import {
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import DataObjectIcon from '@mui/icons-material/DataObject'
 import DeleteIcon from '@mui/icons-material/Delete'
+import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import styled from '@emotion/styled'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { importTours, toursQueryKey } from '@/api/tours'
-import type { Bike, MTTour } from '@/types/api'
+import { importTours, parseFit, toursQueryKey } from '@/api/tours'
+import type { Bike, FitDraftTour, MTTour } from '@/types/api'
 import { BikeSelect, FROM_FILE } from '@/components/common/BikeSelect'
 import { bikeName, formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { bikesQuery } from '@/api/bikes'
+import { FitImportReview } from './FitImportReview'
 
 const dropZoneBorderColor = (active: boolean, error: boolean): string => {
   if (error) return '#d32f2f'
@@ -101,6 +105,7 @@ export const TourImport = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [fileName, setFileName] = useState<string | null>(null)
   const [tours, setTours] = useState<MTTour[] | null>(null)
+  const [fitDrafts, setFitDrafts] = useState<FitDraftTour[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
   const [bikeId, setBikeId] = useState<string | null>(null)
@@ -124,6 +129,7 @@ export const TourImport = () => {
 
   const reset = () => {
     setTours(null)
+    setFitDrafts(null)
     setFileName(null)
     setError(null)
     setBikeId(null)
@@ -131,10 +137,11 @@ export const TourImport = () => {
     if (inputRef.current) inputRef.current.value = ''
   }
 
-  const readFile = async (file: File) => {
+  const handleJsonFile = async (file: File) => {
     setFileName(file.name)
     setError(null)
     setTours(null)
+    setFitDrafts(null)
     setBikeId(null)
     setBikeError(false)
     try {
@@ -150,16 +157,39 @@ export const TourImport = () => {
     }
   }
 
+  const handleFitFile = async (file: File) => {
+    setFileName(file.name)
+    setError(null)
+    setTours(null)
+    setFitDrafts(null)
+    setBikeId(null)
+    setBikeError(false)
+    try {
+      const drafts = await parseFit(file)
+      setFitDrafts(drafts)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to parse FIT file')
+    }
+  }
+
+  const handleFile = (file: File) => {
+    if (file.name.toLowerCase().endsWith('.fit')) {
+      void handleFitFile(file)
+    } else {
+      void handleJsonFile(file)
+    }
+  }
+
   const onDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault()
     setDragging(false)
     const file = e.dataTransfer.files?.[0]
-    if (file) void readFile(file)
+    if (file) handleFile(file)
   }
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) void readFile(file)
+    if (file) handleFile(file)
   }
 
   const submit = () => {
@@ -221,16 +251,24 @@ export const TourImport = () => {
         <input
           ref={inputRef}
           type="file"
-          accept="application/json,.json"
+          accept="application/json,.json,.fit"
           onChange={onChange}
         />
-        <CloudUploadIcon sx={{ fontSize: 44, color: 'text.secondary' }} />
+        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+          <Chip icon={<DataObjectIcon />} label=".json" size="small" variant="outlined" />
+          <Chip icon={<FitnessCenterIcon />} label=".fit" size="small" variant="outlined" />
+        </Stack>
         <Typography variant="body1" sx={{ mt: 1 }}>
-          {fileName || 'Drop a JSON file here or click to select'}
+          {fileName || 'Drop a .json or .fit file here or click to select'}
         </Typography>
         {fileName && !error && tours && (
           <Typography variant="body2" color="success.main">
             {tours.length} tour{tours.length === 1 ? '' : 's'} ready to import
+          </Typography>
+        )}
+        {fileName && !error && fitDrafts && (
+          <Typography variant="body2" color="success.main">
+            {fitDrafts.length} session{fitDrafts.length === 1 ? '' : 's'} parsed
           </Typography>
         )}
       </DropZone>
@@ -249,7 +287,31 @@ export const TourImport = () => {
         </Alert>
       )}
 
-       {tours && (
+       {fitDrafts && (
+        <Box sx={{ mt: 3 }}>
+          <Stack
+            sx={{
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+              alignItems: { xs: 'stretch', sm: 'center' },
+              mb: 2,
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }} />
+            <Button
+              variant="outlined"
+              color="inherit"
+              startIcon={<DeleteIcon />}
+              onClick={reset}
+            >
+              Clear
+            </Button>
+          </Stack>
+          <FitImportReview drafts={fitDrafts} />
+        </Box>
+      )}
+
+      {tours && (
          <Box sx={{ mt: 3 }}>
            <Stack
              sx={{

@@ -155,6 +155,44 @@ export interface CommitImportRequest {
   warningResolutions?: WarningResolution[]
 }
 
+export interface FitDuplicateHint {
+  matchedTours: ExistingTourSummary[]
+}
+
+export interface FitDraftTour {
+  title: string | null
+  distance: number
+  durationMoving: number
+  durationRecorded: number
+  durationElapsed: number
+  altUp: number
+  altDown: number
+  powerTotal: number
+  startedAt: ISODateTime
+  startYear: number
+  startMonth: number
+  startDay: number
+  bike: Bike | null
+  duplicateHint?: FitDuplicateHint
+}
+
+export interface TourCreateRequest {
+  title: string
+  distance: number
+  durationMoving: number
+  durationRecorded: number
+  durationElapsed: number
+  altUp: number
+  altDown: number
+  powerTotal: number
+  startedAt: ISODateTime
+  startYear: number
+  startMonth: number
+  startDay: number
+  bike: Bike
+  source?: 'FIT' | 'MANUAL'
+}
+
 export interface ReportItem {
   label?: string
   manufacturer?: string
