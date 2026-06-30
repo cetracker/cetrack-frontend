@@ -94,12 +94,12 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
         )}
 
         {status === 'created' ? (
-          <Stack direction="row" alignItems="center" gap={1}>
+          <Stack direction="row" alignItems="center" sx={{ gap: 1 }}>
             <CheckCircleIcon color="success" />
             <Typography color="success.main">✓ Created</Typography>
           </Stack>
         ) : (
-          <Stack gap={2}>
+          <Stack sx={{ gap: 2 }}>
             <TextField
               label="Title"
               value={title}
@@ -146,7 +146,7 @@ export const FitImportReview = ({ drafts }: FitImportReviewProps) => {
     return <Alert severity="warning">No sessions found in this FIT file.</Alert>
   }
   return (
-    <Stack gap={2}>
+    <Stack sx={{ gap: 2 }}>
       {drafts.map((draft, i) => (
         <FitDraftCard key={`${draft.startedAt}-${i}`} draft={draft} />
       ))}
