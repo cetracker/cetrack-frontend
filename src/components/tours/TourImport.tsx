@@ -1,4 +1,4 @@
-import { useRef, useState, type DragEvent, type ChangeEvent } from 'react'
+import { useState } from 'react'
 import {
   Accordion,
   AccordionDetails,
@@ -6,7 +6,6 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   Paper,
   Stack,
   Table,
@@ -15,15 +14,10 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import DataObjectIcon from '@mui/icons-material/DataObject'
 import DeleteIcon from '@mui/icons-material/Delete'
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
-import styled from '@emotion/styled'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { importTours, parseFit, toursQueryKey } from '@/api/tours'
 import type { Bike, FitDraftTour, MTTour } from '@/types/api'
@@ -32,31 +26,7 @@ import { bikeName, formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { bikesQuery } from '@/api/bikes'
 import { FitImportReview } from './FitImportReview'
-
-const dropZoneBorderColor = (active: boolean, error: boolean): string => {
-  if (error) return '#d32f2f'
-  if (active) return '#00897B'
-  return '#90a4ae'
-}
-
-const DropZone = styled.label<{ $active: boolean; $error: boolean; $compact?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ $compact }) => ($compact ? '16px 12px' : '36px 24px')};
-  border: 2px dashed
-    ${({ $active, $error }) => dropZoneBorderColor($active, $error)};
-  background: ${({ $active }) =>
-    $active ? 'rgba(0, 137, 123, 0.08)' : 'transparent'};
-  border-radius: 8px;
-  cursor: pointer;
-  text-align: center;
-  transition: all 120ms ease-in-out;
-  input {
-    display: none;
-  }
-`
+import TourDropZone from './TourDropZone'
 
 const SQL_SAMPLE = `Deprecated - Needs adoption! SELECT TOURID AS MTTOURID, STARTYEAR, STARTMONTH, STARTDAY,
   TOURTITLE AS TITLE, TOURSTARTTIME AS STARTTIMESTAMP,
@@ -101,16 +71,13 @@ const previewDate = (t: MTTour): string =>
 
 export const TourImport = () => {
   const qc = useQueryClient()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [fileName, setFileName] = useState<string | null>(null)
   const [tours, setTours] = useState<MTTour[] | null>(null)
   const [fitDrafts, setFitDrafts] = useState<FitDraftTour[] | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dragging, setDragging] = useState(false)
+  const [resetKey, setResetKey] = useState(0)
   const [bikeId, setBikeId] = useState<string | null>(null)
   const [bikeError, setBikeError] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const { data: bikes } = useQuery(bikesQuery())
   const bikeMap: Map<string, Bike> = new Map((bikes ?? []).map((b) => [b.id, b]))
@@ -134,7 +101,7 @@ export const TourImport = () => {
     setError(null)
     setBikeId(null)
     setBikeError(false)
-    if (inputRef.current) inputRef.current.value = ''
+    setResetKey((k) => k + 1)
   }
 
   const handleJsonFile = async (file: File) => {
@@ -178,18 +145,6 @@ export const TourImport = () => {
     } else {
       void handleJsonFile(file)
     }
-  }
-
-  const onDrop = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault()
-    setDragging(false)
-    const file = e.dataTransfer.files?.[0]
-    if (file) handleFile(file)
-  }
-
-  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) handleFile(file)
   }
 
   const submit = () => {
@@ -237,41 +192,25 @@ export const TourImport = () => {
         </AccordionDetails>
       </Accordion>
 
-      <DropZone
-        $active={dragging}
-        $error={!!error}
-        $compact={isMobile}
-        onDragOver={(e) => {
-          e.preventDefault()
-          setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          accept="application/json,.json,.fit"
-          onChange={onChange}
-        />
-        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-          <Chip icon={<DataObjectIcon />} label=".json" size="small" variant="outlined" />
-          <Chip icon={<FitnessCenterIcon />} label=".fit" size="small" variant="outlined" />
-        </Stack>
-        <Typography variant="body1" sx={{ mt: 1 }}>
-          {fileName || 'Drop a .json or .fit file here or click to select'}
-        </Typography>
-        {fileName && !error && tours && (
-          <Typography variant="body2" color="success.main">
-            {tours.length} tour{tours.length === 1 ? '' : 's'} ready to import
+      <TourDropZone key={resetKey} onFileSelect={handleFile} />
+
+      {fileName && !error && (
+        <Box sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            {fileName}
           </Typography>
-        )}
-        {fileName && !error && fitDrafts && (
-          <Typography variant="body2" color="success.main">
-            {fitDrafts.length} session{fitDrafts.length === 1 ? '' : 's'} parsed
-          </Typography>
-        )}
-      </DropZone>
+          {tours && (
+            <Typography variant="body2" color="success.main">
+              {tours.length} tour{tours.length === 1 ? '' : 's'} ready to import
+            </Typography>
+          )}
+          {fitDrafts && (
+            <Typography variant="body2" color="success.main">
+              {fitDrafts.length} session{fitDrafts.length === 1 ? '' : 's'} parsed
+            </Typography>
+          )}
+        </Box>
+      )}
 
       {error && (
         <Alert
