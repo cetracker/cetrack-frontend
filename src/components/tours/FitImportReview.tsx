@@ -125,7 +125,7 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
               <Button
                 variant="contained"
                 onClick={handleCreate}
-                disabled={!title.trim() || !bikeId || status === 'creating' || status === 'created'}
+                disabled={!title.trim() || !bikeId || status === 'creating'}
               >
                 Create
               </Button>
