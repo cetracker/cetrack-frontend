@@ -62,7 +62,7 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
   return (
     <Card variant="outlined">
       <CardContent>
-        <Stack direction="row" flexWrap="wrap" gap={2} sx={{ mb: 2 }}>
+        <Stack sx={{ flexDirection: 'row', flexWrap: 'wrap', gap: 2, mb: 2 }}>
           <Typography variant="body2">{dateStr}</Typography>
           <Typography variant="body2">{formatDistanceKm(draft.distance)} km</Typography>
           <Typography variant="body2">{formatDuration(draft.durationMoving)}</Typography>
@@ -94,7 +94,7 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
         )}
 
         {status === 'created' ? (
-          <Stack direction="row" alignItems="center" sx={{ gap: 1 }}>
+          <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1 }}>
             <CheckCircleIcon color="success" />
             <Typography color="success.main">✓ Created</Typography>
           </Stack>
