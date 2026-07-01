@@ -24,6 +24,7 @@ describe('VersionInfo', () => {
     vi.mocked(backendInfoQuery).mockReturnValue({
       queryKey: ['backend-info'],
       queryFn: () => Promise.reject(new Error('network error')),
+      staleTime: Infinity,
       retry: false,
     })
 
@@ -39,6 +40,7 @@ describe('VersionInfo', () => {
     vi.mocked(backendInfoQuery).mockReturnValue({
       queryKey: ['backend-info'],
       queryFn: () => Promise.resolve({ version: '0.7.0', buildTime: '2026-07-01T18:33:22.511Z' }),
+      staleTime: Infinity,
       retry: false,
     })
 
