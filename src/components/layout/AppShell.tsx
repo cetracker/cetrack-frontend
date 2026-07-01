@@ -22,6 +22,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
 import { pendingMyTourbookSessionQuery } from '@/api/tours'
 import { NavList } from './NavList'
+import { VersionInfo } from './VersionInfo'
 import { useColorMode } from '@/hooks/useColorMode'
 
 const ImportAttentionIndicator = () => {
@@ -110,9 +111,10 @@ export const AppShell = () => {
         }}
       >
         <Toolbar />
-        <Box sx={{ overflow: 'auto' }}>
+        <Box sx={{ overflow: 'auto', flexGrow: 1 }}>
           <NavList onNavigate={isMobile ? () => setMobileNavOpen(false) : undefined} />
         </Box>
+        <VersionInfo />
       </Drawer>
 
       <Box

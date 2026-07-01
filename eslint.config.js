@@ -10,7 +10,11 @@ export default [
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2022,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        __APP_VERSION__: 'readonly',
+        __BUILD_TIME__: 'readonly',
+      },
       parser: tseslint.parser,
     },
     plugins: {
