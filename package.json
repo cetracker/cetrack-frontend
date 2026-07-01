@@ -9,7 +9,7 @@
     "build:sonar": "npm run build && npm run sonar",
     "preview": "vite preview",
     "lint": "eslint --max-warnings=0 \"src/**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --noEmit",
     "sonar": "sonar-scanner",
     "test": "vitest run"
   },
