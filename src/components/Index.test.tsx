@@ -43,6 +43,18 @@ describe('Index', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
+  it('folds the getting-started cards away when the header is toggled', async () => {
+    localStorage.setItem('cetrack:onboarded', 'true')
+    renderIndex()
+    const user = userEvent.setup()
+
+    const toggle = screen.getByRole('button', { name: /getting started/i })
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+
+    await user.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('dismissing the welcome dialog persists the onboarded flag and reveals the cards', async () => {
     renderIndex()
     const user = userEvent.setup()

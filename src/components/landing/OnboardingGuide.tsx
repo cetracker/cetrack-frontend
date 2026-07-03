@@ -1,4 +1,6 @@
-import { Box, Typography, useTheme } from '@mui/material'
+import { useState } from 'react'
+import { Box, Collapse, Typography, useTheme } from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { StepCard } from './StepCard'
 import bikeLight from '@/assets/landing/1_bike_light.png'
 import bikeDark from '@/assets/landing/1_bike_dark.png'
@@ -54,33 +56,59 @@ const steps = [
 
 export const OnboardingGuide = () => {
   const isDark = useTheme().palette.mode === 'dark'
+  const [open, setOpen] = useState(true)
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        Getting started
-      </Typography>
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-          },
-        }}
-      >
-        {steps.map((step, i) => (
-          <StepCard
-            key={step.to}
-            step={i + 1}
-            title={step.title}
-            body={step.body}
-            to={step.to}
-            imgSrc={isDark ? step.dark : step.light}
+      <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+        <Box
+          component="button"
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          sx={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 0.5,
+            p: 0,
+            border: 0,
+            background: 'none',
+            color: 'inherit',
+            font: 'inherit',
+            cursor: 'pointer',
+          }}
+        >
+          Getting started
+          <ExpandMoreIcon
+            fontSize="small"
+            sx={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none' }}
           />
-        ))}
-      </Box>
+        </Box>
+      </Typography>
+      <Collapse in={open}>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            pb: 1,
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+          }}
+        >
+          {steps.map((step, i) => (
+            <StepCard
+              key={step.to}
+              step={i + 1}
+              title={step.title}
+              body={step.body}
+              to={step.to}
+              imgSrc={isDark ? step.dark : step.light}
+            />
+          ))}
+        </Box>
+      </Collapse>
     </Box>
   )
 }
