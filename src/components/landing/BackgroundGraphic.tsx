@@ -15,7 +15,7 @@ export const BackgroundGraphic = () => {
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center bottom',
         backgroundSize: 'auto 80%',
-        opacity: isDark ? 0.22 : 0.3,
+        opacity: isDark ? 0.82 : 0.3,
         pointerEvents: 'none',
       }}
     />
