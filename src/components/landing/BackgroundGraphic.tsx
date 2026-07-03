@@ -13,8 +13,8 @@ export const BackgroundGraphic = () => {
         zIndex: -1,
         backgroundImage: `url(${isDark ? bgDark : bgLight})`,
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'center',
-        backgroundSize: 'contain',
+        backgroundPosition: 'center bottom',
+        backgroundSize: 'auto 80%',
         opacity: isDark ? 0.22 : 0.3,
         pointerEvents: 'none',
       }}
