@@ -17,15 +17,16 @@ interface NavEntry {
   to: string
   label: string
   icon: ReactNode
+  tour: string
 }
 
 const entries: NavEntry[] = [
-  { to: '/parts', label: 'Parts', icon: <SettingsIcon /> },
-  { to: '/partTypes', label: 'Part Types', icon: <CategoryIcon /> },
-  { to: '/bikes', label: 'Bikes', icon: <DirectionsBikeIcon /> },
-  { to: '/tours', label: 'Tours', icon: <MapIcon /> },
-  { to: '/tourImport', label: 'Import Tours', icon: <UploadFileIcon /> },
-  { to: '/report', label: 'Report', icon: <AssessmentIcon /> },
+  { to: '/parts', label: 'Parts', icon: <SettingsIcon />, tour: 'parts' },
+  { to: '/partTypes', label: 'Part Types', icon: <CategoryIcon />, tour: 'partTypes' },
+  { to: '/bikes', label: 'Bikes', icon: <DirectionsBikeIcon />, tour: 'bikes' },
+  { to: '/tours', label: 'Tours', icon: <MapIcon />, tour: 'tours' },
+  { to: '/tourImport', label: 'Import Tours', icon: <UploadFileIcon />, tour: 'tourImport' },
+  { to: '/report', label: 'Report', icon: <AssessmentIcon />, tour: 'report' },
 ]
 
 interface NavListProps {
@@ -34,12 +35,13 @@ interface NavListProps {
 
 export const NavList = ({ onNavigate }: NavListProps) => (
   <List disablePadding>
-    {entries.map(({ to, label, icon }) => (
+    {entries.map(({ to, label, icon, tour }) => (
       <ListItemButton
         key={to}
         component={NavLink}
         to={to}
         onClick={onNavigate}
+        data-tour={tour}
         sx={{
           '&.active': (theme) => ({
             bgcolor: theme.palette.action.selected,

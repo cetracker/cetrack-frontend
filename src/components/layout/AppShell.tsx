@@ -24,6 +24,7 @@ import { pendingMyTourbookSessionQuery } from '@/api/tours'
 import { NavList } from './NavList'
 import { VersionInfo } from './VersionInfo'
 import { useColorMode } from '@/hooks/useColorMode'
+import { GuidedTour } from '@/components/onboarding/GuidedTour'
 
 const ImportAttentionIndicator = () => {
   const { data: session } = useQuery(pendingMyTourbookSessionQuery())
@@ -62,6 +63,7 @@ export const AppShell = () => {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+      <GuidedTour />
       <AppBar
         position="fixed"
         sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}

@@ -11,6 +11,7 @@ import { router } from './router'
 import { darkTheme, lightTheme } from './theme'
 import { NotifyProvider } from './hooks/NotifyProvider'
 import { ColorModeContext, type ColorMode } from './hooks/useColorMode'
+import { OnboardingContext } from './hooks/useOnboarding'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -53,19 +54,42 @@ const ColorModeProvider = ({ children }: { children: ReactNode }) => {
   )
 }
 
+const ONBOARDED_KEY = 'cetrack:onboarded'
+
+export const OnboardingProvider = ({ children }: { children: ReactNode }) => {
+  const [onboarded, setOnboarded] = useState(() => localStorage.getItem(ONBOARDED_KEY) === 'true')
+  const [tourOpen, setTourOpen] = useState(false)
+  const api = useMemo(
+    () => ({
+      onboarded,
+      tourOpen,
+      startTour: () => setTourOpen(true),
+      finishTour: () => {
+        setTourOpen(false)
+        localStorage.setItem(ONBOARDED_KEY, 'true')
+        setOnboarded(true)
+      },
+    }),
+    [onboarded, tourOpen],
+  )
+  return <OnboardingContext.Provider value={api}>{children}</OnboardingContext.Provider>
+}
+
 export const App = () => (
   <ColorModeProvider>
-    <LocalizationProvider
-      dateAdapter={AdapterDateFns}
-      adapterLocale={de}
-      localeText={deDE.components.MuiLocalizationProvider.defaultProps.localeText}
-    >
-       <QueryClientProvider client={queryClient}>
-         <NotifyProvider>
-           <RouterProvider router={router} />
-         </NotifyProvider>
-         <ReactQueryDevtools initialIsOpen={false} />
-       </QueryClientProvider>
-    </LocalizationProvider>
+    <OnboardingProvider>
+      <LocalizationProvider
+        dateAdapter={AdapterDateFns}
+        adapterLocale={de}
+        localeText={deDE.components.MuiLocalizationProvider.defaultProps.localeText}
+      >
+        <QueryClientProvider client={queryClient}>
+          <NotifyProvider>
+            <RouterProvider router={router} />
+          </NotifyProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+      </LocalizationProvider>
+    </OnboardingProvider>
   </ColorModeProvider>
 )
