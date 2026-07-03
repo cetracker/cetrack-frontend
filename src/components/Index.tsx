@@ -29,7 +29,7 @@ export const Index = () => {
   }
 
   return (
-    <Box sx={{ position: 'relative', maxWidth: 960, mx: 'auto' }}>
+    <Box sx={{ position: 'relative', maxWidth: 960, mx: 'auto', minHeight: '70vh' }}>
       <BackgroundGraphic />
       <Box
         sx={{
