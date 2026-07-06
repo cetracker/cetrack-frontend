@@ -22,7 +22,7 @@ import { bikesQuery } from '@/api/bikes'
 import type { Bike, Tour } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
 import {
-  bikeName,
+  bikeIdentity,
   formatDateTime,
   formatDistanceKm,
   formatDuration,
@@ -131,7 +131,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   {
     id: 'bike',
     header: 'Bike',
-    accessorFn: (t) => bikeName(t.bike),
+    accessorFn: (t) => bikeIdentity(t.bike),
     enableGrouping: true,
     filterFn: 'equalsString',
   },
@@ -242,10 +242,10 @@ export const TourList = () => {
               setMenuTour(null)
             }}
           >
-            <Tooltip title={bikeName(b)} placement="left">
+            <Tooltip title={bikeIdentity(b)} placement="left">
                <Stack sx={{ flexDirection: 'row', gap: 1, alignItems: 'center' }}>
                  <DirectionsBikeIcon fontSize="small" />
-                 <span>{bikeName(b)}</span>
+                 <span>{bikeIdentity(b)}</span>
                </Stack>
              </Tooltip>
           </MenuItem>

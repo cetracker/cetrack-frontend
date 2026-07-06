@@ -22,7 +22,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { importTours, parseFit, toursQueryKey } from '@/api/tours'
 import type { Bike, FitDraftTour, MTTour } from '@/types/api'
 import { BikeSelect, FROM_FILE } from '@/components/common/BikeSelect'
-import { bikeName, formatDistanceKm } from '@/utils/formatters'
+import { bikeIdentity, formatDistanceKm } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { bikesQuery } from '@/api/bikes'
 import { FitImportReview } from './FitImportReview'
@@ -328,7 +328,7 @@ export const TourImport = () => {
                         <TableCell
                           sx={noMatch ? { color: 'error.main', fontWeight: 600 } : undefined}
                         >
-                          {matched ? bikeName(matched) : 'No match'}
+                          {matched ? bikeIdentity(matched) : 'No match'}
                         </TableCell>
                       )}
                     </TableRow>

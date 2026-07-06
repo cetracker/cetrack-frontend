@@ -9,7 +9,7 @@ import { DataTable } from '@/components/common/DataTable'
 import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { BikeForm } from './BikeForm'
-import { bikeName, formatDate } from '@/utils/formatters'
+import { bikeIdentity, formatDate } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -123,7 +123,7 @@ export const BikeList = () => {
         title="Delete bike"
         message={
           toDelete
-            ? `Delete "${bikeName(toDelete)}"? This cannot be undone.`
+            ? `Delete "${bikeIdentity(toDelete)}"? This cannot be undone.`
             : ''
         }
         onCancel={() => setToDelete(null)}

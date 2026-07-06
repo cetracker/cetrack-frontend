@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns'
-import type { Bike, Part, PartType } from '@/types/api'
+import type { Bike, Component, Part, PartType } from '@/types/api'
 
 export const formatDate = (iso?: string | null): string => {
   if (!iso) return ''
@@ -83,12 +83,59 @@ export const formatKJ = (work: number | null | undefined): string => {
   return Math.round(work / 1000).toString()
 }
 
-export const bikeName = (bike?: Bike | null): string => {
+/** A bike's displayed identity: its name if given, else make + model. */
+export const bikeIdentity = (bike?: Bike | null): string => {
   if (!bike) return ''
   return (
     bike.name?.trim() ||
     [bike.manufacturer?.trim(), bike.model?.trim()].filter(Boolean).join(' ')
   )
+}
+
+/** The raw identity fields shared by `Component` and a mileage report row. */
+type ComponentIdentityFields = {
+  label?: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+}
+
+/**
+ * The single rule for a component's displayed identity, used by list,
+ * pickers, detail and report: the user's label if given, otherwise the
+ * structured make/model plus serial number.
+ */
+export const componentIdentity = (
+  component?: ComponentIdentityFields | null,
+): string => {
+  if (!component) return ''
+  const label = component.label?.trim()
+  if (label) return label
+  const makeModel = [component.manufacturer?.trim(), component.model?.trim()]
+    .filter(Boolean)
+    .join(' ')
+  const serial = component.serialNumber?.trim()
+  if (makeModel && serial) return `${makeModel} #${serial}`
+  return makeModel || (serial ? `#${serial}` : '')
+}
+
+/**
+ * Secondary, muted line shown in pickers and the component list to tell two
+ * otherwise-identical components apart. Shows all non-empty attributes in a
+ * fixed order: serial, model, manufacturer, purchase date, vendor.
+ * Price, currency, and retirement info are omitted.
+ */
+export const componentDisambiguator = (component?: Component | null): string => {
+  if (!component) return ''
+  return [
+    component.serialNumber?.trim() ? `#${component.serialNumber.trim()}` : null,
+    component.model?.trim() || null,
+    component.manufacturer?.trim() || null,
+    component.purchaseDate ? formatDate(component.purchaseDate) : null,
+    component.vendor?.trim() || null,
+  ]
+    .filter(Boolean)
+    .join(', ')
 }
 
 /** The raw identity fields shared by `Part` and a report row. */

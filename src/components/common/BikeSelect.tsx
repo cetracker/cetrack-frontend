@@ -1,7 +1,7 @@
 import { MenuItem, TextField, type TextFieldProps } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { bikesQuery } from '@/api/bikes'
-import { bikeName } from '@/utils/formatters'
+import { bikeIdentity } from '@/utils/formatters'
 
 export const FROM_FILE = '__from_file__'
 
@@ -40,7 +40,7 @@ export const BikeSelect = ({
       {includeNone && <MenuItem value="">{noneLabel}</MenuItem>}
       {(bikes ?? []).map((b) => (
         <MenuItem key={b.id} value={b.id}>
-          {bikeName(b)}
+          {bikeIdentity(b)}
         </MenuItem>
       ))}
     </TextField>

@@ -15,7 +15,7 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartInfoCell } from '@/components/parts/PartInfoCell'
 import { PartTypeForm } from './PartTypeForm'
 import { PartTypeDetail } from './PartTypeDetail'
-import { bikeName, partIdentity } from '@/utils/formatters'
+import { bikeIdentity, partIdentity } from '@/utils/formatters'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
 const currentPartName = (pt: PartType): string =>
@@ -82,7 +82,7 @@ const buildColumns = (
   {
     id: 'bike',
     header: 'Bike',
-    accessorFn: (pt) => bikeName(pt.bike),
+    accessorFn: (pt) => bikeIdentity(pt.bike),
     enableGrouping: true,
   },
   {

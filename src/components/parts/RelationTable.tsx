@@ -13,7 +13,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
-import { bikeName, formatDate, formatDateTime, partIdentity } from '@/utils/formatters'
+import { bikeIdentity, formatDate, formatDateTime, partIdentity } from '@/utils/formatters'
 import type { Part, PartPartTypeRelation } from '@/types/api'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -94,7 +94,7 @@ export const RelationTable = ({ part, onEdit, mode = 'part' }: RelationTableProp
               <TableCell>
                 {mode === 'part' ? r.partType.name : partIdentity(r.part)}
               </TableCell>
-              <TableCell>{bikeName(r.partType.bike)}</TableCell>
+              <TableCell>{bikeIdentity(r.partType.bike)}</TableCell>
               <TableCell>{formatDate(r.validFrom)}</TableCell>
               <TableCell>
                 {r.validUntil ? formatDateTime(r.validUntil) : (

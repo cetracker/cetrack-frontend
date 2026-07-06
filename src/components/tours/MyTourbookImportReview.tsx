@@ -33,7 +33,7 @@ import type {
   ImportWarning,
   WarningResolutionAction,
 } from '@/types/api'
-import { bikeName, formatDateTime, formatDistanceKm, formatDuration } from '@/utils/formatters'
+import { bikeIdentity, formatDateTime, formatDistanceKm, formatDuration } from '@/utils/formatters'
 import { allowedActions, buildCommitRequest } from '@/utils/mytourbookImport'
 
 // --- CandidateList -----------------------------------------------------------
@@ -204,7 +204,7 @@ export const MyTourbookImportReview = () => {
   const { notify } = useNotify()
 
   const bikeMap = useMemo(() => new Map((bikes ?? []).map((b) => [b.id, b])), [bikes])
-  const bikeLabel = (id?: string) => (id && bikeMap.get(id) ? bikeName(bikeMap.get(id)!) : '—')
+  const bikeLabel = (id?: string) => (id && bikeMap.get(id) ? bikeIdentity(bikeMap.get(id)!) : '—')
 
   const [checkedMtTourIds, setCheckedMtTourIds] = useState<Set<string>>(new Set())
   const [resolutionsByMtTourId, setResolutionsByMtTourId] = useState<

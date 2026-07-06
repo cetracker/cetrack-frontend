@@ -29,7 +29,7 @@ import {
   updatePart,
 } from '@/api/parts'
 import type { Part, PartPartTypeRelation } from '@/types/api'
-import { bikeName, formatDate, formatDateTime } from '@/utils/formatters'
+import { bikeIdentity, formatDate, formatDateTime } from '@/utils/formatters'
 import { isPartRetired, reuseIconKeys } from '@/utils/parts'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -147,7 +147,7 @@ export const PartTypeDetail = ({
 
         {pt && (
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            {pt.bike ? bikeName(pt.bike) : 'No bike assigned'}
+            {pt.bike ? bikeIdentity(pt.bike) : 'No bike assigned'}
             {pt.mandatory && ' · mandatory'}
           </Typography>
         )}

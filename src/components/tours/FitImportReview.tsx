@@ -17,7 +17,7 @@ import { isApiError } from '@/api/client'
 import { BikeSelect } from '@/components/common/BikeSelect'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import type { FitDraftTour } from '@/types/api'
-import { formatDate, formatDistanceKm, formatDuration, formatKJ, bikeName } from '@/utils/formatters'
+import { formatDate, formatDistanceKm, formatDuration, formatKJ, bikeIdentity } from '@/utils/formatters'
 import { draftToCreateRequest, suggestTitle } from '@/utils/fitImport'
 
 type DraftStatus = 'editing' | 'creating' | 'created' | 'error'
@@ -80,7 +80,7 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
             </Typography>
             {draft.duplicateHint.matchedTours.map((t) => {
               const bike = t.bikeId ? bikeMap.get(t.bikeId) : undefined
-              const bikeLabel = bike ? bikeName(bike) : '—'
+              const bikeLabel = bike ? bikeIdentity(bike) : '—'
               return (
                 <Typography key={t.tourId} variant="body2">
                   {t.title} · {formatDate(t.startedAt)} · {bikeLabel}

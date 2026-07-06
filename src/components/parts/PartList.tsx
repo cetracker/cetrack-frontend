@@ -11,14 +11,14 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { PartForm } from './PartForm'
 import { PartDetail } from './PartDetail'
 import { PartInfoCell } from './PartInfoCell'
-import { formatDate, bikeName, partIdentity } from '@/utils/formatters'
+import { formatDate, bikeIdentity, partIdentity } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
 const currentUseAs = (p: Part): string => {
   const r = p.partTypeRelations?.find((rel) => !rel.validUntil)
   if (!r) return ''
-  const bike = r.partType.bike ? ` on ${bikeName(r.partType.bike)}` : ''
+  const bike = r.partType.bike ? ` on ${bikeIdentity(r.partType.bike)}` : ''
   return `${r.partType.name}${bike}`
 }
 

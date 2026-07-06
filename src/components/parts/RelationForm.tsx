@@ -27,7 +27,7 @@ import type {
   PartPartTypeRelation,
   PartType,
 } from '@/types/api'
-import { bikeName, toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
+import { bikeIdentity, toLocalDayEndISO, toLocalDayStartISO } from '@/utils/formatters'
 
 const schema = z
   .object({
@@ -186,7 +186,7 @@ export const RelationForm = ({
               .sort(
                 (a, b) =>
                   a.name.localeCompare(b.name) ||
-                  bikeName(a.bike).localeCompare(bikeName(b.bike)),
+                  bikeIdentity(a.bike).localeCompare(bikeIdentity(b.bike)),
               )
             const selectedPT = sortedPartTypes.find((pt) => pt.id === field.value) ?? null
             return (
@@ -195,14 +195,14 @@ export const RelationForm = ({
                 value={selectedPT}
                 onChange={(_, option) => field.onChange(option?.id ?? '')}
                 getOptionLabel={(pt) =>
-                  pt.bike ? `${pt.name} — ${bikeName(pt.bike)}` : pt.name
+                  pt.bike ? `${pt.name} — ${bikeIdentity(pt.bike)}` : pt.name
                 }
                 isOptionEqualToValue={(opt, val) => opt.id === val.id}
                 clearOnBlur={false}
                 disabled={!!lockedPartTypeId}
                 renderOption={({ key: _key, ...props }, pt) => (
                   <li key={pt.id} {...props}>
-                    {pt.name}{pt.bike ? ` — ${bikeName(pt.bike)}` : ''}
+                    {pt.name}{pt.bike ? ` — ${bikeIdentity(pt.bike)}` : ''}
                   </li>
                 )}
                 renderInput={(params) => (
