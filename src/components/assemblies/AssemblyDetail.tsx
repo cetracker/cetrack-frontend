@@ -8,6 +8,8 @@ import { positionsQuery } from '@/api/catalog'
 import { AssemblyForm } from './AssemblyForm'
 import { AssemblySlotsTable } from './AssemblySlotsTable'
 import { AssemblyMountingHistoryTable } from './AssemblyMountingHistoryTable'
+import { MountAssemblyDialog } from './MountAssemblyDialog'
+import { DismountAssemblyDialog } from './DismountAssemblyDialog'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -24,6 +26,8 @@ export const AssemblyDetail = () => {
   const [tab, setTab] = useState(0)
   const [editOpen, setEditOpen] = useState(false)
   const [toDelete, setToDelete] = useState(false)
+  const [mountOpen, setMountOpen] = useState(false)
+  const [dismountOpen, setDismountOpen] = useState(false)
 
   const deleteMut = useApiMutation(deleteAssembly, {
     successMessage: 'Assembly deleted',
@@ -79,6 +83,20 @@ export const AssemblyDetail = () => {
             <Button variant="outlined" color="error" onClick={() => setToDelete(true)}>
               Delete
             </Button>
+            <Button
+              variant="contained"
+              disabled={assembly.mounted}
+              onClick={() => setMountOpen(true)}
+            >
+              Mount to bike
+            </Button>
+            <Button
+              variant="outlined"
+              disabled={!assembly.mounted}
+              onClick={() => setDismountOpen(true)}
+            >
+              Dismount
+            </Button>
           </Stack>
         )}
       </Stack>
@@ -107,6 +125,16 @@ export const AssemblyDetail = () => {
             confirmLabel="Delete"
             destructive
             busy={deleteMut.isPending}
+          />
+          <MountAssemblyDialog
+            open={mountOpen}
+            onClose={() => setMountOpen(false)}
+            assembly={assembly}
+          />
+          <DismountAssemblyDialog
+            open={dismountOpen}
+            onClose={() => setDismountOpen(false)}
+            assemblyId={assembly.id}
           />
         </>
       )}
