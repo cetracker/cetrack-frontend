@@ -1,35 +1,42 @@
 import { useMemo, useState } from 'react'
-import { Box } from '@mui/material'
+import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
-import { reportQuery } from '@/api/parts'
-import type { ReportItem } from '@/types/api'
+import { mileageQuery } from '@/api/reports'
+import type { MileageItem, MileageScope } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
 import { ReportItemInfoCell } from '@/components/report/ReportItemInfoCell'
 import {
+  componentIdentity,
   formatDistanceKm,
   formatDuration,
   formatKJ,
-  partIdentity,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 
-export const ReportList = () => {
-  const { data, isLoading, error, refetch } = useQuery(reportQuery())
+const rowIdentity = (item: MileageItem, scope: MileageScope): string =>
+  scope === 'bikes' ? item.bikeName || item.bikeModel || '' : componentIdentity(item)
+
+export const MileageReport = () => {
+  const [scope, setScope] = useState<MileageScope>('components')
+  const { data, isLoading, error, refetch } = useQuery(mileageQuery({ scope }))
 
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'distance', desc: true },
   ])
 
-  const columns = useMemo<ColumnDef<ReportItem>[]>(
+  const columns = useMemo<ColumnDef<MileageItem>[]>(
     () => [
       {
-        id: 'part',
-        header: 'Part',
-        accessorFn: (r) => partIdentity(r),
-        cell: ({ row }) => <ReportItemInfoCell item={row.original} />,
-        footer: () => `${(data ?? []).length} parts`,
+        id: 'identity',
+        header: scope === 'bikes' ? 'Bike' : 'Component',
+        accessorFn: (r) => rowIdentity(r, scope),
+        cell: ({ row }) =>
+          scope === 'bikes' ? rowIdentity(row.original, scope) : (
+            <ReportItemInfoCell item={row.original} />
+          ),
+        footer: () => `${(data ?? []).length} ${scope}`,
       },
       {
         accessorKey: 'distance',
@@ -44,31 +51,42 @@ export const ReportList = () => {
         meta: { align: 'right', hideOnMobile: true },
       },
       {
-        accessorKey: 'altUp',
+        accessorKey: 'ascent',
         header: 'Uphill (m)',
         cell: (c) => c.getValue<number>().toLocaleString(),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
-        accessorKey: 'altDown',
+        accessorKey: 'descent',
         header: 'Downhill (m)',
         cell: (c) => c.getValue<number>().toLocaleString(),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
-        accessorKey: 'totalPower',
+        accessorKey: 'powerTotal',
         header: 'Sum Work (kJ)',
-        cell: (c) => formatKJ(c.getValue<number>()),
+        cell: (c) => formatKJ(c.getValue<number | undefined>()),
         meta: { align: 'right', hideOnMobile: true },
       },
     ],
-    [data],
+    [data, scope],
   )
 
   return (
     <Box>
-      <Box sx={{ typography: 'h5', mb: 2 }}>Usage Report</Box>
-      <DataTable<ReportItem>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ typography: 'h5' }}>Usage Report</Box>
+        <ToggleButtonGroup
+          value={scope}
+          exclusive
+          size="small"
+          onChange={(_, v: MileageScope | null) => v && setScope(v)}
+        >
+          <ToggleButton value="components">Components</ToggleButton>
+          <ToggleButton value="bikes">Bikes</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+      <DataTable<MileageItem>
         columns={columns}
         data={data ?? []}
         isLoading={isLoading}

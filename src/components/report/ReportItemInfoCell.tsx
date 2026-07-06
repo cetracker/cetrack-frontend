@@ -1,9 +1,9 @@
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import type { ReportItem } from '@/types/api'
-import { partIdentity } from '@/utils/formatters'
+import type { MileageItem } from '@/types/api'
+import { componentIdentity } from '@/utils/formatters'
 
-export const ReportItemInfoCell = ({ item }: { item: ReportItem }) => {
+export const ReportItemInfoCell = ({ item }: { item: MileageItem }) => {
   const details: [string, string][] = (
     [
       ['Manufacturer', item.manufacturer ?? ''],
@@ -16,7 +16,7 @@ export const ReportItemInfoCell = ({ item }: { item: ReportItem }) => {
 
   return (
     <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5 }}>
-      <span>{partIdentity(item)}</span>
+      <span>{componentIdentity(item)}</span>
       {hasLabel && details.length > 0 && (
         <Tooltip
           title={
@@ -51,7 +51,7 @@ export const ReportItemInfoCell = ({ item }: { item: ReportItem }) => {
         >
           <IconButton
             size="small"
-            aria-label="Part details"
+            aria-label="Component details"
             onClick={(e) => e.stopPropagation()}
           >
             <InfoOutlinedIcon fontSize="inherit" />
