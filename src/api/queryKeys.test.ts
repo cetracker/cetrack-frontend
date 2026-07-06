@@ -9,6 +9,11 @@ import {
   assemblyMountingsQueryKey,
   assemblyQueryKey,
 } from './assemblies'
+import {
+  maintenanceEventsQueryKey,
+  maintenanceTaskQueryKey,
+  maintenanceTasksQueryKey,
+} from './maintenance'
 
 // A wrong key string is a stale-cache bug that's otherwise only caught by
 // manual smoke testing — cheap insurance against a typo silently breaking
@@ -58,6 +63,28 @@ describe('query-key factories', () => {
       'assemblies',
       'a1',
       'mountings',
+    ])
+  })
+
+  it('maintenanceTasksQueryKey nests filters under a list key', () => {
+    expect(maintenanceTasksQueryKey()).toEqual(['maintenanceTasks', 'list', {}])
+    expect(maintenanceTasksQueryKey({ bikeId: 'b1', due: true })).toEqual([
+      'maintenanceTasks',
+      'list',
+      { bikeId: 'b1', due: true },
+    ])
+  })
+
+  it('maintenanceTaskQueryKey nests under a detail key', () => {
+    expect(maintenanceTaskQueryKey('t1')).toEqual(['maintenanceTasks', 'detail', 't1'])
+  })
+
+  it('maintenanceEventsQueryKey nests under the owning task detail so it cascades on invalidate', () => {
+    expect(maintenanceEventsQueryKey('t1')).toEqual([
+      'maintenanceTasks',
+      'detail',
+      't1',
+      'events',
     ])
   })
 })

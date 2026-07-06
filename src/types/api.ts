@@ -395,3 +395,42 @@ export interface SlotMapping {
   mountPointId: UUID
   createdAt?: ISODateTime
 }
+
+// ============== Maintenance ==============
+
+export interface MaintenanceDue {
+  due: boolean
+  lastPerformedAt?: ISODateTime
+  distanceSinceLast?: number
+  distanceRemaining?: number
+  timeSinceLast?: number
+  timeRemaining?: number
+}
+
+export interface MaintenanceTask {
+  id: UUID
+  bikeId: UUID
+  name: string
+  distanceInterval?: number
+  timeInterval?: number
+  due?: MaintenanceDue
+  createdAt?: ISODateTime
+}
+
+export type MaintenanceTaskInput = {
+  bikeId: UUID
+  name: string
+  distanceInterval?: number
+  timeInterval?: number
+}
+
+export interface MaintenanceEvent {
+  id: UUID
+  maintenanceTaskId: UUID
+  performedAt: ISODateTime
+  createdAt?: ISODateTime
+}
+
+export type MaintenanceEventInput = {
+  performedAt: ISODateTime
+}
