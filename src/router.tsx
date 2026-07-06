@@ -42,6 +42,11 @@ const AssemblyDetail = lazy(() =>
 const MaintenanceList = lazy(() =>
   import('./components/maintenance/MaintenanceList').then((m) => ({ default: m.MaintenanceList })),
 )
+const MaintenanceTaskDetail = lazy(() =>
+  import('./components/maintenance/MaintenanceTaskDetail').then((m) => ({
+    default: m.MaintenanceTaskDetail,
+  })),
+)
 
 export const router = createBrowserRouter([
   {
@@ -57,6 +62,7 @@ export const router = createBrowserRouter([
       { path: 'assemblies', element: <AssemblyList /> },
       { path: 'assemblies/:assemblyId', element: <AssemblyDetail /> },
       { path: 'maintenance', element: <MaintenanceList /> },
+      { path: 'maintenance/:taskId', element: <MaintenanceTaskDetail /> },
       { path: 'tours', element: <TourList /> },
       { path: 'tourImport', element: <TourImport /> },
       { path: 'mytourbookImport', element: <MyTourbookImportReview /> },
