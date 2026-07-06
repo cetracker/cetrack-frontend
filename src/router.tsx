@@ -39,6 +39,9 @@ const AssemblyList = lazy(() =>
 const AssemblyDetail = lazy(() =>
   import('./components/assemblies/AssemblyDetail').then((m) => ({ default: m.AssemblyDetail })),
 )
+const MaintenanceList = lazy(() =>
+  import('./components/maintenance/MaintenanceList').then((m) => ({ default: m.MaintenanceList })),
+)
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +56,7 @@ export const router = createBrowserRouter([
       { path: 'bikes/:bikeId', element: <BikeDetail /> },
       { path: 'assemblies', element: <AssemblyList /> },
       { path: 'assemblies/:assemblyId', element: <AssemblyDetail /> },
+      { path: 'maintenance', element: <MaintenanceList /> },
       { path: 'tours', element: <TourList /> },
       { path: 'tourImport', element: <TourImport /> },
       { path: 'mytourbookImport', element: <MyTourbookImportReview /> },
