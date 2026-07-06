@@ -9,6 +9,7 @@ import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTabl
 import { CompositionTable } from './CompositionTable'
 import { BikeForm } from './BikeForm'
 import { RetireBikeDialog } from './RetireBikeDialog'
+import { BikeMaintenanceTab } from './BikeMaintenanceTab'
 import { bikeIdentity } from '@/utils/formatters'
 
 export const BikeDetail = () => {
@@ -70,13 +71,12 @@ export const BikeDetail = () => {
       <Tabs value={tab} onChange={(_, v: number) => setTab(v)} sx={{ mb: 2 }}>
         <Tab label="Composition" />
         <Tab label="History" />
+        <Tab label="Maintenance" />
       </Tabs>
 
-      {tab === 0 ? (
-        <CompositionTable bikeId={bikeId} />
-      ) : (
-        <MountingHistoryTable mountings={history ?? []} perspective="bike" />
-      )}
+      {tab === 0 && <CompositionTable bikeId={bikeId} />}
+      {tab === 1 && <MountingHistoryTable mountings={history ?? []} perspective="bike" />}
+      {tab === 2 && <BikeMaintenanceTab bikeId={bikeId} />}
 
       {bike && (
         <>
