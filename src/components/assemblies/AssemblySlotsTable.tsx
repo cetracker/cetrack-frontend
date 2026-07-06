@@ -15,6 +15,8 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -24,6 +26,8 @@ import { componentsQuery } from '@/api/components'
 import type { Assembly, AssemblySlot } from '@/types/api'
 import { componentIdentity, formatDateTime } from '@/utils/formatters'
 import { AssemblySlotForm } from './AssemblySlotForm'
+import { AddMemberDialog } from './AddMemberDialog'
+import { RemoveMemberDialog } from './RemoveMemberDialog'
 
 interface AssemblySlotsTableProps {
   assembly: Assembly
@@ -37,6 +41,8 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
   const [formOpen, setFormOpen] = useState(false)
   const [editSlot, setEditSlot] = useState<AssemblySlot | null>(null)
   const [toDelete, setToDelete] = useState<AssemblySlot | null>(null)
+  const [addMemberSlot, setAddMemberSlot] = useState<AssemblySlot | null>(null)
+  const [removeMemberComponentId, setRemoveMemberComponentId] = useState<string | null>(null)
 
   const typeNameById = new Map((componentTypes ?? []).map((t) => [t.id, t.name]))
   const componentById = new Map((components ?? []).map((c) => [c.id, c]))
@@ -110,6 +116,23 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                   </TableCell>
                   <TableCell align="right">
                     <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                      {!slot.memberComponentId && (
+                        <Tooltip title="Add member">
+                          <IconButton size="small" onClick={() => setAddMemberSlot(slot)}>
+                            <PersonAddIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {slot.memberComponentId && (
+                        <Tooltip title="Remove member">
+                          <IconButton
+                            size="small"
+                            onClick={() => setRemoveMemberComponentId(slot.memberComponentId!)}
+                          >
+                            <PersonRemoveIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                       <Tooltip title="Edit slot">
                         <IconButton
                           size="small"
@@ -152,6 +175,23 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
         destructive
         busy={deleteMut.isPending}
       />
+
+      <AddMemberDialog
+        open={!!addMemberSlot}
+        onClose={() => setAddMemberSlot(null)}
+        assemblyId={assembly.id}
+        assembly={assembly}
+        slot={addMemberSlot}
+      />
+
+      {removeMemberComponentId && (
+        <RemoveMemberDialog
+          open={!!removeMemberComponentId}
+          onClose={() => setRemoveMemberComponentId(null)}
+          assemblyId={assembly.id}
+          componentId={removeMemberComponentId}
+        />
+      )}
     </Box>
   )
 }
