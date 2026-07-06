@@ -208,8 +208,8 @@ export interface Tour {
   title: string
   distance: number
   durationMoving: number
-  altUp: number
-  altDown: number
+  ascent: number
+  descent: number
   powerTotal: number
   startedAt: ISODateTime
   startYear: number
@@ -217,6 +217,7 @@ export interface Tour {
   startDay: number
   bike?: Bike | null
   createdAt?: ISODateTime
+  source?: 'MYTOURBOOK' | 'FIT' | 'MANUAL'
 }
 
 export interface MTTour {
@@ -249,8 +250,8 @@ export interface ImportCandidate {
   startedAt: ISODateTime
   distance: number
   durationMoving: number
-  altUp?: number
-  altDown?: number
+  ascent?: number
+  descent?: number
   powerTotal?: number
   bikeId?: UUID
 }
@@ -304,8 +305,8 @@ export interface FitDraftTour {
   durationMoving: number
   durationRecorded: number
   durationElapsed: number
-  altUp: number
-  altDown: number
+  ascent: number
+  descent: number
   powerTotal: number
   startedAt: ISODateTime
   startYear: number
@@ -321,8 +322,8 @@ export interface TourCreateRequest {
   durationMoving: number
   durationRecorded: number
   durationElapsed: number
-  altUp: number
-  altDown: number
+  ascent: number
+  descent: number
   powerTotal: number
   startedAt: ISODateTime
   startYear: number

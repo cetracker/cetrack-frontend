@@ -66,8 +66,8 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
           <Typography variant="body2">{dateStr}</Typography>
           <Typography variant="body2">{formatDistanceKm(draft.distance)} km</Typography>
           <Typography variant="body2">{formatDuration(draft.durationMoving)}</Typography>
-          {draft.altUp > 0 && <Typography variant="body2">↑{draft.altUp} m</Typography>}
-          {draft.altDown > 0 && <Typography variant="body2">↓{draft.altDown} m</Typography>}
+          {draft.ascent > 0 && <Typography variant="body2">↑{draft.ascent} m</Typography>}
+          {draft.descent > 0 && <Typography variant="body2">↓{draft.descent} m</Typography>}
           {draft.powerTotal > 0 && (
             <Typography variant="body2">{formatKJ(draft.powerTotal)} kJ</Typography>
           )}

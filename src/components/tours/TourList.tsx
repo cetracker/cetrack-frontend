@@ -53,7 +53,7 @@ const TourActionsCell = ({ tour, onOpenMenu }: TourActionsCellProps) => (
 
 interface TourColumnExtras {
   data: Tour[] | undefined
-  totals: { distance: number; durationMoving: number; altUp: number; altDown: number; powerTotal: number }
+  totals: { distance: number; durationMoving: number; ascent: number; descent: number; powerTotal: number }
   onOpenMenu: (tour: Tour, el: HTMLElement) => void
 }
 
@@ -102,21 +102,21 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
     meta: { align: 'right', hideOnMobile: true },
   },
   {
-    accessorKey: 'altUp',
+    accessorKey: 'ascent',
     header: 'Up (m)',
     enableGrouping: false,
     cell: (c) => c.getValue<number>().toLocaleString(),
     aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-    footer: () => totals.altUp.toLocaleString(),
+    footer: () => totals.ascent.toLocaleString(),
     meta: { align: 'right', hideOnMobile: true },
   },
   {
-    accessorKey: 'altDown',
+    accessorKey: 'descent',
     header: 'Down (m)',
     enableGrouping: false,
     cell: (c) => c.getValue<number>().toLocaleString(),
     aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-    footer: () => totals.altDown.toLocaleString(),
+    footer: () => totals.descent.toLocaleString(),
     meta: { align: 'right', hideOnMobile: true },
   },
   {
@@ -179,8 +179,8 @@ export const TourList = () => {
     return {
       distance: sum(rows, 'distance'),
       durationMoving: sum(rows, 'durationMoving'),
-      altUp: sum(rows, 'altUp'),
-      altDown: sum(rows, 'altDown'),
+      ascent: sum(rows, 'ascent'),
+      descent: sum(rows, 'descent'),
       powerTotal: sum(rows, 'powerTotal'),
     }
   }, [data])
