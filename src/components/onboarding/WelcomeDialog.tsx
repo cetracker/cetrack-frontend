@@ -18,7 +18,7 @@ export const WelcomeDialog = ({ open, onTakeTour, onDismiss }: WelcomeDialogProp
     <DialogTitle id="welcome-title">Welcome to CETracker 👋</DialogTitle>
     <DialogContent>
       <DialogContentText>
-        Want a quick tour of how to track your bikes, parts, and rides?
+        Want a quick tour of how to track your bikes, components, and rides?
       </DialogContentText>
     </DialogContent>
     <DialogActions>

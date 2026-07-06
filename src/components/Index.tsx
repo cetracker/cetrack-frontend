@@ -6,7 +6,7 @@ import { BackgroundGraphic } from './landing/BackgroundGraphic'
 import { WelcomeDialog } from './onboarding/WelcomeDialog'
 
 const TAGLINE =
-  "Every part, every ride — see how your gear wears and plan maintenance before it's overdue."
+  "Every component, every ride — see how your gear wears and plan maintenance before it's overdue."
 
 export const Index = () => {
   const { onboarded, startTour, finishTour } = useOnboarding()
