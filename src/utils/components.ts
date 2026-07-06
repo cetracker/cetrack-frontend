@@ -19,6 +19,28 @@ export const STATUS_LABEL: Record<ComponentStatus, string> = {
   retired: 'Retired',
 }
 
+/**
+ * Componentids previously mounted at this mount point, most-recently-dismounted
+ * first, each listed once (CE-0011: the re-use action shows once per unique
+ * component, not once per historical mounting). Excludes the component(s)
+ * currently active there — re-using the thing that's already mounted is a no-op.
+ */
+export const reuseCandidateComponentIds = (mountings: Mounting[]): string[] => {
+  const activeIds = new Set(mountings.filter((m) => !m.dismountedAt).map((m) => m.componentId))
+  const closed = mountings
+    .filter((m) => m.dismountedAt && !activeIds.has(m.componentId))
+    .slice()
+    .sort((a, b) => (b.dismountedAt ?? '').localeCompare(a.dismountedAt ?? ''))
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const m of closed) {
+    if (seen.has(m.componentId)) continue
+    seen.add(m.componentId)
+    result.push(m.componentId)
+  }
+  return result
+}
+
 interface CorrectMountingBodyInput {
   mountedAt?: string
   dismountedAt?: string

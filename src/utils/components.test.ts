@@ -3,6 +3,7 @@ import {
   activeMounting,
   buildCorrectMountingBody,
   isComponentRetired,
+  reuseCandidateComponentIds,
 } from './components'
 import type { Component, Mounting } from '@/types/api'
 
@@ -54,5 +55,30 @@ describe('buildCorrectMountingBody', () => {
   it('omits mountedAt when not provided', () => {
     const body = buildCorrectMountingBody({ reopen: true })
     expect('mountedAt' in body).toBe(false)
+  })
+})
+
+describe('reuseCandidateComponentIds', () => {
+  const closed = (componentId: string, dismountedAt: string): Mounting =>
+    ({ id: `${componentId}-${dismountedAt}`, componentId, dismountedAt }) as Mounting
+  const open = (componentId: string): Mounting =>
+    ({ id: `${componentId}-active`, componentId }) as Mounting
+
+  it('lists each unique component once, most-recently-dismounted first (CE-0011)', () => {
+    const mountings = [
+      closed('c1', '2026-01-01T00:00:00Z'),
+      closed('c1', '2026-03-01T00:00:00Z'),
+      closed('c2', '2026-02-01T00:00:00Z'),
+    ]
+    expect(reuseCandidateComponentIds(mountings)).toEqual(['c1', 'c2'])
+  })
+
+  it('excludes the component currently active at this mount point', () => {
+    const mountings = [closed('c1', '2026-01-01T00:00:00Z'), open('c1')]
+    expect(reuseCandidateComponentIds(mountings)).toEqual([])
+  })
+
+  it('returns an empty list when nothing has ever been dismounted here', () => {
+    expect(reuseCandidateComponentIds([open('c1')])).toEqual([])
   })
 })
