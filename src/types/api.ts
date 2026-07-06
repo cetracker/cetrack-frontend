@@ -1,5 +1,6 @@
 // Hand-written TypeScript types mirroring the backend OpenAPI specs
-// (parts-api.yaml, bike-api.yaml, tour-api.yaml).
+// (common-api.yaml, catalog-api.yaml, component-api.yaml, bike-api.yaml,
+// tour-api.yaml, report-api.yaml).
 // Keep in sync when the specs change.
 
 export type UUID = string
@@ -43,54 +44,6 @@ export type MountPointInput = Omit<MountPoint, 'id' | 'bikeId' | 'createdAt'>
 export interface MountRequest {
   componentId: UUID
   at: ISODateTime
-}
-
-export interface Part {
-  id: UUID
-  label?: string
-  manufacturer?: string
-  model?: string
-  serialNumber?: string
-  vendor?: string
-  /** Decimal-formatted string, e.g. "10.57" (display-only). */
-  purchasePrice?: string
-  /** ISO 4217 currency code, e.g. "EUR". */
-  purchasePriceCurrency?: string
-  firstUsedDate?: ISODateTime | null
-  boughtAt?: ISODateTime | null
-  retiredAt?: ISODateTime | null
-  partTypeRelations?: PartPartTypeRelation[]
-  createdAt?: ISODateTime
-}
-
-export type PartInput = Omit<Part, 'id' | 'createdAt'>
-
-export interface PartType {
-  id: UUID
-  name: string
-  mandatory: boolean
-  partTypeRelations?: PartPartTypeRelation[]
-  bike?: Bike | null
-  createdAt?: ISODateTime
-}
-
-export type PartTypeInput = Omit<PartType, 'id' | 'createdAt'>
-
-export interface PartPartTypeRelation {
-  partId: UUID
-  partTypeId: UUID
-  validFrom: ISODateTime
-  validUntil?: ISODateTime | null
-  part: Part
-  partType: PartType
-}
-
-export type PartPartTypeRelationInput = Pick<
-  PartPartTypeRelation,
-  'partId' | 'partTypeId' | 'validFrom' | 'validUntil'
-> & {
-  part: Pick<Part, 'id' | 'label'>
-  partType: Pick<PartType, 'id' | 'name' | 'mandatory'>
 }
 
 // ============== Catalog ==============
@@ -331,16 +284,4 @@ export interface TourCreateRequest {
   startDay: number
   bike: Bike
   source?: 'FIT' | 'MANUAL'
-}
-
-export interface ReportItem {
-  label?: string
-  manufacturer?: string
-  model?: string
-  serialNumber?: string
-  distance: number
-  durationMoving: number
-  altUp: number
-  altDown: number
-  totalPower: number
 }

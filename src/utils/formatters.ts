@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns'
-import type { Bike, Component, Part, PartType } from '@/types/api'
+import type { Bike, Component } from '@/types/api'
 
 export const formatDate = (iso?: string | null): string => {
   if (!iso) return ''
@@ -137,57 +137,3 @@ export const componentDisambiguator = (component?: Component | null): string => 
     .filter(Boolean)
     .join(', ')
 }
-
-/** The raw identity fields shared by `Part` and a report row. */
-type PartIdentityFields = Pick<
-  Part,
-  'label' | 'manufacturer' | 'model' | 'serialNumber'
->
-
-/**
- * The single rule for a part's displayed identity, used by list, pickers,
- * detail and report: the user's label if given, otherwise the structured
- * make/model plus serial number. Deliberately mount-independent (no part type).
- */
-export const partIdentity = (part?: PartIdentityFields | null): string => {
-  if (!part) return ''
-  const label = part.label?.trim()
-  if (label) return label
-  const makeModel = [part.manufacturer?.trim(), part.model?.trim()]
-    .filter(Boolean)
-    .join(' ')
-  const serial = part.serialNumber?.trim()
-  if (makeModel && serial) return `${makeModel} #${serial}`
-  return makeModel || (serial ? `#${serial}` : '')
-}
-
-/**
- * Secondary, muted line shown in pickers and the part list to tell two
- * otherwise-identical parts apart. Shows all non-empty attributes in a
- * fixed order: serial, model, manufacturer, purchase date, vendor.
- * Price, currency, and first-used date are omitted.
- */
-export const partDisambiguator = (part?: Part | null): string => {
-  if (!part) return ''
-  return [
-    part.serialNumber?.trim() ? `#${part.serialNumber.trim()}` : null,
-    part.model?.trim() || null,
-    part.manufacturer?.trim() || null,
-    part.boughtAt ? formatDate(part.boughtAt) : null,
-    part.vendor?.trim() || null,
-  ]
-    .filter(Boolean)
-    .join(', ')
-}
-
-/** Find the currently-active (validUntil null) relation for a part or part type. */
-export const findActiveRelation = (
-  entity: Part | PartType | undefined | null,
-) => entity?.partTypeRelations?.find((r) => !r.validUntil) ?? null
-
-export const findLastRelation = (entity: Part | PartType | undefined | null) =>
-  entity?.partTypeRelations
-    ?.slice()
-    .sort((a, b) =>
-      (b.validUntil ?? b.validFrom).localeCompare(a.validUntil ?? a.validFrom),
-    )[0] ?? null
