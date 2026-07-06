@@ -74,7 +74,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   })
 
   const updateMut = useApiMutation(
-    (v: { id: string; bike: Bike }) => updateBike(v.id, v.bike),
+    (v: { id: string; bike: BikeInput }) => updateBike(v.id, v.bike),
     {
       successMessage: 'Bike updated',
       onSuccess: () => {
@@ -92,7 +92,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
       purchaseDate: toISODate(values.purchaseDate),
     }
     if (initial) {
-      updateMut.mutate({ id: initial.id, bike: { id: initial.id, ...payload } })
+      updateMut.mutate({ id: initial.id, bike: payload })
     } else {
       createMut.mutate(payload)
     }
