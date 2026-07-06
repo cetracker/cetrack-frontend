@@ -4,6 +4,11 @@ import { mountingsQueryKey } from './mountings'
 import { mileageQueryKey } from './reports'
 import { bikeQueryKey, mountPointsQueryKey } from './bikes'
 import { componentTypeQueryKey, positionQueryKey } from './catalog'
+import {
+  assembliesQueryKey,
+  assemblyMountingsQueryKey,
+  assemblyQueryKey,
+} from './assemblies'
 
 // A wrong key string is a stale-cache bug that's otherwise only caught by
 // manual smoke testing — cheap insurance against a typo silently breaking
@@ -41,5 +46,18 @@ describe('query-key factories', () => {
   it('componentTypeQueryKey and positionQueryKey nest under their catalog roots', () => {
     expect(componentTypeQueryKey('ct1')).toEqual(['componentTypes', 'ct1'])
     expect(positionQueryKey('p1')).toEqual(['positions', 'p1'])
+  })
+
+  it('assemblyQueryKey nests under assemblies', () => {
+    expect(assembliesQueryKey).toEqual(['assemblies'])
+    expect(assemblyQueryKey('a1')).toEqual(['assemblies', 'a1'])
+  })
+
+  it('assemblyMountingsQueryKey nests under the owning assembly so it cascades on invalidate', () => {
+    expect(assemblyMountingsQueryKey('a1')).toEqual([
+      'assemblies',
+      'a1',
+      'mountings',
+    ])
   })
 })

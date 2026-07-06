@@ -285,3 +285,113 @@ export interface TourCreateRequest {
   bike: Bike
   source?: 'FIT' | 'MANUAL'
 }
+
+// ============== Assemblies ==============
+
+export interface Assembly {
+  id: UUID
+  name: string
+  positionId?: UUID
+  complete: boolean
+  mounted: boolean
+  slots: AssemblySlot[]
+  createdAt?: ISODateTime
+}
+export type AssemblyInput = { name: string; positionId?: UUID }
+
+export interface AssemblySlot {
+  id: UUID
+  name: string
+  componentTypeId: UUID
+  validFrom: ISODateTime
+  validTo?: ISODateTime
+  memberComponentId?: UUID
+  memberFrom?: ISODateTime
+  createdAt?: ISODateTime
+}
+export type AssemblySlotInput = {
+  name: string
+  componentTypeId: UUID
+  validFrom: ISODateTime
+  validTo?: ISODateTime
+}
+
+export interface AssemblyMounting {
+  id: UUID
+  assemblyId: UUID
+  bikeId: UUID
+  mountedAt: ISODateTime
+  dismountedAt?: ISODateTime
+  createdAt?: ISODateTime
+}
+
+export interface AddMemberRequest {
+  componentId: UUID
+  slotId: UUID
+  from: ISODateTime
+  mountPointId?: UUID
+}
+export interface RemoveMemberRequest {
+  componentId: UUID
+  to: ISODateTime
+}
+export interface PlanMountRequest {
+  bikeId: UUID
+  at: ISODateTime
+}
+export interface SlotResolution {
+  slotId: UUID
+  mountPointId: UUID
+}
+export interface Candidate {
+  mountPointId: UUID
+  mountPointName: string
+  positionId?: UUID
+}
+
+export type PlannedSlotState = 'resolved' | 'unresolved' | 'impossible' | 'empty'
+export interface PlannedSlot {
+  slotId: UUID
+  componentId?: UUID
+  state: PlannedSlotState
+  mountPointId?: UUID
+  resolvedBy?: 'uniqueCandidate' | 'positionFilter' | 'slotMapping'
+  willDismountComponentId?: UUID
+  candidates?: Candidate[]
+  reasonCode?:
+    | 'noCandidate'
+    | 'positionFilterEmpty'
+    | 'memberMountedElsewhere'
+    | 'occupiedByGovernedMounting'
+  reason?: string
+}
+export interface MountPlan {
+  assemblyId: UUID
+  bikeId: UUID
+  at: ISODateTime
+  mountable: boolean
+  slots: PlannedSlot[]
+}
+export interface MountAssemblyRequest {
+  bikeId: UUID
+  at: ISODateTime
+  slotResolutions?: SlotResolution[]
+}
+export interface DismountAssemblyRequest {
+  at: ISODateTime
+}
+export interface AssemblyMountResult {
+  assemblyMounting: AssemblyMounting
+  changes: MountingChanges
+  rememberedSlotMappings?: SlotMapping[]
+}
+
+// bike-api.yaml SlotMapping — surfaced only via AssemblyMountResult.rememberedSlotMappings
+// and the AddMemberDialog 409 retry; no dedicated CRUD UI this issue.
+export interface SlotMapping {
+  id: UUID
+  assemblySlotId: UUID
+  bikeId: UUID
+  mountPointId: UUID
+  createdAt?: ISODateTime
+}

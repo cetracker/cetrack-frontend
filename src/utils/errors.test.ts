@@ -19,6 +19,24 @@ describe('friendlyErrorMessage', () => {
     expect(friendlyErrorMessage(err)).toContain('part of an assembly')
   })
 
+  it('maps UNRESOLVED_SLOTS to friendly text', () => {
+    const err = new ApiException({
+      status: 409,
+      code: 'UNRESOLVED_SLOTS',
+      message: 'raw server text',
+    })
+    expect(friendlyErrorMessage(err)).toContain('mount point choice')
+  })
+
+  it('maps MOUNTING_GOVERNED to friendly text', () => {
+    const err = new ApiException({
+      status: 409,
+      code: 'MOUNTING_GOVERNED',
+      message: 'raw server text',
+    })
+    expect(friendlyErrorMessage(err)).toContain('managed by an assembly')
+  })
+
   it('falls back to the server message for an unknown code', () => {
     const err = new ApiException({ status: 400, code: 'SOMETHING_ELSE', message: 'raw server text' })
     expect(friendlyErrorMessage(err)).toBe('raw server text')
