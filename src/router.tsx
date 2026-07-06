@@ -7,11 +7,8 @@ import { NotFound } from './components/NotFound'
 const Index = lazy(() =>
   import('./components/Index').then((m) => ({ default: m.Index })),
 )
-const PartList = lazy(() =>
-  import('./components/parts/PartList').then((m) => ({ default: m.PartList })),
-)
-const PartTypeList = lazy(() =>
-  import('./components/partTypes/PartTypeList').then((m) => ({ default: m.PartTypeList })),
+const ComponentList = lazy(() =>
+  import('./components/components/ComponentList').then((m) => ({ default: m.ComponentList })),
 )
 const CatalogPage = lazy(() =>
   import('./components/catalog/CatalogPage').then((m) => ({ default: m.CatalogPage })),
@@ -41,8 +38,7 @@ export const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       { index: true, element: <Index /> },
-      { path: 'parts', element: <PartList /> },
-      { path: 'partTypes', element: <PartTypeList /> },
+      { path: 'components', element: <ComponentList /> },
       { path: 'catalog', element: <CatalogPage /> },
       { path: 'bikes', element: <BikeList /> },
       { path: 'tours', element: <TourList /> },

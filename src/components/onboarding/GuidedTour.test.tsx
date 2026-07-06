@@ -9,7 +9,7 @@ import { OnboardingProvider } from '@/App'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { GuidedTour } from './GuidedTour'
 
-const NAV_KEYS = ['bikes', 'partTypes', 'parts', 'tourImport', 'tours', 'report']
+const NAV_KEYS = ['bikes', 'componentTypes', 'components', 'tourImport', 'tours', 'report']
 
 const StartTour = () => {
   const { startTour } = useOnboarding()
@@ -49,7 +49,7 @@ describe('GuidedTour', () => {
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: 'Next' }))
-    expect(screen.getByText('Part Types')).toBeInTheDocument()
+    expect(screen.getByText('Component Types')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Back' }))
     expect(screen.getByText('Bikes')).toBeInTheDocument()

@@ -18,16 +18,16 @@ import reportDark from '@/assets/landing/6_report_dark.png'
 const steps = [
   { to: '/bikes', title: 'Bikes', body: 'Create one or more bikes.', light: bikeLight, dark: bikeDark },
   {
-    to: '/partTypes',
-    title: 'Part Types',
-    body: 'Define the part types each bike needs.',
+    to: '/catalog',
+    title: 'Component Types',
+    body: 'Define the component types each bike needs.',
     light: partTypesLight,
     dark: partTypesDark,
   },
   {
-    to: '/parts',
-    title: 'Parts',
-    body: 'Add your physical parts and relate them to a part type.',
+    to: '/components',
+    title: 'Components',
+    body: 'Add your physical components and mount them to a bike.',
     light: partsLight,
     dark: partsDark,
   },

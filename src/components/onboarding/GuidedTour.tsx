@@ -10,8 +10,8 @@ interface TourStep {
 
 const steps: TourStep[] = [
   { nav: 'bikes', title: 'Bikes', body: 'Start by creating the bikes you ride.' },
-  { nav: 'partTypes', title: 'Part Types', body: 'Define the part types each bike needs, e.g. chain or tyres.' },
-  { nav: 'parts', title: 'Parts', body: 'Add your physical parts and relate them to a part type.' },
+  { nav: 'componentTypes', title: 'Component Types', body: 'Define the component types each bike needs, e.g. chain or tyres.' },
+  { nav: 'components', title: 'Components', body: 'Add your physical components and mount them to a bike.' },
   { nav: 'tourImport', title: 'Import Tours', body: 'Import tours from a .FIT file or a MyTourbook export.' },
   { nav: 'tours', title: 'Tours', body: 'Review the tours you have imported.' },
   { nav: 'report', title: 'Report', body: 'Inspect usage statistics to plan maintenance.' },

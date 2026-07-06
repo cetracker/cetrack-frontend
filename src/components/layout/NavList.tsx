@@ -21,8 +21,8 @@ interface NavEntry {
 }
 
 const entries: NavEntry[] = [
-  { to: '/parts', label: 'Parts', icon: <SettingsIcon />, tour: 'parts' },
-  { to: '/partTypes', label: 'Part Types', icon: <CategoryIcon />, tour: 'partTypes' },
+  { to: '/components', label: 'Components', icon: <SettingsIcon />, tour: 'components' },
+  { to: '/catalog', label: 'Component Types', icon: <CategoryIcon />, tour: 'componentTypes' },
   { to: '/bikes', label: 'Bikes', icon: <DirectionsBikeIcon />, tour: 'bikes' },
   { to: '/tours', label: 'Tours', icon: <MapIcon />, tour: 'tours' },
   { to: '/tourImport', label: 'Import Tours', icon: <UploadFileIcon />, tour: 'tourImport' },

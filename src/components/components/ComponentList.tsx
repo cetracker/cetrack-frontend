@@ -1,0 +1,207 @@
+import { useMemo, useState } from 'react'
+import { Box, Button, Chip, MenuItem, Stack, TextField } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { componentsQuery, componentsQueryKey, deleteComponent } from '@/api/components'
+import { componentTypesQuery } from '@/api/catalog'
+import type { Component, ComponentStatus } from '@/types/api'
+import { DataTable } from '@/components/common/DataTable'
+import { RowActions } from '@/components/common/RowActions'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
+import { ComponentForm } from './ComponentForm'
+import { ComponentDetail } from './ComponentDetail'
+import { ComponentInfoCell } from './ComponentInfoCell'
+import { componentIdentity, formatDate } from '@/utils/formatters'
+import { STATUS_LABEL } from '@/utils/components'
+import { createErrorDisplay } from '@/utils/errors'
+import { useApiMutation } from '@/hooks/useApiMutation'
+
+interface ActionsCellProps {
+  component: Component
+  onEdit: (component: Component) => void
+  onDelete: (component: Component) => void
+  onOpenDetail: (component: Component) => void
+}
+
+const ActionsCell = ({ component, onEdit, onDelete, onOpenDetail }: ActionsCellProps) => (
+  <RowActions
+    onOpenRelations={() => onOpenDetail(component)}
+    onEdit={() => onEdit(component)}
+    onDelete={() => onDelete(component)}
+  />
+)
+
+const buildColumns = (
+  typeNameById: Map<string, string>,
+  onEdit: (component: Component) => void,
+  onDelete: (component: Component) => void,
+  onOpenDetail: (component: Component) => void,
+): ColumnDef<Component>[] => [
+  {
+    id: 'identity',
+    header: 'Component',
+    accessorFn: (c) => componentIdentity(c),
+    cell: ({ row }) => <ComponentInfoCell component={row.original} />,
+  },
+  {
+    id: 'componentType',
+    header: 'Type',
+    accessorFn: (c) => typeNameById.get(c.componentTypeId) ?? '',
+  },
+  {
+    id: 'status',
+    header: 'Status',
+    accessorFn: (c) => c.status ?? '',
+    cell: ({ row }) =>
+      row.original.status ? <Chip label={STATUS_LABEL[row.original.status]} size="small" /> : null,
+  },
+  {
+    accessorKey: 'purchaseDate',
+    header: 'Purchase Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    accessorKey: 'retiredAt',
+    header: 'Retired Date',
+    cell: (c) => formatDate(c.getValue<string | null>()),
+    meta: { hideOnMobile: true },
+  },
+  {
+    id: 'actions',
+    header: '',
+    enableSorting: false,
+    enableGlobalFilter: false,
+    cell: ({ row }) => (
+      <ActionsCell
+        component={row.original}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onOpenDetail={onOpenDetail}
+      />
+    ),
+  },
+]
+
+export const ComponentList = () => {
+  const qc = useQueryClient()
+  const [statusFilter, setStatusFilter] = useState<ComponentStatus | ''>('')
+  const { data, isLoading, error, refetch } = useQuery(
+    componentsQuery(statusFilter ? { status: statusFilter } : {}),
+  )
+  const { data: componentTypes } = useQuery(componentTypesQuery())
+  const typeNameById = useMemo(
+    () => new Map((componentTypes ?? []).map((ct) => [ct.id, ct.name])),
+    [componentTypes],
+  )
+
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'identity', desc: false },
+  ])
+
+  const [editOpen, setEditOpen] = useState(false)
+  const [editComponent, setEditComponent] = useState<Component | null>(null)
+  const [toDelete, setToDelete] = useState<Component | null>(null)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [detailId, setDetailId] = useState<string | null>(null)
+
+  const deleteMut = useApiMutation(deleteComponent, {
+    successMessage: 'Component deleted',
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: componentsQueryKey() })
+      setToDelete(null)
+    },
+  })
+
+  const openEdit = (component: Component) => {
+    setEditComponent(component)
+    setEditOpen(true)
+  }
+
+  const openDetail = (component: Component) => {
+    setDetailId(component.id)
+    setDetailOpen(true)
+  }
+
+  const columns = useMemo(
+    () => buildColumns(typeNameById, openEdit, setToDelete, openDetail),
+    [typeNameById],
+  )
+
+  return (
+    <Box>
+      <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ typography: 'h5' }}>Components</Box>
+        <Stack sx={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
+          <TextField
+            select
+            size="small"
+            label="Status"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as ComponentStatus | '')}
+            sx={{ minWidth: 140 }}
+          >
+            <MenuItem value="">All</MenuItem>
+            {(Object.keys(STATUS_LABEL) as ComponentStatus[]).map((s) => (
+              <MenuItem key={s} value={s}>
+                {STATUS_LABEL[s]}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setEditComponent(null)
+              setEditOpen(true)
+            }}
+          >
+            Add component
+          </Button>
+        </Stack>
+      </Stack>
+
+      <DataTable<Component>
+        columns={columns}
+        data={data ?? []}
+        isLoading={isLoading}
+        error={createErrorDisplay(error)}
+        onRetry={() => refetch()}
+        globalFilter={globalFilter}
+        onGlobalFilterChange={setGlobalFilter}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        onRowClick={(c) => openDetail(c)}
+      />
+
+      <ComponentForm
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        initial={editComponent}
+      />
+
+      <ComponentDetail
+        open={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        componentId={detailId}
+      />
+
+      <ConfirmDialog
+        open={!!toDelete}
+        title="Delete component"
+        message={
+          toDelete
+            ? `Delete "${componentIdentity(toDelete)}"? This cannot be undone.`
+            : ''
+        }
+        onCancel={() => setToDelete(null)}
+        onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
+        confirmLabel="Delete"
+        destructive
+        busy={deleteMut.isPending}
+      />
+    </Box>
+  )
+}

@@ -43,7 +43,7 @@ export const toLocalDayEndISO = (d: Date | null | undefined): string | null => {
   return withLocalOffset(local)
 }
 
-const withLocalOffset = (date: Date): string => {
+export const withLocalOffset = (date: Date): string => {
   const pad = (n: number, w = 2) => String(n).padStart(w, '0')
   const yyyy = date.getFullYear()
   const MM = pad(date.getMonth() + 1)
