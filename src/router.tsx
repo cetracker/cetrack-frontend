@@ -13,6 +13,9 @@ const PartList = lazy(() =>
 const PartTypeList = lazy(() =>
   import('./components/partTypes/PartTypeList').then((m) => ({ default: m.PartTypeList })),
 )
+const CatalogPage = lazy(() =>
+  import('./components/catalog/CatalogPage').then((m) => ({ default: m.CatalogPage })),
+)
 const BikeList = lazy(() =>
   import('./components/bikes/BikeList').then((m) => ({ default: m.BikeList })),
 )
@@ -40,6 +43,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Index /> },
       { path: 'parts', element: <PartList /> },
       { path: 'partTypes', element: <PartTypeList /> },
+      { path: 'catalog', element: <CatalogPage /> },
       { path: 'bikes', element: <BikeList /> },
       { path: 'tours', element: <TourList /> },
       { path: 'tourImport', element: <TourImport /> },
