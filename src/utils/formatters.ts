@@ -85,8 +85,10 @@ export const formatKJ = (work: number | null | undefined): string => {
 
 export const bikeName = (bike?: Bike | null): string => {
   if (!bike) return ''
-  const mfr = bike.manufacturer?.trim()
-  return mfr ? `${mfr} ${bike.model}` : bike.model
+  return (
+    bike.name?.trim() ||
+    [bike.manufacturer?.trim(), bike.model?.trim()].filter(Boolean).join(' ')
+  )
 }
 
 /** The raw identity fields shared by `Part` and a report row. */

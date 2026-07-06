@@ -9,7 +9,7 @@ import { DataTable } from '@/components/common/DataTable'
 import { RowActions } from '@/components/common/RowActions'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { BikeForm } from './BikeForm'
-import { formatDate } from '@/utils/formatters'
+import { bikeName, formatDate } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -27,10 +27,11 @@ const buildColumns = (
   onEdit: (bike: Bike) => void,
   onDelete: (bike: Bike) => void,
 ): ColumnDef<Bike>[] => [
+  { accessorKey: 'name', header: 'Name' },
   { accessorKey: 'manufacturer', header: 'Manufacturer' },
   { accessorKey: 'model', header: 'Model' },
   {
-    accessorKey: 'boughtAt',
+    accessorKey: 'purchaseDate',
     header: 'Purchase Date',
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
@@ -122,7 +123,7 @@ export const BikeList = () => {
         title="Delete bike"
         message={
           toDelete
-            ? `Delete "${toDelete.manufacturer} ${toDelete.model}"? This cannot be undone.`
+            ? `Delete "${bikeName(toDelete)}"? This cannot be undone.`
             : ''
         }
         onCancel={() => setToDelete(null)}

@@ -2,18 +2,21 @@ import axios, { AxiosError, type AxiosResponse } from 'axios'
 
 export interface ApiError {
   status: number
+  code?: string
   message: string
-  details?: string[]
+  details?: Record<string, unknown>
 }
 
 export class ApiException extends Error implements ApiError {
   status: number
-  details?: string[]
+  code?: string
+  details?: Record<string, unknown>
 
   constructor(apiError: ApiError) {
     super(apiError.message)
     this.name = 'ApiException'
     this.status = apiError.status
+    this.code = apiError.code
     this.details = apiError.details
   }
 }
@@ -28,58 +31,32 @@ export const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+// shared Error schema (common-api.yaml); tour-api 400/409/500 bodies are
+// contract-undefined (bare `description`, no Error schema) — may arrive as
+// plain text instead of this shape.
 type BackendErrorShape = {
+  code?: string
   message?: string
-  error?: string
-  detail?: string
-  errors?: unknown
-}
-
-const stringifyUnknown = (val: unknown): string => {
-  if (typeof val === 'string') return val
-  if (val instanceof Error) return val.message
-  try {
-    return JSON.stringify(val) ?? String(val)
-  } catch {
-    return String(val)
-  }
-}
-
-const parseDetails = (errors: unknown): string[] | undefined => {
-  if (!errors) return undefined
-  if (Array.isArray(errors)) {
-    return errors
-      .map((e: unknown) => {
-        if (typeof e === 'string') return e
-        if ((e as Record<string, unknown> | null)?.message != null)
-          return String((e as Record<string, unknown>).message)
-        return stringifyUnknown(e)
-      })
-      .filter(Boolean)
-  }
-  if (typeof errors === 'object') {
-    return Object.entries(errors as Record<string, unknown>).map(
-      ([k, v]) => `${k}: ${stringifyUnknown(v)}`,
-    )
-  }
-  return [String(errors)]
+  details?: Record<string, unknown>
 }
 
 client.interceptors.response.use(
   (res: AxiosResponse) => res,
-  (err: AxiosError<BackendErrorShape>) => {
+  (err: AxiosError<BackendErrorShape | string>) => {
     const status = err.response?.status ?? 0
     const body = err.response?.data
-    const message =
-      body?.message ??
-      body?.error ??
-      body?.detail ??
-      err.message ??
-      'Unexpected error'
-    const apiError: ApiError = {
-      status,
-      message,
-      details: parseDetails(body?.errors),
+    let apiError: ApiError
+    if (typeof body === 'string' && body.length > 0) {
+      apiError = { status, message: body }
+    } else if (body && typeof body === 'object' && typeof body.message === 'string') {
+      apiError = {
+        status,
+        code: body.code,
+        message: body.message,
+        details: body.details,
+      }
+    } else {
+      apiError = { status, message: err.message ?? 'Unexpected error' }
     }
     throw new ApiException(apiError)
   },

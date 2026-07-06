@@ -3,7 +3,8 @@ import {
   type UseMutationOptions,
   type UseMutationResult,
 } from '@tanstack/react-query'
-import { isApiError, type ApiError } from '@/api/client'
+import type { ApiError } from '@/api/client'
+import { friendlyErrorMessage } from '@/utils/errors'
 import { useNotify } from './useNotify'
 
 type Options<TData, TVars> = UseMutationOptions<TData, ApiError, TVars> & {
@@ -37,8 +38,7 @@ export const useApiMutation = <TData, TVars>(
     },
     onError: (error, variables, onMutateResult, context) => {
       if (notifyOnError) {
-        const msg = isApiError(error) ? error.message : 'Unexpected error'
-        notify(msg, 'error')
+        notify(friendlyErrorMessage(error), 'error')
       }
       if (onError) {
         onError(error, variables, onMutateResult, context)

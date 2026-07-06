@@ -4,23 +4,29 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { format, parseISO } from 'date-fns'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { createBike, updateBike, bikesQueryKey } from '@/api/bikes'
-import type { Bike } from '@/types/api'
+import type { Bike, BikeInput } from '@/types/api'
 import { useQueryClient } from '@tanstack/react-query'
 
-const schema = z.object({
-  manufacturer: z.string().min(1, 'Manufacturer required'),
-  model: z.string().min(1, 'Model required'),
-  boughtAt: z.date().nullable(),
-  retiredAt: z.date().nullable(),
-})
+const schema = z
+  .object({
+    name: z.string(),
+    manufacturer: z.string(),
+    model: z.string(),
+    purchaseDate: z.date().nullable(),
+  })
+  .refine((v) => v.name.trim() || v.model.trim(), {
+    message: 'Name or model required',
+    path: ['name'],
+  })
 
 export type BikeFormValues = z.infer<typeof schema>
 
-const toISO = (d: Date | null) => (d ? d.toISOString() : null)
-const fromISO = (s: string | null | undefined) => (s ? new Date(s) : null)
+const toISODate = (d: Date | null) => (d ? format(d, 'yyyy-MM-dd') : undefined)
+const fromISODate = (s: string | null | undefined) => (s ? parseISO(s) : null)
 
 interface BikeFormProps {
   open: boolean
@@ -39,20 +45,20 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   } = useForm<BikeFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
+      name: '',
       manufacturer: '',
       model: '',
-      boughtAt: null,
-      retiredAt: null,
+      purchaseDate: null,
     },
   })
 
   useEffect(() => {
     if (open) {
       reset({
+        name: initial?.name ?? '',
         manufacturer: initial?.manufacturer ?? '',
         model: initial?.model ?? '',
-        boughtAt: fromISO(initial?.boughtAt),
-        retiredAt: fromISO(initial?.retiredAt),
+        purchaseDate: fromISODate(initial?.purchaseDate),
       })
     }
   }, [open, initial, reset])
@@ -79,14 +85,14 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   )
 
   const submit = handleSubmit((values) => {
-    const payload = {
-      manufacturer: values.manufacturer,
-      model: values.model,
-      boughtAt: toISO(values.boughtAt),
-      retiredAt: toISO(values.retiredAt),
+    const payload: BikeInput = {
+      name: values.name.trim() || undefined,
+      manufacturer: values.manufacturer.trim() || undefined,
+      model: values.model.trim() || undefined,
+      purchaseDate: toISODate(values.purchaseDate),
     }
     if (initial) {
-      updateMut.mutate({ id: initial.id, bike: { ...initial, ...payload } })
+      updateMut.mutate({ id: initial.id, bike: { id: initial.id, ...payload } })
     } else {
       createMut.mutate(payload)
     }
@@ -105,50 +111,33 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
       <Stack spacing={2} sx={{ pt: 1 }}>
         <Controller
           control={control}
-          name="manufacturer"
+          name="name"
           render={({ field }) => (
             <TextField
               {...field}
-              label="Manufacturer"
-              required
-              error={!!errors.manufacturer}
-              helperText={errors.manufacturer?.message}
+              label="Name"
+              error={!!errors.name}
+              helperText={errors.name?.message ?? 'Name or model required'}
               autoFocus
             />
           )}
         />
         <Controller
           control={control}
-          name="model"
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Model"
-              required
-              error={!!errors.model}
-              helperText={errors.model?.message}
-            />
-          )}
+          name="manufacturer"
+          render={({ field }) => <TextField {...field} label="Manufacturer" />}
         />
         <Controller
           control={control}
-          name="boughtAt"
+          name="model"
+          render={({ field }) => <TextField {...field} label="Model" />}
+        />
+        <Controller
+          control={control}
+          name="purchaseDate"
           render={({ field }) => (
             <DatePicker
               label="Purchase Date"
-              displayWeekNumber
-              value={field.value}
-              onChange={field.onChange}
-              slotProps={{ textField: { fullWidth: true } }}
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="retiredAt"
-          render={({ field }) => (
-            <DatePicker
-              label="Retired Date"
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}

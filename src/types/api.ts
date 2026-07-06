@@ -4,17 +4,46 @@
 
 export type UUID = string
 export type ISODateTime = string
+export type ISODate = string // yyyy-MM-dd
 
 export interface Bike {
   id: UUID
-  model: string
+  name?: string
+  model?: string
   manufacturer?: string
-  boughtAt?: ISODateTime | null
-  retiredAt?: ISODateTime | null
+  purchaseDate?: ISODate
+  price?: string
+  priceCurrency?: string
+  retiredAt?: ISODateTime
   createdAt?: ISODateTime
 }
 
-export type BikeInput = Omit<Bike, 'id' | 'createdAt'>
+// no retiredAt — set only via the retire action
+export type BikeInput = Omit<
+  Bike,
+  'id' | 'retiredAt' | 'createdAt'
+>
+
+export interface RetireBikeRequest {
+  at: ISODateTime
+}
+
+export interface MountPoint {
+  id: UUID
+  bikeId?: UUID
+  name: string
+  componentTypeId: UUID
+  positionId?: UUID
+  mandatory: boolean
+  createdAt?: ISODateTime
+}
+
+export type MountPointInput = Omit<MountPoint, 'id' | 'bikeId' | 'createdAt'>
+
+export interface MountRequest {
+  componentId: UUID
+  at: ISODateTime
+}
 
 export interface Part {
   id: UUID
@@ -62,6 +91,116 @@ export type PartPartTypeRelationInput = Pick<
 > & {
   part: Pick<Part, 'id' | 'label'>
   partType: Pick<PartType, 'id' | 'name' | 'mandatory'>
+}
+
+// ============== Catalog ==============
+
+export interface ComponentType {
+  id: UUID
+  name: string
+  description?: string
+  createdAt?: ISODateTime
+}
+
+export type ComponentTypeInput = Omit<ComponentType, 'id' | 'createdAt'>
+
+export interface Position {
+  id: UUID
+  name: string
+  createdAt?: ISODateTime
+}
+
+export type PositionInput = Omit<Position, 'id' | 'createdAt'>
+
+// ============== Components ==============
+
+export type ComponentStatus = 'inStock' | 'inAssembly' | 'mounted' | 'retired'
+
+export type RetirementKind = 'scrapped' | 'sold'
+
+export interface Component {
+  id: UUID
+  componentTypeId: UUID
+  label: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+  vendor?: string
+  purchaseDate?: ISODate
+  price?: string
+  priceCurrency?: string
+  retiredAt?: ISODateTime
+  retirementKind?: RetirementKind
+  status?: ComponentStatus
+  createdAt?: ISODateTime
+}
+
+// editable subset — lifecycle fields (retiredAt, retirementKind, status) change via actions only
+export type ComponentInput = Omit<
+  Component,
+  'id' | 'retiredAt' | 'retirementKind' | 'status' | 'createdAt'
+>
+
+export interface DismountRequest {
+  at: ISODateTime
+}
+
+export interface RetireComponentRequest {
+  at: ISODateTime
+  kind: RetirementKind
+}
+
+export interface CorrectMountingRequest {
+  mountedAt?: ISODateTime
+  // tri-state: value sets, key absent keeps, explicit null re-opens
+  dismountedAt?: ISODateTime | null
+}
+
+// ============== Mountings (common) ==============
+
+export interface Mounting {
+  id: UUID
+  componentId: UUID
+  mountPointId: UUID
+  bikeId: UUID
+  mountPointName: string
+  assemblyMountingId?: UUID
+  mountedAt: ISODateTime
+  dismountedAt?: ISODateTime | null
+  createdAt?: ISODateTime
+}
+
+export interface MembershipChange {
+  componentId: UUID
+  assemblySlotId: UUID
+  action: 'added' | 'removed'
+  at: ISODateTime
+}
+
+export interface MountingChanges {
+  created?: Mounting[]
+  closed?: Mounting[]
+  membershipChanges?: MembershipChange[]
+}
+
+// ============== Reports ==============
+
+export type MileageScope = 'components' | 'bikes'
+
+export interface MileageItem {
+  componentId?: UUID
+  label?: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+  bikeId?: UUID
+  bikeName?: string
+  bikeModel?: string
+  distance: number
+  durationMoving: number
+  ascent: number
+  descent: number
+  powerTotal?: number
 }
 
 export interface Tour {
