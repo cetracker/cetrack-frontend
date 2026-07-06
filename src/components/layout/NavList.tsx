@@ -10,6 +10,7 @@ import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
 import MapIcon from '@mui/icons-material/Map'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import AssessmentIcon from '@mui/icons-material/Assessment'
+import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import { NavLink } from 'react-router-dom'
 import type { ReactNode } from 'react'
 
@@ -24,6 +25,7 @@ const entries: NavEntry[] = [
   { to: '/components', label: 'Components', icon: <SettingsIcon />, tour: 'components' },
   { to: '/catalog', label: 'Component Types', icon: <CategoryIcon />, tour: 'componentTypes' },
   { to: '/bikes', label: 'Bikes', icon: <DirectionsBikeIcon />, tour: 'bikes' },
+  { to: '/assemblies', label: 'Assemblies', icon: <AccountTreeIcon />, tour: 'assemblies' },
   { to: '/tours', label: 'Tours', icon: <MapIcon />, tour: 'tours' },
   { to: '/tourImport', label: 'Import Tours', icon: <UploadFileIcon />, tour: 'tourImport' },
   { to: '/report', label: 'Report', icon: <AssessmentIcon />, tour: 'report' },

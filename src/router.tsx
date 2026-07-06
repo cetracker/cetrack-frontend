@@ -33,6 +33,12 @@ const MyTourbookImportReview = lazy(() =>
 const MileageReport = lazy(() =>
   import('./components/report/MileageReport').then((m) => ({ default: m.MileageReport })),
 )
+const AssemblyList = lazy(() =>
+  import('./components/assemblies/AssemblyList').then((m) => ({ default: m.AssemblyList })),
+)
+const AssemblyDetail = lazy(() =>
+  import('./components/assemblies/AssemblyDetail').then((m) => ({ default: m.AssemblyDetail })),
+)
 
 export const router = createBrowserRouter([
   {
@@ -45,6 +51,8 @@ export const router = createBrowserRouter([
       { path: 'catalog', element: <CatalogPage /> },
       { path: 'bikes', element: <BikeList /> },
       { path: 'bikes/:bikeId', element: <BikeDetail /> },
+      { path: 'assemblies', element: <AssemblyList /> },
+      { path: 'assemblies/:assemblyId', element: <AssemblyDetail /> },
       { path: 'tours', element: <TourList /> },
       { path: 'tourImport', element: <TourImport /> },
       { path: 'mytourbookImport', element: <MyTourbookImportReview /> },
