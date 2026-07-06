@@ -12,6 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -20,6 +21,7 @@ import { bikesQuery } from '@/api/bikes'
 import { componentsQuery } from '@/api/components'
 import type { Mounting } from '@/types/api'
 import { bikeIdentity, componentIdentity, formatDateTime } from '@/utils/formatters'
+import { CorrectMountingDialog } from './CorrectMountingDialog'
 
 interface MountingHistoryTableProps {
   mountings: Mounting[]
@@ -34,6 +36,7 @@ export const MountingHistoryTable = ({
   const { data: bikes } = useQuery(bikesQuery())
   const { data: components } = useQuery(componentsQuery())
   const [toVoid, setToVoid] = useState<Mounting | null>(null)
+  const [toCorrect, setToCorrect] = useState<Mounting | null>(null)
 
   const voidMut = useApiMutation(voidMounting, {
     successMessage: 'Mounting voided',
@@ -88,6 +91,17 @@ export const MountingHistoryTable = ({
                 </TableCell>
                 <TableCell align="right">
                   <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                    <Tooltip title={locked ? 'Governed by an assembly mounting' : 'Correct'}>
+                      <span>
+                        <IconButton
+                          size="small"
+                          disabled={locked}
+                          onClick={() => setToCorrect(m)}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </span>
+                    </Tooltip>
                     <Tooltip title={locked ? 'Governed by an assembly mounting' : 'Void'}>
                       <span>
                         <IconButton
@@ -117,6 +131,12 @@ export const MountingHistoryTable = ({
         confirmLabel="Void"
         destructive
         busy={voidMut.isPending}
+      />
+
+      <CorrectMountingDialog
+        open={!!toCorrect}
+        onClose={() => setToCorrect(null)}
+        mounting={toCorrect}
       />
     </>
   )

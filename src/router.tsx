@@ -16,6 +16,9 @@ const CatalogPage = lazy(() =>
 const BikeList = lazy(() =>
   import('./components/bikes/BikeList').then((m) => ({ default: m.BikeList })),
 )
+const BikeDetail = lazy(() =>
+  import('./components/bikes/BikeDetail').then((m) => ({ default: m.BikeDetail })),
+)
 const TourList = lazy(() =>
   import('./components/tours/TourList').then((m) => ({ default: m.TourList })),
 )
@@ -41,6 +44,7 @@ export const router = createBrowserRouter([
       { path: 'components', element: <ComponentList /> },
       { path: 'catalog', element: <CatalogPage /> },
       { path: 'bikes', element: <BikeList /> },
+      { path: 'bikes/:bikeId', element: <BikeDetail /> },
       { path: 'tours', element: <TourList /> },
       { path: 'tourImport', element: <TourImport /> },
       { path: 'mytourbookImport', element: <MyTourbookImportReview /> },

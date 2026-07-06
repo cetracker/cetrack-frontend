@@ -17,6 +17,14 @@ const schema = z
     manufacturer: z.string(),
     model: z.string(),
     purchaseDate: z.date().nullable(),
+    price: z
+      .string()
+      .regex(/^\d+(\.\d+)?$/, 'Use a decimal like 10.57')
+      .or(z.literal('')),
+    priceCurrency: z
+      .string()
+      .regex(/^[A-Z]{3}$/, 'ISO 4217 code, e.g. EUR')
+      .or(z.literal('')),
   })
   .refine((v) => v.name.trim() || v.model.trim(), {
     message: 'Name or model required',
@@ -27,6 +35,7 @@ export type BikeFormValues = z.infer<typeof schema>
 
 const toISODate = (d: Date | null) => (d ? format(d, 'yyyy-MM-dd') : undefined)
 const fromISODate = (s: string | null | undefined) => (s ? parseISO(s) : null)
+const blankToUndef = (s: string) => (s.trim() ? s.trim() : undefined)
 
 interface BikeFormProps {
   open: boolean
@@ -49,6 +58,8 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
       manufacturer: '',
       model: '',
       purchaseDate: null,
+      price: '',
+      priceCurrency: '',
     },
   })
 
@@ -59,6 +70,8 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
         manufacturer: initial?.manufacturer ?? '',
         model: initial?.model ?? '',
         purchaseDate: fromISODate(initial?.purchaseDate),
+        price: initial?.price ?? '',
+        priceCurrency: initial?.priceCurrency ?? '',
       })
     }
   }, [open, initial, reset])
@@ -90,6 +103,8 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
       manufacturer: values.manufacturer.trim() || undefined,
       model: values.model.trim() || undefined,
       purchaseDate: toISODate(values.purchaseDate),
+      price: blankToUndef(values.price),
+      priceCurrency: blankToUndef(values.priceCurrency),
     }
     if (initial) {
       updateMut.mutate({ id: initial.id, bike: payload })
@@ -145,6 +160,34 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
             />
           )}
         />
+        <Stack direction="row" spacing={2}>
+          <Controller
+            control={control}
+            name="price"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Purchase Price"
+                fullWidth
+                error={!!errors.price}
+                helperText={errors.price?.message}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="priceCurrency"
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Currency"
+                sx={{ width: 130 }}
+                error={!!errors.priceCurrency}
+                helperText={errors.priceCurrency?.message}
+              />
+            )}
+          />
+        </Stack>
       </Stack>
     </FormDialog>
   )
