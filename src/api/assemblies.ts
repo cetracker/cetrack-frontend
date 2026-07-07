@@ -1,6 +1,7 @@
 import type { QueryClient } from '@tanstack/react-query'
 import { client } from './client'
 import { invalidateAfterMountingChanges } from './mountings'
+import { membershipsRootKey } from './memberships'
 import type {
   AddMemberRequest,
   Assembly,
@@ -156,7 +157,8 @@ export const dismountAssembly = async (
  * Composes the mounting-side invalidation (mountings+components+reports) with
  * assembly-side invalidation — the assembly list/detail carry derived
  * complete/mounted flags and slot membership that also change on every
- * addMember/removeMember/mount/dismount.
+ * addMember/removeMember/mount/dismount. memberships is a separate top-level
+ * key, not covered by the assemblies-prefix invalidation.
  */
 export const invalidateAfterAssemblyMountingChanges = (
   qc: QueryClient,
@@ -166,4 +168,5 @@ export const invalidateAfterAssemblyMountingChanges = (
     invalidateAfterMountingChanges(qc),
     qc.invalidateQueries({ queryKey: assembliesQueryKey }),
     qc.invalidateQueries({ queryKey: assemblyQueryKey(assemblyId) }),
+    qc.invalidateQueries({ queryKey: membershipsRootKey }),
   ])

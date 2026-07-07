@@ -15,7 +15,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import HistoryIcon from '@mui/icons-material/History'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -26,7 +26,7 @@ import { componentsQuery } from '@/api/components'
 import type { Assembly, AssemblySlot } from '@/types/api'
 import { componentIdentity, formatDateTime } from '@/utils/formatters'
 import { AssemblySlotForm } from './AssemblySlotForm'
-import { AddMemberDialog } from './AddMemberDialog'
+import { SlotMemberHistoryDrawer } from './SlotMemberHistoryDrawer'
 import { RemoveMemberDialog } from './RemoveMemberDialog'
 
 interface AssemblySlotsTableProps {
@@ -41,7 +41,7 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
   const [formOpen, setFormOpen] = useState(false)
   const [editSlot, setEditSlot] = useState<AssemblySlot | null>(null)
   const [toDelete, setToDelete] = useState<AssemblySlot | null>(null)
-  const [addMemberSlot, setAddMemberSlot] = useState<AssemblySlot | null>(null)
+  const [historySlot, setHistorySlot] = useState<AssemblySlot | null>(null)
   const [removeMemberComponentId, setRemoveMemberComponentId] = useState<string | null>(null)
 
   const typeNameById = new Map((componentTypes ?? []).map((t) => [t.id, t.name]))
@@ -116,13 +116,11 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                   </TableCell>
                   <TableCell align="right">
                     <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                      {!slot.memberComponentId && (
-                        <Tooltip title="Add member">
-                          <IconButton size="small" onClick={() => setAddMemberSlot(slot)}>
-                            <PersonAddIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      )}
+                      <Tooltip title="Member history">
+                        <IconButton size="small" onClick={() => setHistorySlot(slot)}>
+                          <HistoryIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                       {slot.memberComponentId && (
                         <Tooltip title="Remove member">
                           <IconButton
@@ -176,12 +174,12 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
         busy={deleteMut.isPending}
       />
 
-      <AddMemberDialog
-        open={!!addMemberSlot}
-        onClose={() => setAddMemberSlot(null)}
+      <SlotMemberHistoryDrawer
+        open={!!historySlot}
+        onClose={() => setHistorySlot(null)}
         assemblyId={assembly.id}
         assembly={assembly}
-        slot={addMemberSlot}
+        slot={historySlot}
       />
 
       {removeMemberComponentId && (

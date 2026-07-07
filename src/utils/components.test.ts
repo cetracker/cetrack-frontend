@@ -4,8 +4,9 @@ import {
   buildCorrectMountingBody,
   isComponentRetired,
   reuseCandidateComponentIds,
+  reuseCandidateMemberComponentIds,
 } from './components'
-import type { Component, Mounting } from '@/types/api'
+import type { AssemblyMembership, Component, Mounting } from '@/types/api'
 
 describe('isComponentRetired', () => {
   it('is true only when status is retired', () => {
@@ -80,5 +81,30 @@ describe('reuseCandidateComponentIds', () => {
 
   it('returns an empty list when nothing has ever been dismounted here', () => {
     expect(reuseCandidateComponentIds([open('c1')])).toEqual([])
+  })
+})
+
+describe('reuseCandidateMemberComponentIds', () => {
+  const closed = (componentId: string, memberTo: string): AssemblyMembership =>
+    ({ id: `${componentId}-${memberTo}`, componentId, memberTo }) as AssemblyMembership
+  const open = (componentId: string): AssemblyMembership =>
+    ({ id: `${componentId}-active`, componentId }) as AssemblyMembership
+
+  it('lists each unique component once, most-recently-ended first (CE-0105)', () => {
+    const memberships = [
+      closed('c1', '2026-01-01T00:00:00Z'),
+      closed('c1', '2026-03-01T00:00:00Z'),
+      closed('c2', '2026-02-01T00:00:00Z'),
+    ]
+    expect(reuseCandidateMemberComponentIds(memberships)).toEqual(['c1', 'c2'])
+  })
+
+  it('excludes the component currently an active member of this slot', () => {
+    const memberships = [closed('c1', '2026-01-01T00:00:00Z'), open('c1')]
+    expect(reuseCandidateMemberComponentIds(memberships)).toEqual([])
+  })
+
+  it('returns an empty list when nothing has ever been a member here', () => {
+    expect(reuseCandidateMemberComponentIds([open('c1')])).toEqual([])
   })
 })

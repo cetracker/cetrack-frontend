@@ -1,4 +1,5 @@
 import type {
+  AssemblyMembership,
   Component,
   ComponentStatus,
   CorrectMountingRequest,
@@ -31,6 +32,29 @@ export const reuseCandidateComponentIds = (mountings: Mounting[]): string[] => {
     .filter((m) => m.dismountedAt && !activeIds.has(m.componentId))
     .slice()
     .sort((a, b) => (b.dismountedAt ?? '').localeCompare(a.dismountedAt ?? ''))
+  const seen = new Set<string>()
+  const result: string[] = []
+  for (const m of closed) {
+    if (seen.has(m.componentId)) continue
+    seen.add(m.componentId)
+    result.push(m.componentId)
+  }
+  return result
+}
+
+/**
+ * Componentids previously a member of this slot, most-recently-ended first,
+ * each listed once (CE-0105: the re-use action shows once per unique
+ * component, not once per historical membership). Excludes the component(s)
+ * currently active in the slot — re-using the current member is a no-op.
+ * Mirrors reuseCandidateComponentIds, keyed on memberTo instead of dismountedAt.
+ */
+export const reuseCandidateMemberComponentIds = (memberships: AssemblyMembership[]): string[] => {
+  const activeIds = new Set(memberships.filter((m) => !m.memberTo).map((m) => m.componentId))
+  const closed = memberships
+    .filter((m) => m.memberTo && !activeIds.has(m.componentId))
+    .slice()
+    .sort((a, b) => (b.memberTo ?? '').localeCompare(a.memberTo ?? ''))
   const seen = new Set<string>()
   const result: string[] = []
   for (const m of closed) {

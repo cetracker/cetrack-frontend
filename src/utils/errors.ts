@@ -32,7 +32,6 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
   ASSEMBLY_SLOT_IN_USE:
     'This slot still has membership history — end its validity instead of deleting it.',
   ALREADY_MEMBER: 'This component already belongs to an assembly.',
-  SLOT_OCCUPIED: 'This slot already has an active member.',
 }
 
 /** Map known Error.code values to friendly text; fall back to the server message. */

@@ -325,6 +325,16 @@ export interface AssemblyMounting {
   createdAt?: ISODateTime
 }
 
+export interface AssemblyMembership {
+  id: UUID
+  componentId: UUID
+  assemblySlotId: UUID
+  assemblyId: UUID
+  memberFrom: ISODateTime
+  memberTo?: ISODateTime | null
+  createdAt?: ISODateTime
+}
+
 export interface AddMemberRequest {
   componentId: UUID
   slotId: UUID
