@@ -15,16 +15,29 @@ vi.mock('@/api/assemblies', async (importOriginal) => {
   return { ...actual, addAssemblyMember: vi.fn() }
 })
 
+const componentsQueryMock = vi.fn()
+
 vi.mock('@/api/components', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/api/components')>()
   return {
     ...actual,
-    componentsQuery: () => ({
-      queryKey: actual.componentsQueryKey(),
-      queryFn: async () => [
-        { id: 'c1', componentTypeId: 'ct1', label: 'Component One', status: 'inStock' },
-      ],
-    }),
+    componentsQuery: (filters: unknown) => {
+      componentsQueryMock(filters)
+      return {
+        queryKey: actual.componentsQueryKey(filters as never),
+        queryFn: async () => [
+          { id: 'c1', componentTypeId: 'ct1', label: 'Component One', status: 'inStock' },
+          {
+            id: 'c2',
+            componentTypeId: 'ct1',
+            label: 'Component Two',
+            status: 'mounted',
+            directlyMounted: true,
+          },
+          { id: 'c3', componentTypeId: 'ct1', label: 'Component Three', status: 'retired' },
+        ],
+      }
+    },
   }
 })
 
@@ -72,6 +85,37 @@ const pickComponent = async (user: ReturnType<typeof userEvent.setup>) => {
 describe('AddMemberDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  it('queries by componentTypeId only - no status filter (CE-0106: mounted components are candidates)', async () => {
+    renderDialog()
+    await screen.findByRole('combobox', { name: /component/i })
+    expect(componentsQueryMock).toHaveBeenCalledWith({ componentTypeId: 'ct1' })
+  })
+
+  it('lists a directly-mounted candidate with a Mounted pill, excludes retired', async () => {
+    const user = userEvent.setup()
+    renderDialog()
+
+    await user.click(screen.getByRole('combobox', { name: /component/i }))
+    const mountedOption = await screen.findByRole('option', { name: /Component Two/ })
+    expect(mountedOption).toHaveTextContent('Mounted')
+    expect(screen.getByRole('option', { name: 'Component One' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: /Component Three/ })).not.toBeInTheDocument()
+  })
+
+  it('adds a directly-mounted component without a dismount side effect', async () => {
+    const user = userEvent.setup()
+    vi.mocked(assembliesApi.addAssemblyMember).mockResolvedValueOnce({})
+    renderDialog()
+
+    await user.click(screen.getByRole('combobox', { name: /component/i }))
+    await user.click(await screen.findByRole('option', { name: /Component Two/ }))
+    await user.click(screen.getByRole('button', { name: /^add$/i }))
+
+    expect(assembliesApi.addAssemblyMember).toHaveBeenCalledTimes(1)
+    const [, body] = vi.mocked(assembliesApi.addAssemblyMember).mock.calls[0]
+    expect(body.componentId).toBe('c2')
   })
 
   it('shows a candidate picker after a 409 UNRESOLVED_SLOTS, then resubmits with the chosen mountPointId', async () => {

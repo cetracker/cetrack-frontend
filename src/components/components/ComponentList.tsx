@@ -15,7 +15,7 @@ import { ComponentForm } from './ComponentForm'
 import { ComponentDetail } from './ComponentDetail'
 import { ComponentInfoCell } from './ComponentInfoCell'
 import { bikeIdentity, componentIdentity, formatDate } from '@/utils/formatters'
-import { STATUS_LABEL } from '@/utils/components'
+import { STATUS_LABEL, componentStatusLabel } from '@/utils/components'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -58,7 +58,7 @@ const buildColumns = (
     header: 'Status',
     accessorFn: (c) => c.status ?? '',
     cell: ({ row }) =>
-      row.original.status ? <Chip label={STATUS_LABEL[row.original.status]} size="small" /> : null,
+      row.original.status ? <Chip label={componentStatusLabel(row.original)} size="small" /> : null,
   },
   {
     id: 'currentUsage',

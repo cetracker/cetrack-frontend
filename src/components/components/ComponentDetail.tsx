@@ -19,7 +19,7 @@ import { DismountDialog } from './DismountDialog'
 import { RetireComponentDialog } from './RetireComponentDialog'
 import { MountComponentDialog } from './MountComponentDialog'
 import { formatDate, componentIdentity } from '@/utils/formatters'
-import { STATUS_LABEL } from '@/utils/components'
+import { componentStatusLabel } from '@/utils/components'
 
 interface ComponentDetailProps {
   open: boolean
@@ -77,7 +77,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           </Typography>
           {component?.status && (
             <Chip
-              label={STATUS_LABEL[component.status]}
+              label={componentStatusLabel(component)}
               color={STATUS_COLOR[component.status]}
               size="small"
             />

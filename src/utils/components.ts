@@ -21,6 +21,18 @@ export const STATUS_LABEL: Record<ComponentStatus, string> = {
 }
 
 /**
+ * Mounted covers both a component's own direct mounting and one it only holds
+ * because its assembly is mounted (CE-0106: directlyMounted disambiguates
+ * the two - both report status=mounted).
+ */
+export const componentStatusLabel = (component: Component): string =>
+  component.status === 'mounted' && !component.directlyMounted
+    ? 'Mounted (via assembly)'
+    : component.status
+      ? STATUS_LABEL[component.status]
+      : ''
+
+/**
  * Componentids previously mounted at this mount point, most-recently-dismounted
  * first, each listed once (CE-0011: the re-use action shows once per unique
  * component, not once per historical mounting). Excludes the component(s)

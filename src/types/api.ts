@@ -85,6 +85,7 @@ export interface Component {
   retiredAt?: ISODateTime
   retirementKind?: RetirementKind
   status?: ComponentStatus
+  directlyMounted?: boolean
   createdAt?: ISODateTime
 }
 
