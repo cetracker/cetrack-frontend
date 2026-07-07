@@ -5,6 +5,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { componentsQuery, componentsQueryKey, deleteComponent } from '@/api/components'
 import { componentTypesQuery } from '@/api/catalog'
+import { mountingsQuery } from '@/api/mountings'
+import { bikesQuery } from '@/api/bikes'
 import type { Component, ComponentStatus } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
 import { RowActions } from '@/components/common/RowActions'
@@ -12,7 +14,7 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { ComponentForm } from './ComponentForm'
 import { ComponentDetail } from './ComponentDetail'
 import { ComponentInfoCell } from './ComponentInfoCell'
-import { componentIdentity, formatDate } from '@/utils/formatters'
+import { bikeIdentity, componentIdentity, formatDate } from '@/utils/formatters'
 import { STATUS_LABEL } from '@/utils/components'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -27,6 +29,7 @@ interface ActionsCellProps {
 const ActionsCell = ({ component, onEdit, onDelete, onOpenDetail }: ActionsCellProps) => (
   <RowActions
     onOpenRelations={() => onOpenDetail(component)}
+    relationsLabel="Show details"
     onEdit={() => onEdit(component)}
     onDelete={() => onDelete(component)}
   />
@@ -34,6 +37,7 @@ const ActionsCell = ({ component, onEdit, onDelete, onOpenDetail }: ActionsCellP
 
 const buildColumns = (
   typeNameById: Map<string, string>,
+  usageByComponentId: Map<string, string>,
   onEdit: (component: Component) => void,
   onDelete: (component: Component) => void,
   onOpenDetail: (component: Component) => void,
@@ -55,6 +59,12 @@ const buildColumns = (
     accessorFn: (c) => c.status ?? '',
     cell: ({ row }) =>
       row.original.status ? <Chip label={STATUS_LABEL[row.original.status]} size="small" /> : null,
+  },
+  {
+    id: 'currentUsage',
+    header: 'Currently In Use As',
+    accessorFn: (c) => usageByComponentId.get(c.id) ?? '',
+    meta: { hideOnMobile: true },
   },
   {
     accessorKey: 'purchaseDate',
@@ -96,6 +106,23 @@ export const ComponentList = () => {
     [componentTypes],
   )
 
+  const { data: mountings } = useQuery(mountingsQuery({}))
+  const { data: bikes } = useQuery(bikesQuery())
+  const bikeById = useMemo(
+    () => new Map((bikes ?? []).map((b) => [b.id, b])),
+    [bikes],
+  )
+  const usageByComponentId = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const m of mountings ?? []) {
+      if (m.dismountedAt) continue
+      const bike = bikeById.get(m.bikeId)
+      if (!bike) continue
+      map.set(m.componentId, `${m.mountPointName} on ${bikeIdentity(bike)}`)
+    }
+    return map
+  }, [mountings, bikeById])
+
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'identity', desc: false },
@@ -126,12 +153,12 @@ export const ComponentList = () => {
   }
 
   const columns = useMemo(
-    () => buildColumns(typeNameById, openEdit, setToDelete, openDetail),
-    [typeNameById],
+    () => buildColumns(typeNameById, usageByComponentId, openEdit, setToDelete, openDetail),
+    [typeNameById, usageByComponentId],
   )
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h5' }}>Components</Box>
         <Stack sx={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
@@ -174,6 +201,7 @@ export const ComponentList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(c) => openDetail(c)}
+        fillHeight
       />
 
       <ComponentForm
