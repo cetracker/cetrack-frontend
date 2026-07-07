@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   activeMounting,
   buildCorrectMountingBody,
+  componentStatusLabel,
   isComponentRetired,
   reuseCandidateComponentIds,
   reuseCandidateMemberComponentIds,
@@ -12,6 +13,33 @@ describe('isComponentRetired', () => {
   it('is true only when status is retired', () => {
     expect(isComponentRetired({ status: 'retired' } as Component)).toBe(true)
     expect(isComponentRetired({ status: 'mounted' } as Component)).toBe(false)
+  })
+})
+
+describe('componentStatusLabel', () => {
+  it('labels a directly-mounted component "Mounted" (CE-0106)', () => {
+    expect(
+      componentStatusLabel({ status: 'mounted', directlyMounted: true } as Component),
+    ).toBe('Mounted')
+  })
+
+  it('disambiguates a governed (via-assembly) mounting as "Mounted (via assembly)"', () => {
+    expect(
+      componentStatusLabel({ status: 'mounted', directlyMounted: false } as Component),
+    ).toBe('Mounted (via assembly)')
+    expect(componentStatusLabel({ status: 'mounted' } as Component)).toBe(
+      'Mounted (via assembly)',
+    )
+  })
+
+  it('falls through to the plain status label for non-mounted statuses', () => {
+    expect(componentStatusLabel({ status: 'inStock' } as Component)).toBe('In stock')
+    expect(componentStatusLabel({ status: 'inAssembly' } as Component)).toBe('In assembly')
+    expect(componentStatusLabel({ status: 'retired' } as Component)).toBe('Retired')
+  })
+
+  it('returns an empty string when status is absent', () => {
+    expect(componentStatusLabel({} as Component)).toBe('')
   })
 })
 

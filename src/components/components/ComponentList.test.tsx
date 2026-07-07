@@ -106,6 +106,20 @@ describe('ComponentList', () => {
     expect(await screen.findByText('Spare Wheel')).toBeInTheDocument()
   })
 
+  it('distinguishes a direct mounting from a governed one in the status chip (CE-0106)', async () => {
+    componentsData = [
+      { id: 'c1', componentTypeId: 'ct1', label: 'Direct', status: 'mounted', directlyMounted: true },
+      { id: 'c2', componentTypeId: 'ct1', label: 'Via Assembly', status: 'mounted', directlyMounted: false },
+    ]
+    mountingsData = []
+
+    renderList()
+
+    expect(await screen.findByText('Direct')).toBeInTheDocument()
+    expect(screen.getByText('Mounted')).toBeInTheDocument()
+    expect(screen.getByText('Mounted (via assembly)')).toBeInTheDocument()
+  })
+
   it('shows "Show details" as the row action tooltip label', async () => {
     componentsData = [
       { id: 'c1', componentTypeId: 'ct1', label: 'Wheel A', status: 'inStock' },
