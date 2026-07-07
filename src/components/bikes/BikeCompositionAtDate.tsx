@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import {
-  Box,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Stack,
   Table,
   TableBody,
@@ -9,13 +11,15 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery } from '@tanstack/react-query'
 import { mountPointsQuery } from '@/api/bikes'
 import { componentTypesQuery, positionsQuery } from '@/api/catalog'
 import { componentsQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
-import { componentIdentity, formatDateTime, withLocalOffset } from '@/utils/formatters'
+import { ComponentInfoCell } from '@/components/components/ComponentInfoCell'
+import { formatDateTime, withLocalOffset } from '@/utils/formatters'
 
 interface BikeCompositionAtDateProps {
   bikeId: string
@@ -41,8 +45,12 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
   const rows = (mountPoints ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))
 
   return (
-    <Box>
-      <Stack sx={{ mb: 1 }}>
+    <Accordion defaultExpanded disableGutters>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography>Composition snapshot</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+      <Stack sx={{ mb: 1, alignItems: 'flex-start' }}>
         <DateTimePicker
           label="Composition at"
           value={at}
@@ -77,12 +85,12 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
                     <TableCell>{mp.positionId ? positionNameById.get(mp.positionId) ?? '' : ''}</TableCell>
                     <TableCell>
                       {mounting && component ? (
-                        <>
-                          {componentIdentity(component)}{' '}
+                        <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                          <ComponentInfoCell component={component} />
                           <Typography component="span" variant="caption" color="text.secondary">
                             since {formatDateTime(mounting.mountedAt)}
                           </Typography>
-                        </>
+                        </Stack>
                       ) : (
                         '—'
                       )}
@@ -94,6 +102,7 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
           </Table>
         )
       )}
-    </Box>
+      </AccordionDetails>
+    </Accordion>
   )
 }

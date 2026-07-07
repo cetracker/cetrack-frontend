@@ -113,4 +113,25 @@ describe('BikeCompositionAtDate', () => {
 
     expect(await screen.findByText('Comp A')).toBeInTheDocument()
   })
+
+  it('shows the (i) info button for a mounted component with details', async () => {
+    componentsData = [{ ...component, manufacturer: 'Shimano' }]
+    mountingsData = [
+      {
+        id: 'm1',
+        componentId: 'c1',
+        mountPointId: 'mp1',
+        bikeId: 'b1',
+        mountPointName: 'Front wheel',
+        mountedAt: '2026-01-01T00:00:00Z',
+        dismountedAt: '2026-06-01T00:00:00Z',
+      },
+    ]
+
+    renderSnapshot()
+
+    expect(
+      await screen.findByRole('button', { name: 'Component details' }),
+    ).toBeInTheDocument()
+  })
 })
