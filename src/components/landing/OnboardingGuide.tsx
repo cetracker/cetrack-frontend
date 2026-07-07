@@ -2,41 +2,58 @@ import { useState } from 'react'
 import { Box, Collapse, Typography, useTheme } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { StepCard } from './StepCard'
-import bikeLight from '@/assets/landing/1_bike_light.png'
-import bikeDark from '@/assets/landing/1_bike_dark.png'
-import partTypesLight from '@/assets/landing/2_partTypes_light.png'
-import partTypesDark from '@/assets/landing/2_partTypes_dark.png'
-import partsLight from '@/assets/landing/3_parts_light.png'
-import partsDark from '@/assets/landing/3_parts_dark.png'
-import importLight from '@/assets/landing/4_tour_import_light.png'
-import importDark from '@/assets/landing/4_tour_import_dark.png'
-import toursLight from '@/assets/landing/5_tours_light.png'
-import toursDark from '@/assets/landing/5_tours_dark.png'
-import reportLight from '@/assets/landing/6_report_light.png'
-import reportDark from '@/assets/landing/6_report_dark.png'
+import componentTypesLight from '@/assets/landing/componentTypes_light.png'
+import componentTypesDark from '@/assets/landing/componentTypes_dark.png'
+import bikesLight from '@/assets/landing/bikes_light.png'
+import bikesDark from '@/assets/landing/bikes_dark.png'
+import componentsLight from '@/assets/landing/components_light.png'
+import componentsDark from '@/assets/landing/components_dark.png'
+import assembliesLight from '@/assets/landing/assemblies_light.png'
+import assembliesDark from '@/assets/landing/assemblies_dark.png'
+import tourImportLight from '@/assets/landing/tourImport_light.png'
+import tourImportDark from '@/assets/landing/tourImport_dark.png'
+import toursLight from '@/assets/landing/tours_light.png'
+import toursDark from '@/assets/landing/tours_dark.png'
+import maintenanceLight from '@/assets/landing/maintenance_light.png'
+import maintenanceDark from '@/assets/landing/maintenance_dark.png'
+import reportLight from '@/assets/landing/report_light.png'
+import reportDark from '@/assets/landing/report_dark.png'
 
 const steps = [
-  { to: '/bikes', title: 'Bikes', body: 'Create one or more bikes.', light: bikeLight, dark: bikeDark },
   {
     to: '/catalog',
     title: 'Component Types',
-    body: 'Define the component types each bike needs.',
-    light: partTypesLight,
-    dark: partTypesDark,
+    body: 'Define the component types you want to track — chain, tyres, brake pads…',
+    light: componentTypesLight,
+    dark: componentTypesDark,
+  },
+  {
+    to: '/bikes',
+    title: 'Bikes',
+    body: "Create your bikes and give each one mount points — the places a component type fits.",
+    light: bikesLight,
+    dark: bikesDark,
   },
   {
     to: '/components',
     title: 'Components',
-    body: 'Add your physical components and mount them to a bike.',
-    light: partsLight,
-    dark: partsDark,
+    body: "Add your physical components and mount them at a bike's mount points.",
+    light: componentsLight,
+    dark: componentsDark,
+  },
+  {
+    to: '/assemblies',
+    title: 'Assemblies',
+    body: 'Group components, e.g. into a wheelset, and mount or swap them as one unit.',
+    light: assembliesLight,
+    dark: assembliesDark,
   },
   {
     to: '/tourImport',
     title: 'Import Tours',
     body: 'Import tours from a .FIT file or a MyTourbook export.',
-    light: importLight,
-    dark: importDark,
+    light: tourImportLight,
+    dark: tourImportDark,
   },
   {
     to: '/tours',
@@ -44,6 +61,13 @@ const steps = [
     body: 'Inspect the tours you have imported.',
     light: toursLight,
     dark: toursDark,
+  },
+  {
+    to: '/maintenance',
+    title: 'Maintenance',
+    body: "Set up recurring maintenance tasks per bike and log when they're done.",
+    light: maintenanceLight,
+    dark: maintenanceDark,
   },
   {
     to: '/report',

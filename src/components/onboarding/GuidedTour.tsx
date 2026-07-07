@@ -9,11 +9,13 @@ interface TourStep {
 }
 
 const steps: TourStep[] = [
-  { nav: 'bikes', title: 'Bikes', body: 'Start by creating the bikes you ride.' },
-  { nav: 'componentTypes', title: 'Component Types', body: 'Define the component types each bike needs, e.g. chain or tyres.' },
+  { nav: 'componentTypes', title: 'Component Types', body: 'Define the component types you want to track, e.g. chain or tyres.' },
+  { nav: 'bikes', title: 'Bikes', body: 'Create your bikes and give each one mount points.' },
   { nav: 'components', title: 'Components', body: 'Add your physical components and mount them to a bike.' },
+  { nav: 'assemblies', title: 'Assemblies', body: 'Group components, e.g. into a wheelset, and mount or swap them as one unit.' },
   { nav: 'tourImport', title: 'Import Tours', body: 'Import tours from a .FIT file or a MyTourbook export.' },
   { nav: 'tours', title: 'Tours', body: 'Review the tours you have imported.' },
+  { nav: 'maintenance', title: 'Maintenance', body: "Set up recurring maintenance tasks and log when they're done." },
   { nav: 'report', title: 'Report', body: 'Inspect usage statistics to plan maintenance.' },
 ]
 

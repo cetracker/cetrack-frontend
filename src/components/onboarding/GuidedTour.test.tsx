@@ -9,7 +9,16 @@ import { OnboardingProvider } from '@/App'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { GuidedTour } from './GuidedTour'
 
-const NAV_KEYS = ['bikes', 'componentTypes', 'components', 'tourImport', 'tours', 'report']
+const NAV_KEYS = [
+  'componentTypes',
+  'bikes',
+  'components',
+  'assemblies',
+  'tourImport',
+  'tours',
+  'maintenance',
+  'report',
+]
 
 const StartTour = () => {
   const { startTour } = useOnboarding()
@@ -36,11 +45,11 @@ const renderTour = () =>
 beforeEach(() => localStorage.clear())
 
 describe('GuidedTour', () => {
-  it('starts on the first step with 6 progress dots and no Back button', () => {
+  it('starts on the first step with 8 progress dots and no Back button', () => {
     renderTour()
 
-    expect(screen.getByText('Bikes')).toBeInTheDocument()
-    expect(screen.getAllByTestId('tour-progress-dot')).toHaveLength(6)
+    expect(screen.getByText('Component Types')).toBeInTheDocument()
+    expect(screen.getAllByTestId('tour-progress-dot')).toHaveLength(8)
     expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument()
   })
 
@@ -49,10 +58,10 @@ describe('GuidedTour', () => {
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: 'Next' }))
-    expect(screen.getByText('Component Types')).toBeInTheDocument()
+    expect(screen.getByText('Bikes')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Back' }))
-    expect(screen.getByText('Bikes')).toBeInTheDocument()
+    expect(screen.getByText('Component Types')).toBeInTheDocument()
   })
 
   it('clamps at the last step, showing Finish instead of Next', async () => {
@@ -73,7 +82,7 @@ describe('GuidedTour', () => {
 
     await user.click(screen.getByRole('button', { name: 'Skip' }))
 
-    expect(screen.queryByText('Bikes')).not.toBeInTheDocument()
+    expect(screen.queryByText('Component Types')).not.toBeInTheDocument()
     expect(localStorage.getItem('cetrack:onboarded')).toBe('true')
   })
 
@@ -82,7 +91,7 @@ describe('GuidedTour', () => {
 
     fireEvent.keyDown(window, { key: 'Escape' })
 
-    expect(screen.queryByText('Bikes')).not.toBeInTheDocument()
+    expect(screen.queryByText('Component Types')).not.toBeInTheDocument()
     expect(localStorage.getItem('cetrack:onboarded')).toBe('true')
   })
 

@@ -22,13 +22,18 @@ const renderIndex = () =>
 beforeEach(() => localStorage.clear())
 
 describe('Index', () => {
-  it('shows the 6-step getting-started guide and a welcome dialog on first visit', () => {
+  it('shows the 8-step getting-started guide and a welcome dialog on first visit', () => {
     renderIndex()
 
     // Cards render behind the modal; the open dialog aria-hides the app, so query card
     // text rather than roles here.
+    expect(screen.getByText('Component Types')).toBeInTheDocument()
     expect(screen.getByText('Bikes')).toBeInTheDocument()
+    expect(screen.getByText('Components')).toBeInTheDocument()
+    expect(screen.getByText('Assemblies')).toBeInTheDocument()
     expect(screen.getByText('Import Tours')).toBeInTheDocument()
+    expect(screen.getByText('Tours')).toBeInTheDocument()
+    expect(screen.getByText('Maintenance')).toBeInTheDocument()
     expect(screen.getByText('Report')).toBeInTheDocument()
     expect(screen.getByText(/\.FIT file or a MyTourbook export/i)).toBeInTheDocument()
     expect(screen.getByRole('dialog')).toHaveTextContent(/Welcome to CETracker/i)
@@ -39,7 +44,7 @@ describe('Index', () => {
     renderIndex()
 
     expect(screen.getByRole('heading', { name: 'Getting started' })).toBeInTheDocument()
-    expect(screen.getByText('Bikes')).toBeInTheDocument()
+    expect(screen.getByText('Component Types')).toBeInTheDocument()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
