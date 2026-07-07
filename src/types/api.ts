@@ -429,6 +429,7 @@ export interface MaintenanceEvent {
   maintenanceTaskId: UUID
   performedAt: ISODateTime
   createdAt?: ISODateTime
+  distanceSincePrevious?: number
 }
 
 export type MaintenanceEventInput = {

@@ -12,7 +12,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteMaintenanceEvent, invalidateMaintenance, maintenanceEventsQuery } from '@/api/maintenance'
-import { formatDateTime } from '@/utils/formatters'
+import { formatDateTime, formatDistanceKm } from '@/utils/formatters'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import type { MaintenanceEvent } from '@/types/api'
@@ -51,6 +51,7 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
           <TableRow>
             <TableCell>Performed at</TableCell>
             <TableCell>Logged</TableCell>
+            <TableCell>Ridden since previous</TableCell>
             <TableCell align="right" />
           </TableRow>
         </TableHead>
@@ -59,6 +60,7 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
             <TableRow key={e.id}>
               <TableCell>{formatDateTime(e.performedAt)}</TableCell>
               <TableCell>{formatDateTime(e.createdAt)}</TableCell>
+              <TableCell>{e.distanceSincePrevious != null ? `${formatDistanceKm(e.distanceSincePrevious)} km` : ''}</TableCell>
               <TableCell align="right">
                 <Tooltip title="Delete">
                   <IconButton size="small" color="error" onClick={() => setToDelete(e)}>
