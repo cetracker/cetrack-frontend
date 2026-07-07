@@ -33,7 +33,7 @@ import type { MountPoint } from '@/types/api'
 import { componentIdentity, formatDateTime } from '@/utils/formatters'
 import { activeMounting } from '@/utils/components'
 import { MountPointForm } from './MountPointForm'
-import { MountDialog } from './MountDialog'
+import { MountPointHistoryDrawer } from './MountPointHistoryDrawer'
 import { DismountDialog } from '@/components/components/DismountDialog'
 
 interface CompositionTableProps {
@@ -52,7 +52,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
 
   const [formOpen, setFormOpen] = useState(false)
   const [editMountPoint, setEditMountPoint] = useState<MountPoint | null>(null)
-  const [mountTarget, setMountTarget] = useState<MountPoint | null>(null)
+  const [historyTarget, setHistoryTarget] = useState<MountPoint | null>(null)
   const [dismountComponentId, setDismountComponentId] = useState<string | null>(null)
   const [toDelete, setToDelete] = useState<MountPoint | null>(null)
 
@@ -133,7 +133,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                   <TableCell align="right">
                     <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
                       <Tooltip title={active ? 'Swap' : 'Mount'}>
-                        <IconButton size="small" onClick={() => setMountTarget(mp)}>
+                        <IconButton size="small" onClick={() => setHistoryTarget(mp)}>
                           <SwapHorizIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
@@ -179,11 +179,11 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
         initial={editMountPoint}
       />
 
-      <MountDialog
-        open={!!mountTarget}
-        onClose={() => setMountTarget(null)}
+      <MountPointHistoryDrawer
+        open={!!historyTarget}
+        onClose={() => setHistoryTarget(null)}
         bikeId={bikeId}
-        mountPoint={mountTarget}
+        mountPoint={historyTarget}
       />
 
       {dismountComponentId && (

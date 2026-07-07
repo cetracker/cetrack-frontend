@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
+import CachedIcon from '@mui/icons-material/Cached'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -26,11 +27,15 @@ import { CorrectMountingDialog } from './CorrectMountingDialog'
 interface MountingHistoryTableProps {
   mountings: Mounting[]
   perspective: 'component' | 'bike'
+  onReuse?: (componentId: string) => void
+  reuseComponentIds?: string[]
 }
 
 export const MountingHistoryTable = ({
   mountings,
   perspective,
+  onReuse,
+  reuseComponentIds,
 }: MountingHistoryTableProps) => {
   const qc = useQueryClient()
   const { data: bikes } = useQuery(bikesQuery())
@@ -56,6 +61,9 @@ export const MountingHistoryTable = ({
 
   const sorted = mountings.slice().sort((a, b) => b.mountedAt.localeCompare(a.mountedAt))
 
+  const reuseIdSet = new Set(reuseComponentIds ?? [])
+  const seenComponentIds = new Set<string>()
+
   if (sorted.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
@@ -69,6 +77,7 @@ export const MountingHistoryTable = ({
       <Table size="small">
         <TableHead>
           <TableRow>
+            {onReuse && <TableCell />}
             <TableCell>{perspective === 'component' ? 'Mount Point' : 'Component'}</TableCell>
             <TableCell>Mounted</TableCell>
             <TableCell>Dismounted</TableCell>
@@ -78,8 +87,22 @@ export const MountingHistoryTable = ({
         <TableBody>
           {sorted.map((m) => {
             const locked = !!m.assemblyMountingId
+            const showReuse =
+              !!onReuse && !seenComponentIds.has(m.componentId) && reuseIdSet.has(m.componentId)
+            seenComponentIds.add(m.componentId)
             return (
               <TableRow key={m.id}>
+                {onReuse && (
+                  <TableCell>
+                    {showReuse && (
+                      <Tooltip title="Re-use">
+                        <IconButton size="small" onClick={() => onReuse(m.componentId)}>
+                          <CachedIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </TableCell>
+                )}
                 <TableCell>{counterpart(m)}</TableCell>
                 <TableCell>{formatDateTime(m.mountedAt)}</TableCell>
                 <TableCell>

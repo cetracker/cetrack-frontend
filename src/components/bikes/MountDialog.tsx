@@ -2,11 +2,9 @@ import { useMemo, useState } from 'react'
 import {
   Autocomplete,
   Checkbox,
-  Chip,
   FormControlLabel,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -15,10 +13,10 @@ import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
 import { mountComponent } from '@/api/bikes'
 import { componentsQuery } from '@/api/components'
-import { invalidateAfterMountingChanges, mountingsQuery } from '@/api/mountings'
+import { invalidateAfterMountingChanges } from '@/api/mountings'
 import type { Component, MountPoint } from '@/types/api'
 import { componentDisambiguator, componentIdentity, withLocalOffset } from '@/utils/formatters'
-import { isComponentRetired, reuseCandidateComponentIds } from '@/utils/components'
+import { isComponentRetired } from '@/utils/components'
 
 interface MountDialogProps {
   open: boolean
@@ -39,27 +37,10 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
     enabled: !!mountPoint && open,
   })
 
-  const { data: history } = useQuery({
-    ...mountingsQuery({ mountPointId: mountPoint?.id ?? '' }),
-    enabled: !!mountPoint && open,
-  })
-
-  const componentById = useMemo(
-    () => new Map((components ?? []).map((c) => [c.id, c])),
-    [components],
-  )
-
   const options = useMemo(() => {
     const unretired = (components ?? []).filter((c) => !isComponentRetired(c))
     return includeMounted ? unretired : unretired.filter((c) => c.status === 'inStock')
   }, [components, includeMounted])
-
-  const reuseCandidates = useMemo(() => {
-    if (!history) return []
-    return reuseCandidateComponentIds(history)
-      .map((id) => componentById.get(id))
-      .filter((c): c is Component => !!c && !isComponentRetired(c))
-  }, [history, componentById])
 
   const mountMut = useApiMutation(
     (body: { componentId: string; at: string }) =>
@@ -105,28 +86,6 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
       submitLabel="Mount"
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
-        {reuseCandidates.length > 0 && (
-          <Stack spacing={0.5}>
-            <Typography variant="caption" color="text.secondary">
-              Previously used here
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-              {reuseCandidates.map((c) => (
-                <Chip
-                  key={c.id}
-                  label={componentIdentity(c)}
-                  size="small"
-                  clickable
-                  color={componentId === c.id ? 'primary' : 'default'}
-                  onClick={() => {
-                    setComponentId(c.id)
-                    if (c.status !== 'inStock') setIncludeMounted(true)
-                  }}
-                />
-              ))}
-            </Stack>
-          </Stack>
-        )}
         <Autocomplete<Component>
           options={options}
           value={options.find((c) => c.id === componentId) ?? null}
