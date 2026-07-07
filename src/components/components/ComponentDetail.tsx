@@ -102,6 +102,17 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
                     : '',
                 ],
                 ['Purchased', formatDate(component.purchaseDate)],
+                [
+                  'First used',
+                  formatDate(
+                    mountings?.length
+                      ? mountings.reduce(
+                          (min, m) => (m.mountedAt < min ? m.mountedAt : min),
+                          mountings[0].mountedAt,
+                        )
+                      : undefined,
+                  ),
+                ],
                 ['Retired', formatDate(component.retiredAt)],
               ] as [string, string][]
             )
