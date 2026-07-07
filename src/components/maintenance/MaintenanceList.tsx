@@ -67,7 +67,7 @@ export const MaintenanceList = () => {
   )
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h5' }}>Maintenance</Box>
         <Button
@@ -107,6 +107,7 @@ export const MaintenanceList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(t) => navigate(`/maintenance/${t.id}`)}
+        fillHeight
       />
 
       <MaintenanceTaskForm open={formOpen} onClose={() => setFormOpen(false)} initial={editTask} />

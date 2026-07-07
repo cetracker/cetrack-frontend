@@ -196,7 +196,7 @@ export const TourList = () => {
   )
 
    return (
-     <Box>
+     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
          <Box sx={{ typography: 'h5' }}>Tours</Box>
          <Typography variant="body2" color="text.secondary">
@@ -220,6 +220,7 @@ export const TourList = () => {
         onColumnVisibilityChange={setColumnVisibility}
         enableGrouping
         showFooter
+        fillHeight
       />
 
       <Menu

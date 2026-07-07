@@ -79,7 +79,7 @@ export const ComponentTypeList = () => {
   const columns = useMemo(() => buildColumns(handleEdit, setToDelete), [])
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h6' }}>Component Types</Box>
         <Button
@@ -105,6 +105,7 @@ export const ComponentTypeList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(ct) => handleEdit(ct)}
+        fillHeight
       />
 
       <ComponentTypeForm

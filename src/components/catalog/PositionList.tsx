@@ -74,7 +74,7 @@ export const PositionList = () => {
   const columns = useMemo(() => buildColumns(handleEdit, setToDelete), [])
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h6' }}>Positions</Box>
         <Button
@@ -100,6 +100,7 @@ export const PositionList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(position) => handleEdit(position)}
+        fillHeight
       />
 
       <PositionForm

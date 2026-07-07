@@ -84,6 +84,7 @@ export interface DataTableProps<TData> {
   showFooter?: boolean
   stickyHeader?: boolean
   maxHeight?: number | string
+  fillHeight?: boolean
   title?: ReactNode
   toolbarExtras?: ReactNode
 }
@@ -113,6 +114,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
     showFooter = false,
     stickyHeader = true,
     maxHeight = 'calc(100vh - 200px)',
+    fillHeight = false,
     title,
     toolbarExtras,
   } = props
@@ -193,7 +195,14 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
   )
 
   return (
-    <Paper elevation={1} sx={{ display: 'flex', flexDirection: 'column' }}>
+    <Paper
+      elevation={1}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        ...(fillHeight && { flexGrow: 1, minHeight: 0 }),
+      }}
+    >
        <Stack
          sx={{ flexDirection: 'row', gap: 1, alignItems: 'center', px: 2, py: 1.5, flexWrap: 'wrap' }}
        >
@@ -301,7 +310,9 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
         </Alert>
       )}
 
-      <TableContainer sx={{ maxHeight }}>
+      <TableContainer
+        sx={fillHeight ? { flexGrow: 1, minHeight: 0, overflow: 'auto' } : { maxHeight }}
+      >
         <Table size="small" stickyHeader={stickyHeader}>
           <TableHead>
             {table.getHeaderGroups().map((hg) => (

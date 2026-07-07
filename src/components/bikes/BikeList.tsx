@@ -110,7 +110,7 @@ export const BikeList = () => {
   )
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h5' }}>Bikes</Box>
         <Button
@@ -136,6 +136,7 @@ export const BikeList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(b) => navigate(`/bikes/${b.id}`)}
+        fillHeight
       />
 
       <BikeForm

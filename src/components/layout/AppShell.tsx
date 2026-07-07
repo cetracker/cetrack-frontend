@@ -125,6 +125,10 @@ export const AppShell = () => {
           flexGrow: 1,
           p: { xs: 2, sm: 3 },
           minWidth: 0,
+          height: '100dvh',
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Toolbar />

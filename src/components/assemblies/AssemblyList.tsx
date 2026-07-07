@@ -114,7 +114,7 @@ export const AssemblyList = () => {
   )
 
   return (
-    <Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h5' }}>Assemblies</Box>
         <Button
@@ -140,6 +140,7 @@ export const AssemblyList = () => {
         sorting={sorting}
         onSortingChange={setSorting}
         onRowClick={(a) => navigate(`/assemblies/${a.id}`)}
+        fillHeight
       />
 
       <AssemblyForm open={editOpen} onClose={() => setEditOpen(false)} initial={editAssembly} />
