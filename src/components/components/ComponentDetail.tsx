@@ -17,6 +17,7 @@ import { mountingsQuery } from '@/api/mountings'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
 import { DismountDialog } from './DismountDialog'
 import { RetireComponentDialog } from './RetireComponentDialog'
+import { MountComponentDialog } from './MountComponentDialog'
 import { formatDate, componentIdentity } from '@/utils/formatters'
 import { STATUS_LABEL } from '@/utils/components'
 
@@ -45,6 +46,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
     enabled: !!componentId && open,
   })
 
+  const [mountOpen, setMountOpen] = useState(false)
   const [dismountOpen, setDismountOpen] = useState(false)
   const [retireOpen, setRetireOpen] = useState(false)
 
@@ -135,6 +137,14 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           <Stack direction="row" spacing={2} sx={{ pt: 2 }}>
             <Button
               variant="outlined"
+              onClick={() => setMountOpen(true)}
+              disabled={component.status !== 'inStock'}
+              fullWidth
+            >
+              Mount
+            </Button>
+            <Button
+              variant="outlined"
               onClick={() => setDismountOpen(true)}
               disabled={component.status !== 'mounted'}
               fullWidth
@@ -155,6 +165,11 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
 
         {component && (
           <>
+            <MountComponentDialog
+              open={mountOpen}
+              onClose={() => setMountOpen(false)}
+              component={component}
+            />
             <DismountDialog
               open={dismountOpen}
               onClose={() => setDismountOpen(false)}
