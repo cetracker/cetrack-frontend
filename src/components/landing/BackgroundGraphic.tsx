@@ -1,6 +1,6 @@
 import { Box, useTheme } from '@mui/material'
-import bgLight from '@/assets/landing/background_light.png'
-import bgDark from '@/assets/landing/background_dark.png'
+import bgLight from '@/assets/landing/background_light.webp'
+import bgDark from '@/assets/landing/background_dark.webp'
 
 export const BackgroundGraphic = () => {
   const isDark = useTheme().palette.mode === 'dark'
