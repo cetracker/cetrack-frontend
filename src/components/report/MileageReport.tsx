@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Box, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { mileageQuery } from '@/api/reports'
@@ -11,6 +12,8 @@ import {
   formatDistanceKm,
   formatDuration,
   formatKJ,
+  toLocalDayEndISO,
+  toLocalDayStartISO,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 
@@ -19,7 +22,15 @@ const rowIdentity = (item: MileageItem, scope: MileageScope): string =>
 
 export const MileageReport = () => {
   const [scope, setScope] = useState<MileageScope>('components')
-  const { data, isLoading, error, refetch } = useQuery(mileageQuery({ scope }))
+  const [from, setFrom] = useState<Date | null>(null)
+  const [to, setTo] = useState<Date | null>(null)
+  const { data, isLoading, error, refetch } = useQuery(
+    mileageQuery({
+      scope,
+      from: toLocalDayStartISO(from) ?? undefined,
+      to: toLocalDayEndISO(to) ?? undefined,
+    }),
+  )
 
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState<SortingState>([
@@ -74,17 +85,31 @@ export const MileageReport = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ typography: 'h5' }}>Usage Report</Box>
-        <ToggleButtonGroup
-          value={scope}
-          exclusive
-          size="small"
-          onChange={(_, v: MileageScope | null) => v && setScope(v)}
-        >
-          <ToggleButton value="components">Components</ToggleButton>
-          <ToggleButton value="bikes">Bikes</ToggleButton>
-        </ToggleButtonGroup>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <DatePicker
+            label="From"
+            value={from}
+            onChange={setFrom}
+            slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
+          />
+          <DatePicker
+            label="To"
+            value={to}
+            onChange={setTo}
+            slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
+          />
+          <ToggleButtonGroup
+            value={scope}
+            exclusive
+            size="small"
+            onChange={(_, v: MileageScope | null) => v && setScope(v)}
+          >
+            <ToggleButton value="components">Components</ToggleButton>
+            <ToggleButton value="bikes">Bikes</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
       </Box>
       <DataTable<MileageItem>
         columns={columns}
