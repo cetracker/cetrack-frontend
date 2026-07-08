@@ -122,7 +122,7 @@ export const AddMemberDialog = ({
               isOptionEqualToValue={(opt, val) => opt.id === val.id}
               renderOption={({ key: _key, ...props }, c) => (
                 <li key={c.id} {...props}>
-                  <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
+                  <Stack direction="row" spacing={1} sx={{ width: '100%', alignItems: 'center' }}>
                     <Stack sx={{ flexGrow: 1 }}>
                       <span>{componentIdentity(c)}</span>
                       {componentDisambiguator(c) && (
