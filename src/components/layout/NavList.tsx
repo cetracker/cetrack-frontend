@@ -13,49 +13,54 @@ import AssessmentIcon from '@mui/icons-material/Assessment'
 import AccountTreeIcon from '@mui/icons-material/AccountTree'
 import BuildIcon from '@mui/icons-material/Build'
 import { NavLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import type { ParseKeys } from 'i18next'
 import type { ReactNode } from 'react'
 
 interface NavEntry {
   to: string
-  label: string
+  labelKey: ParseKeys
   icon: ReactNode
   tour: string
 }
 
 const entries: NavEntry[] = [
-  { to: '/components', label: 'Components', icon: <SettingsIcon />, tour: 'components' },
-  { to: '/catalog', label: 'Component Types', icon: <CategoryIcon />, tour: 'componentTypes' },
-  { to: '/bikes', label: 'Bikes', icon: <DirectionsBikeIcon />, tour: 'bikes' },
-  { to: '/assemblies', label: 'Assemblies', icon: <AccountTreeIcon />, tour: 'assemblies' },
-  { to: '/maintenance', label: 'Maintenance', icon: <BuildIcon />, tour: 'maintenance' },
-  { to: '/tours', label: 'Tours', icon: <MapIcon />, tour: 'tours' },
-  { to: '/tourImport', label: 'Import Tours', icon: <UploadFileIcon />, tour: 'tourImport' },
-  { to: '/report', label: 'Report', icon: <AssessmentIcon />, tour: 'report' },
+  { to: '/components', labelKey: 'nav.components', icon: <SettingsIcon />, tour: 'components' },
+  { to: '/catalog', labelKey: 'nav.componentTypes', icon: <CategoryIcon />, tour: 'componentTypes' },
+  { to: '/bikes', labelKey: 'nav.bikes', icon: <DirectionsBikeIcon />, tour: 'bikes' },
+  { to: '/assemblies', labelKey: 'nav.assemblies', icon: <AccountTreeIcon />, tour: 'assemblies' },
+  { to: '/maintenance', labelKey: 'nav.maintenance', icon: <BuildIcon />, tour: 'maintenance' },
+  { to: '/tours', labelKey: 'nav.tours', icon: <MapIcon />, tour: 'tours' },
+  { to: '/tourImport', labelKey: 'nav.tourImport', icon: <UploadFileIcon />, tour: 'tourImport' },
+  { to: '/report', labelKey: 'nav.report', icon: <AssessmentIcon />, tour: 'report' },
 ]
 
 interface NavListProps {
   onNavigate?: () => void
 }
 
-export const NavList = ({ onNavigate }: NavListProps) => (
-  <List disablePadding>
-    {entries.map(({ to, label, icon, tour }) => (
-      <ListItemButton
-        key={to}
-        component={NavLink}
-        to={to}
-        onClick={onNavigate}
-        data-tour={tour}
-        sx={{
-          '&.active': (theme) => ({
-            bgcolor: theme.palette.action.selected,
-            borderRight: `3px solid ${theme.palette.primary.main}`,
-          }),
-        }}
-      >
-        <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
-        <ListItemText primary={label} />
-      </ListItemButton>
-    ))}
-  </List>
-)
+export const NavList = ({ onNavigate }: NavListProps) => {
+  const { t } = useTranslation()
+  return (
+    <List disablePadding>
+      {entries.map(({ to, labelKey, icon, tour }) => (
+        <ListItemButton
+          key={to}
+          component={NavLink}
+          to={to}
+          onClick={onNavigate}
+          data-tour={tour}
+          sx={{
+            '&.active': (theme) => ({
+              bgcolor: theme.palette.action.selected,
+              borderRight: `3px solid ${theme.palette.primary.main}`,
+            }),
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+          <ListItemText primary={t(labelKey)} />
+        </ListItemButton>
+      ))}
+    </List>
+  )
+}

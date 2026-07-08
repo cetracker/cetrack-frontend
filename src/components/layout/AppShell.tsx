@@ -20,13 +20,17 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import PedalBikeIcon from '@mui/icons-material/PedalBike'
 import { useQuery } from '@tanstack/react-query'
 import { Link as RouterLink, Outlet } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { pendingMyTourbookSessionQuery } from '@/api/tours'
 import { NavList } from './NavList'
 import { VersionInfo } from './VersionInfo'
+import { LanguageSwitcher } from './LanguageSwitcher'
+import { FormatSwitcher } from './FormatSwitcher'
 import { useColorMode } from '@/hooks/useColorMode'
 import { GuidedTour } from '@/components/onboarding/GuidedTour'
 
 const ImportAttentionIndicator = () => {
+  const { t } = useTranslation()
   const { data: session } = useQuery(pendingMyTourbookSessionQuery())
   if (!session || (session.candidates.length === 0 && session.warnings.length === 0)) return null
 
@@ -34,8 +38,13 @@ const ImportAttentionIndicator = () => {
 
   if (hasLogicalDuplicate) {
     return (
-      <Tooltip title="Import needs attention — duplicate tours detected">
-        <IconButton color="inherit" component={RouterLink} to="/mytourbookImport" aria-label="review import">
+      <Tooltip title={t('appShell.importAttentionTooltip')}>
+        <IconButton
+          color="inherit"
+          component={RouterLink}
+          to="/mytourbookImport"
+          aria-label={t('appShell.reviewImport')}
+        >
           <NotificationImportantIcon color="error" />
         </IconButton>
       </Tooltip>
@@ -43,8 +52,13 @@ const ImportAttentionIndicator = () => {
   }
 
   return (
-    <Tooltip title="Import pending review">
-      <IconButton color="inherit" component={RouterLink} to="/mytourbookImport" aria-label="review import">
+    <Tooltip title={t('appShell.importPendingTooltip')}>
+      <IconButton
+        color="inherit"
+        component={RouterLink}
+        to="/mytourbookImport"
+        aria-label={t('appShell.reviewImport')}
+      >
         <Badge variant="dot" color="default">
           <NotificationsIcon />
         </Badge>
@@ -56,6 +70,7 @@ const ImportAttentionIndicator = () => {
 const DRAWER_WIDTH = 220
 
 export const AppShell = () => {
+  const { t } = useTranslation()
   const { mode, toggle } = useColorMode()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -74,7 +89,7 @@ export const AppShell = () => {
             color="inherit"
             onClick={() => setMobileNavOpen(true)}
             sx={{ mr: 1, display: { md: 'none' } }}
-            aria-label="open navigation"
+            aria-label={t('appShell.openNavigation')}
           >
             <MenuIcon />
           </IconButton>
@@ -83,15 +98,17 @@ export const AppShell = () => {
             component={RouterLink}
             to="/"
             sx={{ mr: 2, display: { xs: 'none', md: 'inline-flex' } }}
-            aria-label="home"
+            aria-label={t('appShell.home')}
           >
             <PedalBikeIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }}>
-            Cycling Equipment Usage Tracker
+            {t('appShell.title')}
           </Typography>
           <ImportAttentionIndicator />
-          <Tooltip title={mode === 'dark' ? 'Light mode' : 'Dark mode'}>
+          <LanguageSwitcher />
+          <FormatSwitcher />
+          <Tooltip title={mode === 'dark' ? t('appShell.lightMode') : t('appShell.darkMode')}>
             <IconButton color="inherit" onClick={toggle}>
               {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>

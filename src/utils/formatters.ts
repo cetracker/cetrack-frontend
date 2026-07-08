@@ -1,10 +1,11 @@
 import { format, parseISO } from 'date-fns'
+import { dateFnsLocale, getFormatProfile } from '@/i18n/formatProfile'
 import type { Bike, Component } from '@/types/api'
 
 export const formatDate = (iso?: string | null): string => {
   if (!iso) return ''
   try {
-    return format(parseISO(iso), 'yyyy-MM-dd')
+    return format(parseISO(iso), 'P', { locale: dateFnsLocale(getFormatProfile()) })
   } catch {
     return ''
   }
@@ -13,7 +14,7 @@ export const formatDate = (iso?: string | null): string => {
 export const formatDateTime = (iso?: string | null): string => {
   if (!iso) return ''
   try {
-    return format(parseISO(iso), 'yyyy-MM-dd HH:mm')
+    return format(parseISO(iso), 'Pp', { locale: dateFnsLocale(getFormatProfile()) })
   } catch {
     return ''
   }
