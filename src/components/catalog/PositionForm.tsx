@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Stack, TextField } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -14,11 +16,12 @@ import {
 } from '@/api/catalog'
 import type { Position, PositionInput } from '@/types/api'
 
-const schema = z.object({
-  name: z.string().min(1, 'Name required'),
-})
+const buildSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t('validation.nameRequired')),
+  })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 interface PositionFormProps {
   open: boolean
@@ -27,7 +30,9 @@ interface PositionFormProps {
 }
 
 export const PositionForm = ({ open, onClose, initial }: PositionFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -51,7 +56,7 @@ export const PositionForm = ({ open, onClose, initial }: PositionFormProps) => {
   }
 
   const createMut = useApiMutation(createPosition, {
-    successMessage: 'Position created',
+    successMessage: t('catalog.positionList.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -61,7 +66,7 @@ export const PositionForm = ({ open, onClose, initial }: PositionFormProps) => {
   const updateMut = useApiMutation(
     (v: { id: string; data: PositionInput }) => updatePosition(v.id, v.data),
     {
-      successMessage: 'Position updated',
+      successMessage: t('catalog.positionList.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -83,7 +88,7 @@ export const PositionForm = ({ open, onClose, initial }: PositionFormProps) => {
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Position' : 'Add Position'}
+      title={initial ? t('catalog.positionForm.editTitle') : t('catalog.positionForm.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -95,7 +100,7 @@ export const PositionForm = ({ open, onClose, initial }: PositionFormProps) => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               required
               error={!!errors.name}
               helperText={errors.name?.message}

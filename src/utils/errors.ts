@@ -11,7 +11,7 @@ import { isApiError } from '@/api/client'
 export function friendlyErrorMessage(err: unknown): string {
   if (isApiError(err) && err.code) {
     const key = `errors.${err.code}` as ParseKeys
-    if (i18n.exists(key)) return i18n.t(key)
+    if (i18n.exists(key)) return i18n.t(key) as string
   }
   return getErrorMessage(err)
 }

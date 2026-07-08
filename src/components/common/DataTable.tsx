@@ -30,6 +30,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import ViewColumnIcon from '@mui/icons-material/ViewColumn'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import WorkspacesIcon from '@mui/icons-material/Workspaces'
+import { useTranslation } from 'react-i18next'
 import {
   flexRender,
   getCoreRowModel,
@@ -90,6 +91,7 @@ export interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
+  const { t } = useTranslation()
   const {
     columns,
     data,
@@ -97,7 +99,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
     error,
     onRetry,
     onRowClick,
-    emptyMessage = 'No records',
+    emptyMessage,
     globalFilter,
     onGlobalFilterChange,
     columnFilters,
@@ -217,7 +219,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
           <TextField
             value={globalFilter ?? ''}
             onChange={(e) => onGlobalFilterChange(e.target.value)}
-            placeholder="Search…"
+            placeholder={t('common.search')}
             size="small"
             slotProps={{
               input: {
@@ -232,7 +234,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
           />
         )}
         {enableColumnFilters && (
-          <Tooltip title={showFilters ? 'Hide filters' : 'Show filters'}>
+          <Tooltip title={showFilters ? t('common.hideFilters') : t('common.showFilters')}>
             <IconButton onClick={() => setShowFilters((v) => !v)}>
               <FilterListIcon />
             </IconButton>
@@ -240,7 +242,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
         )}
         {enableGrouping && onGroupingChange && (
           <>
-            <Tooltip title="Grouping">
+            <Tooltip title={t('common.grouping')}>
               <IconButton onClick={(e) => setGroupMenuEl(e.currentTarget)}>
                 <WorkspacesIcon />
               </IconButton>
@@ -251,7 +253,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
               onClose={() => setGroupMenuEl(null)}
             >
               {groupableCols.length === 0 && (
-                <MenuItem disabled>No groupable columns</MenuItem>
+                <MenuItem disabled>{t('common.noGroupableColumns')}</MenuItem>
               )}
               {groupableCols.map((col) => (
                 <MenuItem key={col.id} onClick={() => col.toggleGrouping()}>
@@ -268,7 +270,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
             </Menu>
           </>
         )}
-        <Tooltip title="Columns">
+        <Tooltip title={t('common.columns')}>
           <IconButton onClick={(e) => setColMenuEl(e.currentTarget)}>
             <ViewColumnIcon />
           </IconButton>
@@ -301,7 +303,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
           action={
             onRetry ? (
               <Button color="inherit" size="small" onClick={onRetry}>
-                Retry
+                {t('common.retry')}
               </Button>
             ) : undefined
           }
@@ -360,7 +362,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
                           value={(col.getFilterValue() as string) ?? ''}
                           onChange={(e) => col.setFilterValue(e.target.value)}
                           size="small"
-                          placeholder="Filter"
+                          placeholder={t('common.filter')}
                           variant="standard"
                           fullWidth
                         />
@@ -391,7 +393,7 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
                   align="center"
                   sx={{ py: 4, color: 'text.secondary' }}
                 >
-                  {emptyMessage}
+                  {emptyMessage ?? t('common.noRecords')}
                 </TableCell>
               </TableRow>
             )}

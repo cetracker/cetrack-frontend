@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import type { ReactNode } from 'react'
 
 interface ConfirmDialogProps {
@@ -26,28 +27,31 @@ export const ConfirmDialog = ({
   message,
   onConfirm,
   onCancel,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   destructive,
   busy,
-}: ConfirmDialogProps) => (
-  <Dialog open={open} onClose={busy ? undefined : onCancel} maxWidth="xs" fullWidth>
-    <DialogTitle>{title}</DialogTitle>
-    <DialogContent>
-      <DialogContentText>{message}</DialogContentText>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={onCancel} disabled={busy}>
-        {cancelLabel}
-      </Button>
-      <Button
-        onClick={onConfirm}
-        variant="contained"
-        color={destructive ? 'error' : 'primary'}
-        disabled={busy}
-      >
-        {confirmLabel}
-      </Button>
-    </DialogActions>
-  </Dialog>
-)
+}: ConfirmDialogProps) => {
+  const { t } = useTranslation()
+  return (
+    <Dialog open={open} onClose={busy ? undefined : onCancel} maxWidth="xs" fullWidth>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{message}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onCancel} disabled={busy}>
+          {cancelLabel ?? t('common.cancel')}
+        </Button>
+        <Button
+          onClick={onConfirm}
+          variant="contained"
+          color={destructive ? 'error' : 'primary'}
+          disabled={busy}
+        >
+          {confirmLabel ?? t('common.confirm')}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}

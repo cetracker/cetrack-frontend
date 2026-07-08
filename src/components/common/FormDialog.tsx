@@ -8,6 +8,7 @@ import {
   useTheme,
   type DialogProps,
 } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import { type FormEvent, type ReactNode } from 'react'
 
 interface FormDialogProps {
@@ -28,13 +29,14 @@ export const FormDialog = ({
   title,
   onCancel,
   onSubmit,
-  submitLabel = 'Save',
-  cancelLabel = 'Cancel',
+  submitLabel,
+  cancelLabel,
   submitting,
   submitDisabled,
   children,
   maxWidth = 'sm',
 }: FormDialogProps) => {
+  const { t } = useTranslation()
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -59,10 +61,10 @@ export const FormDialog = ({
     <DialogContent dividers>{children}</DialogContent>
     <DialogActions>
       <Button onClick={onCancel} disabled={submitting}>
-        {cancelLabel}
+        {cancelLabel ?? t('common.cancel')}
       </Button>
       <Button type="submit" variant="contained" disabled={submitting || submitDisabled}>
-        {submitLabel}
+        {submitLabel ?? t('common.save')}
       </Button>
     </DialogActions>
   </Dialog>

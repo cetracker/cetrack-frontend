@@ -1,5 +1,6 @@
 import { MenuItem, TextField, type TextFieldProps } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { bikesQuery } from '@/api/bikes'
 import { bikeIdentity } from '@/utils/formatters'
 
@@ -17,17 +18,18 @@ export const BikeSelect = ({
   value,
   onChange,
   includeNone = true,
-  noneLabel = '— None —',
+  noneLabel,
   includeFromFile = false,
-  label = 'Bike',
+  label,
   ...rest
 }: Props) => {
+  const { t } = useTranslation()
   const { data: bikes, isLoading } = useQuery(bikesQuery())
 
   return (
     <TextField
       select
-      label={label}
+      label={label ?? t('common.bike')}
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value || null)}
       disabled={isLoading || rest.disabled}
@@ -35,9 +37,9 @@ export const BikeSelect = ({
       {...rest}
     >
       {includeFromFile && (
-        <MenuItem value={FROM_FILE}>— Use bike from file —</MenuItem>
+        <MenuItem value={FROM_FILE}>{t('common.useBikeFromFile')}</MenuItem>
       )}
-      {includeNone && <MenuItem value="">{noneLabel}</MenuItem>}
+      {includeNone && <MenuItem value="">{noneLabel ?? t('common.none')}</MenuItem>}
       {(bikes ?? []).map((b) => (
         <MenuItem key={b.id} value={b.id}>
           {bikeIdentity(b)}

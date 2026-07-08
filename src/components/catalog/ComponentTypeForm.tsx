@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Stack, TextField } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -14,12 +16,13 @@ import {
 } from '@/api/catalog'
 import type { ComponentType, ComponentTypeInput } from '@/types/api'
 
-const schema = z.object({
-  name: z.string().min(1, 'Name required'),
-  description: z.string(),
-})
+const buildSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t('validation.nameRequired')),
+    description: z.string(),
+  })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 interface ComponentTypeFormProps {
   open: boolean
@@ -28,7 +31,9 @@ interface ComponentTypeFormProps {
 }
 
 export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -55,7 +60,7 @@ export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormP
   }
 
   const createMut = useApiMutation(createComponentType, {
-    successMessage: 'Component type created',
+    successMessage: t('catalog.componentTypeList.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -66,7 +71,7 @@ export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormP
     (v: { id: string; data: ComponentTypeInput }) =>
       updateComponentType(v.id, v.data),
     {
-      successMessage: 'Component type updated',
+      successMessage: t('catalog.componentTypeList.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -91,7 +96,7 @@ export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormP
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Component Type' : 'Add Component Type'}
+      title={initial ? t('catalog.componentTypeForm.editTitle') : t('catalog.componentTypeForm.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -103,7 +108,7 @@ export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormP
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               required
               error={!!errors.name}
               helperText={errors.name?.message}
@@ -115,7 +120,7 @@ export const ComponentTypeForm = ({ open, onClose, initial }: ComponentTypeFormP
           control={control}
           name="description"
           render={({ field }) => (
-            <TextField {...field} label="Description" multiline minRows={2} />
+            <TextField {...field} label={t('common.description')} multiline minRows={2} />
           )}
         />
       </Stack>

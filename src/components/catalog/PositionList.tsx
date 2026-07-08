@@ -3,6 +3,8 @@ import { Box, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { deletePosition, positionsQuery, positionsQueryKey } from '@/api/catalog'
 import type { Position } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
@@ -24,13 +26,14 @@ const ActionsCell = ({ position, onEdit, onDelete }: ActionsCellProps) => (
 )
 
 const buildColumns = (
+  t: TFunction,
   onEdit: (position: Position) => void,
   onDelete: (position: Position) => void,
 ): ColumnDef<Position>[] => [
-  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'name', header: t('common.name') },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: t('common.created'),
     cell: (c) => formatDateTime(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -46,6 +49,7 @@ const buildColumns = (
 ]
 
 export const PositionList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(positionsQuery())
 
@@ -59,7 +63,7 @@ export const PositionList = () => {
   const [toDelete, setToDelete] = useState<Position | null>(null)
 
   const deleteMut = useApiMutation(deletePosition, {
-    successMessage: 'Position deleted',
+    successMessage: t('catalog.positionList.deletedSuccess'),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: positionsQueryKey })
       setToDelete(null)
@@ -71,12 +75,12 @@ export const PositionList = () => {
     setEditOpen(true)
   }
 
-  const columns = useMemo(() => buildColumns(handleEdit, setToDelete), [])
+  const columns = useMemo(() => buildColumns(t, handleEdit, setToDelete), [t])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h6' }}>Positions</Box>
+        <Box sx={{ typography: 'h6' }}>{t('catalog.positionList.title')}</Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -85,7 +89,7 @@ export const PositionList = () => {
             setEditOpen(true)
           }}
         >
-          Add position
+          {t('catalog.positionList.addButton')}
         </Button>
       </Stack>
 
@@ -111,11 +115,11 @@ export const PositionList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete position"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        title={t('catalog.positionList.deleteTitle')}
+        message={toDelete ? t('common.deleteConfirmMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

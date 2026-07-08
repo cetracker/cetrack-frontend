@@ -3,6 +3,8 @@ import { Box, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import {
   componentTypesQuery,
   componentTypesQueryKey,
@@ -28,14 +30,15 @@ const ActionsCell = ({ ct, onEdit, onDelete }: ActionsCellProps) => (
 )
 
 const buildColumns = (
+  t: TFunction,
   onEdit: (ct: ComponentType) => void,
   onDelete: (ct: ComponentType) => void,
 ): ColumnDef<ComponentType>[] => [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'description', header: 'Description' },
+  { accessorKey: 'name', header: t('common.name') },
+  { accessorKey: 'description', header: t('common.description') },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: t('common.created'),
     cell: (c) => formatDateTime(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -51,6 +54,7 @@ const buildColumns = (
 ]
 
 export const ComponentTypeList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(componentTypesQuery())
 
@@ -64,7 +68,7 @@ export const ComponentTypeList = () => {
   const [toDelete, setToDelete] = useState<ComponentType | null>(null)
 
   const deleteMut = useApiMutation(deleteComponentType, {
-    successMessage: 'Component type deleted',
+    successMessage: t('catalog.componentTypeList.deletedSuccess'),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: componentTypesQueryKey })
       setToDelete(null)
@@ -76,12 +80,12 @@ export const ComponentTypeList = () => {
     setEditOpen(true)
   }
 
-  const columns = useMemo(() => buildColumns(handleEdit, setToDelete), [])
+  const columns = useMemo(() => buildColumns(t, handleEdit, setToDelete), [t])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h6' }}>Component Types</Box>
+        <Box sx={{ typography: 'h6' }}>{t('catalog.componentTypeList.title')}</Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -90,7 +94,7 @@ export const ComponentTypeList = () => {
             setEditOpen(true)
           }}
         >
-          Add component type
+          {t('catalog.componentTypeList.addButton')}
         </Button>
       </Stack>
 
@@ -116,11 +120,11 @@ export const ComponentTypeList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete component type"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        title={t('catalog.componentTypeList.deleteTitle')}
+        message={toDelete ? t('common.deleteConfirmMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

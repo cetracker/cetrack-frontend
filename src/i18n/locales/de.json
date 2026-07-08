@@ -1,5 +1,28 @@
 {
-  "common": {},
+  "common": {
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "showRelations": "Beziehungen anzeigen",
+    "none": "— Keine —",
+    "bike": "Fahrrad",
+    "useBikeFromFile": "— Fahrrad aus Datei verwenden —",
+    "search": "Suchen…",
+    "hideFilters": "Filter ausblenden",
+    "showFilters": "Filter anzeigen",
+    "grouping": "Gruppierung",
+    "noGroupableColumns": "Keine gruppierbaren Spalten",
+    "columns": "Spalten",
+    "retry": "Erneut versuchen",
+    "noRecords": "Keine Einträge",
+    "filter": "Filter",
+    "name": "Name",
+    "description": "Beschreibung",
+    "created": "Erstellt",
+    "deleteConfirmMessage": "\"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden."
+  },
   "nav": {
     "components": "Komponenten",
     "componentTypes": "Komponententypen",
@@ -50,5 +73,38 @@
     "generic": "Ein Fehler ist aufgetreten",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
   },
-  "validation": {}
+  "validation": {
+    "nameRequired": "Name erforderlich"
+  },
+  "catalog": {
+    "page": {
+      "title": "Katalog",
+      "componentTypesTab": "Komponententypen",
+      "positionsTab": "Positionen"
+    },
+    "componentTypeList": {
+      "title": "Komponententypen",
+      "addButton": "Komponententyp hinzufügen",
+      "deleteTitle": "Komponententyp löschen",
+      "createdSuccess": "Komponententyp erstellt",
+      "updatedSuccess": "Komponententyp aktualisiert",
+      "deletedSuccess": "Komponententyp gelöscht"
+    },
+    "componentTypeForm": {
+      "addTitle": "Komponententyp hinzufügen",
+      "editTitle": "Komponententyp bearbeiten"
+    },
+    "positionList": {
+      "title": "Positionen",
+      "addButton": "Position hinzufügen",
+      "deleteTitle": "Position löschen",
+      "createdSuccess": "Position erstellt",
+      "updatedSuccess": "Position aktualisiert",
+      "deletedSuccess": "Position gelöscht"
+    },
+    "positionForm": {
+      "addTitle": "Position hinzufügen",
+      "editTitle": "Position bearbeiten"
+    }
+  }
 }

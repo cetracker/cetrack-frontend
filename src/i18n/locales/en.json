@@ -1,5 +1,28 @@
 {
-  "common": {},
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "showRelations": "Show relations",
+    "none": "— None —",
+    "bike": "Bike",
+    "useBikeFromFile": "— Use bike from file —",
+    "search": "Search…",
+    "hideFilters": "Hide filters",
+    "showFilters": "Show filters",
+    "grouping": "Grouping",
+    "noGroupableColumns": "No groupable columns",
+    "columns": "Columns",
+    "retry": "Retry",
+    "noRecords": "No records",
+    "filter": "Filter",
+    "name": "Name",
+    "description": "Description",
+    "created": "Created",
+    "deleteConfirmMessage": "Delete \"{{name}}\"? This cannot be undone."
+  },
   "nav": {
     "components": "Components",
     "componentTypes": "Component Types",
@@ -50,5 +73,38 @@
     "generic": "An error occurred",
     "unexpected": "An unexpected error occurred"
   },
-  "validation": {}
+  "validation": {
+    "nameRequired": "Name required"
+  },
+  "catalog": {
+    "page": {
+      "title": "Catalog",
+      "componentTypesTab": "Component Types",
+      "positionsTab": "Positions"
+    },
+    "componentTypeList": {
+      "title": "Component Types",
+      "addButton": "Add component type",
+      "deleteTitle": "Delete component type",
+      "createdSuccess": "Component type created",
+      "updatedSuccess": "Component type updated",
+      "deletedSuccess": "Component type deleted"
+    },
+    "componentTypeForm": {
+      "addTitle": "Add Component Type",
+      "editTitle": "Edit Component Type"
+    },
+    "positionList": {
+      "title": "Positions",
+      "addButton": "Add position",
+      "deleteTitle": "Delete position",
+      "createdSuccess": "Position created",
+      "updatedSuccess": "Position updated",
+      "deletedSuccess": "Position deleted"
+    },
+    "positionForm": {
+      "addTitle": "Add Position",
+      "editTitle": "Edit Position"
+    }
+  }
 }
