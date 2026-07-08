@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { componentQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
@@ -37,6 +38,7 @@ const STATUS_COLOR: Record<string, 'default' | 'success' | 'warning' | 'info'> =
 }
 
 export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailProps) => {
+  const { t } = useTranslation()
   const { data: component, isLoading } = useQuery({
     ...componentQuery(componentId ?? ''),
     enabled: !!componentId && open,
@@ -73,7 +75,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
       >
         <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {componentIdentity(component) || (isLoading ? 'Loading…' : 'Component')}
+            {componentIdentity(component) || (isLoading ? t('common.loading') : t('components.detail.fallbackTitle'))}
           </Typography>
           {component?.status && (
             <Chip
@@ -82,7 +84,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
               size="small"
             />
           )}
-          <IconButton onClick={onClose} aria-label="Close drawer">
+          <IconButton onClick={onClose} aria-label={t('components.detail.closeDrawer')}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -91,19 +93,19 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           <Box sx={{ mb: 2 }}>
             {(
               [
-                ['Manufacturer', component.manufacturer ?? ''],
-                ['Model', component.model ?? ''],
-                ['Serial', component.serialNumber ?? ''],
-                ['Vendor', component.vendor ?? ''],
+                [t('components.fields.manufacturer'), component.manufacturer ?? ''],
+                [t('components.fields.model'), component.model ?? ''],
+                [t('components.fields.serial'), component.serialNumber ?? ''],
+                [t('components.fields.vendor'), component.vendor ?? ''],
                 [
-                  'Price',
+                  t('components.fields.price'),
                   component.price
                     ? `${component.price} ${component.priceCurrency ?? ''}`.trim()
                     : '',
                 ],
-                ['Purchased', formatDate(component.purchaseDate)],
+                [t('components.fields.purchased'), formatDate(component.purchaseDate)],
                 [
-                  'First used',
+                  t('components.fields.firstUsed'),
                   formatDate(
                     mountings?.length
                       ? mountings.reduce(
@@ -113,7 +115,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
                       : undefined,
                   ),
                 ],
-                ['Retired', formatDate(component.retiredAt)],
+                [t('components.fields.retired'), formatDate(component.retiredAt)],
               ] as [string, string][]
             )
               .filter(([, v]) => v)
@@ -135,12 +137,12 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
 
         <Box sx={{ flexGrow: 1, overflowY: 'auto', mt: 2 }}>
           <Typography variant="subtitle1" gutterBottom>
-            Mounting history
+            {t('components.detail.mountingHistoryTitle')}
           </Typography>
           {mountings ? (
             <MountingHistoryTable mountings={mountings} perspective="component" />
           ) : (
-            <Typography color="text.secondary">Loading…</Typography>
+            <Typography color="text.secondary">{t('common.loading')}</Typography>
           )}
         </Box>
 
@@ -152,7 +154,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
               disabled={component.status !== 'inStock'}
               fullWidth
             >
-              Mount
+              {t('components.detail.mountButton')}
             </Button>
             <Button
               variant="outlined"
@@ -160,7 +162,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
               disabled={component.status !== 'mounted'}
               fullWidth
             >
-              Dismount
+              {t('components.detail.dismountButton')}
             </Button>
             <Button
               variant="outlined"
@@ -169,7 +171,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
               disabled={component.status === 'mounted' || component.status === 'retired'}
               fullWidth
             >
-              Retire
+              {t('components.detail.retireButton')}
             </Button>
           </Stack>
         )}

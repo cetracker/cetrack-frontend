@@ -15,6 +15,7 @@ import { ComponentForm } from './ComponentForm'
 import { ComponentDetail } from './ComponentDetail'
 import { ComponentInfoCell } from './ComponentInfoCell'
 import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { bikeIdentity, componentIdentity, formatDate } from '@/utils/formatters'
 import { statusLabels, componentStatusLabel } from '@/utils/components'
 import { createErrorDisplay } from '@/utils/errors'
@@ -27,16 +28,20 @@ interface ActionsCellProps {
   onOpenDetail: (component: Component) => void
 }
 
-const ActionsCell = ({ component, onEdit, onDelete, onOpenDetail }: ActionsCellProps) => (
-  <RowActions
-    onOpenRelations={() => onOpenDetail(component)}
-    relationsLabel="Show details"
-    onEdit={() => onEdit(component)}
-    onDelete={() => onDelete(component)}
-  />
-)
+const ActionsCell = ({ component, onEdit, onDelete, onOpenDetail }: ActionsCellProps) => {
+  const { t } = useTranslation()
+  return (
+    <RowActions
+      onOpenRelations={() => onOpenDetail(component)}
+      relationsLabel={t('components.list.showDetails')}
+      onEdit={() => onEdit(component)}
+      onDelete={() => onDelete(component)}
+    />
+  )
+}
 
 const buildColumns = (
+  t: TFunction,
   typeNameById: Map<string, string>,
   usageByComponentId: Map<string, string>,
   onEdit: (component: Component) => void,
@@ -45,37 +50,37 @@ const buildColumns = (
 ): ColumnDef<Component>[] => [
   {
     id: 'identity',
-    header: 'Component',
+    header: t('components.list.columns.component'),
     accessorFn: (c) => componentIdentity(c),
     cell: ({ row }) => <ComponentInfoCell component={row.original} />,
   },
   {
     id: 'componentType',
-    header: 'Type',
+    header: t('components.list.columns.type'),
     accessorFn: (c) => typeNameById.get(c.componentTypeId) ?? '',
   },
   {
     id: 'status',
-    header: 'Status',
+    header: t('components.list.statusLabel'),
     accessorFn: (c) => c.status ?? '',
     cell: ({ row }) =>
       row.original.status ? <Chip label={componentStatusLabel(row.original)} size="small" /> : null,
   },
   {
     id: 'currentUsage',
-    header: 'Currently In Use As',
+    header: t('components.list.columns.currentUsage'),
     accessorFn: (c) => usageByComponentId.get(c.id) ?? '',
     meta: { hideOnMobile: true },
   },
   {
     accessorKey: 'purchaseDate',
-    header: 'Purchase Date',
+    header: t('components.fields.purchaseDate'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
   {
     accessorKey: 'retiredAt',
-    header: 'Retired Date',
+    header: t('components.fields.retiredDate'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -96,7 +101,7 @@ const buildColumns = (
 ]
 
 export const ComponentList = () => {
-  useTranslation()
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [statusFilter, setStatusFilter] = useState<ComponentStatus | ''>('')
   const { data, isLoading, error, refetch } = useQuery(
@@ -137,7 +142,7 @@ export const ComponentList = () => {
   const [detailId, setDetailId] = useState<string | null>(null)
 
   const deleteMut = useApiMutation(deleteComponent, {
-    successMessage: 'Component deleted',
+    successMessage: t('components.list.deletedSuccess'),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: componentsQueryKey() })
       setToDelete(null)
@@ -155,24 +160,24 @@ export const ComponentList = () => {
   }
 
   const columns = useMemo(
-    () => buildColumns(typeNameById, usageByComponentId, openEdit, setToDelete, openDetail),
-    [typeNameById, usageByComponentId],
+    () => buildColumns(t, typeNameById, usageByComponentId, openEdit, setToDelete, openDetail),
+    [t, typeNameById, usageByComponentId],
   )
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Components</Box>
+        <Box sx={{ typography: 'h5' }}>{t('components.list.title')}</Box>
         <Stack sx={{ flexDirection: 'row', gap: 2, alignItems: 'center' }}>
           <TextField
             select
             size="small"
-            label="Status"
+            label={t('components.list.statusLabel')}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ComponentStatus | '')}
             sx={{ minWidth: 140 }}
           >
-            <MenuItem value="">All</MenuItem>
+            <MenuItem value="">{t('components.list.all')}</MenuItem>
             {Object.entries(statusLabels()).map(([s, label]) => (
               <MenuItem key={s} value={s}>
                 {label}
@@ -187,7 +192,7 @@ export const ComponentList = () => {
               setEditOpen(true)
             }}
           >
-            Add component
+            {t('components.list.addButton')}
           </Button>
         </Stack>
       </Stack>
@@ -220,15 +225,15 @@ export const ComponentList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete component"
+        title={t('components.list.deleteTitle')}
         message={
           toDelete
-            ? `Delete "${componentIdentity(toDelete)}"? This cannot be undone.`
+            ? t('common.deleteConfirmMessage', { name: componentIdentity(toDelete) })
             : ''
         }
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

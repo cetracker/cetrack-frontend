@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Alert, Autocomplete, Stack, TextField, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
@@ -18,6 +19,7 @@ interface MountComponentDialogProps {
 }
 
 export const MountComponentDialog = ({ open, onClose, component }: MountComponentDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { notify } = useNotify()
   const [bikeId, setBikeId] = useState<string | null>(null)
@@ -66,11 +68,11 @@ export const MountComponentDialog = ({ open, onClose, component }: MountComponen
         await invalidateAfterMountingChanges(qc)
         if (changes.closed?.length) {
           notify(
-            `Mounted — auto-closed ${changes.closed.length} previous mounting${changes.closed.length > 1 ? 's' : ''}`,
+            t('components.mount.autoClosedNotice', { count: changes.closed.length }),
             'success',
           )
         } else {
-          notify('Component mounted', 'success')
+          notify(t('components.mount.successMessage'), 'success')
         }
         handleClose()
       },
@@ -85,12 +87,12 @@ export const MountComponentDialog = ({ open, onClose, component }: MountComponen
   return (
     <FormDialog
       open={open}
-      title={`Mount ${componentIdentity(component)}`}
+      title={t('components.mount.title', { identity: componentIdentity(component) })}
       onCancel={handleClose}
       onSubmit={submit}
       submitting={mountMut.isPending}
       submitDisabled={!bikeId || !mountPointId || !at}
-      submitLabel="Mount"
+      submitLabel={t('components.detail.mountButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         <Autocomplete<Bike>
@@ -103,7 +105,7 @@ export const MountComponentDialog = ({ open, onClose, component }: MountComponen
           getOptionLabel={(b) => bikeIdentity(b)}
           isOptionEqualToValue={(opt, val) => opt.id === val.id}
           renderInput={(params) => (
-            <TextField {...params} label="Bike" required autoFocus />
+            <TextField {...params} label={t('common.bike')} required autoFocus />
           )}
         />
         <Autocomplete<MountPoint>
@@ -112,26 +114,28 @@ export const MountComponentDialog = ({ open, onClose, component }: MountComponen
           onChange={(_, option) => setMountPointId(option?.id ?? null)}
           getOptionLabel={(mp) => {
             const occupant = occupantByMountPointId.get(mp.id)
-            return occupant ? `${mp.name} — currently: ${componentIdentity(occupant)}` : mp.name
+            return occupant
+              ? t('components.mount.occupantOption', { name: mp.name, identity: componentIdentity(occupant) })
+              : mp.name
           }}
           isOptionEqualToValue={(opt, val) => opt.id === val.id}
           disabled={!bikeId}
           renderInput={(params) => (
-            <TextField {...params} label="Mount point" required />
+            <TextField {...params} label={t('components.mount.mountPointLabel')} required />
           )}
         />
         {bikeId && mountPointOptions.length === 0 && (
           <Typography variant="body2" color="text.secondary">
-            No compatible mount points on this bike.
+            {t('components.mount.noCompatiblePoints')}
           </Typography>
         )}
         {selectedOccupant && (
           <Alert severity="warning">
-            Mounting here will dismount {componentIdentity(selectedOccupant)}.
+            {t('components.mount.dismountWarning', { identity: componentIdentity(selectedOccupant) })}
           </Alert>
         )}
         <DateTimePicker
-          label="Mounted at"
+          label={t('components.mount.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { fullWidth: true } }}

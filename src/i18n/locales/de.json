@@ -21,7 +21,8 @@
     "name": "Name",
     "description": "Beschreibung",
     "created": "Erstellt",
-    "deleteConfirmMessage": "\"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden."
+    "deleteConfirmMessage": "\"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden.",
+    "loading": "Wird geladen…"
   },
   "nav": {
     "components": "Komponenten",
@@ -74,7 +75,85 @@
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
   },
   "validation": {
-    "nameRequired": "Name erforderlich"
+    "nameRequired": "Name erforderlich",
+    "componentTypeRequired": "Komponententyp erforderlich",
+    "labelRequired": "Bezeichnung erforderlich",
+    "priceFormat": "Dezimalzahl verwenden, z. B. 10.57",
+    "currencyFormat": "ISO-4217-Code, z. B. EUR"
+  },
+  "components": {
+    "fields": {
+      "manufacturer": "Hersteller",
+      "model": "Modell",
+      "serial": "Seriennummer",
+      "serialNumber": "Seriennummer",
+      "vendor": "Händler",
+      "price": "Preis",
+      "purchasePrice": "Kaufpreis",
+      "currency": "Währung",
+      "purchaseDate": "Kaufdatum",
+      "purchased": "Gekauft",
+      "retiredDate": "Ausmusterungsdatum",
+      "retired": "Ausgemustert",
+      "firstUsed": "Erstmals verwendet",
+      "componentType": "Komponententyp",
+      "label": "Bezeichnung"
+    },
+    "list": {
+      "title": "Komponenten",
+      "addButton": "Komponente hinzufügen",
+      "statusLabel": "Status",
+      "all": "Alle",
+      "showDetails": "Details anzeigen",
+      "deleteTitle": "Komponente löschen",
+      "deletedSuccess": "Komponente gelöscht",
+      "columns": {
+        "component": "Komponente",
+        "type": "Typ",
+        "currentUsage": "Aktuell verwendet als"
+      }
+    },
+    "form": {
+      "addTitle": "Komponente hinzufügen",
+      "editTitle": "Komponente bearbeiten",
+      "createdSuccess": "Komponente erstellt",
+      "updatedSuccess": "Komponente aktualisiert"
+    },
+    "detail": {
+      "fallbackTitle": "Komponente",
+      "closeDrawer": "Ablage schließen",
+      "mountingHistoryTitle": "Montageverlauf",
+      "mountButton": "Montieren",
+      "dismountButton": "Demontieren",
+      "retireButton": "Ausmustern"
+    },
+    "infoCell": {
+      "detailsAriaLabel": "Komponentendetails"
+    },
+    "mount": {
+      "title": "{{identity}} montieren",
+      "mountPointLabel": "Montagepunkt",
+      "occupantOption": "{{name}} — aktuell: {{identity}}",
+      "noCompatiblePoints": "Keine passenden Montagepunkte an diesem Fahrrad.",
+      "dismountWarning": "Durch die Montage wird {{identity}} demontiert.",
+      "atLabel": "Montiert am",
+      "successMessage": "Komponente montiert",
+      "autoClosedNotice_one": "Montiert — {{count}} vorherige Montage automatisch beendet",
+      "autoClosedNotice_other": "Montiert — {{count}} vorherige Montagen automatisch beendet"
+    },
+    "dismount": {
+      "title": "Komponente demontieren",
+      "atLabel": "Demontiert am",
+      "successMessage": "Komponente demontiert"
+    },
+    "retire": {
+      "title": "Komponente ausmustern",
+      "atLabel": "Ausgemustert am",
+      "reasonLabel": "Grund",
+      "scrapped": "Verschrottet",
+      "sold": "Verkauft",
+      "successMessage": "Komponente ausgemustert"
+    }
   },
   "catalog": {
     "page": {

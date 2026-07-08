@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { MenuItem, Stack, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -17,25 +19,26 @@ import {
 import { componentTypesQuery } from '@/api/catalog'
 import type { Component, ComponentInput } from '@/types/api'
 
-const schema = z.object({
-  componentTypeId: z.string().min(1, 'Component type required'),
-  label: z.string().min(1, 'Label required'),
-  manufacturer: z.string(),
-  model: z.string(),
-  serialNumber: z.string(),
-  vendor: z.string(),
-  purchaseDate: z.date().nullable(),
-  price: z
-    .string()
-    .regex(/^\d+(\.\d+)?$/, 'Use a decimal like 10.57')
-    .or(z.literal('')),
-  priceCurrency: z
-    .string()
-    .regex(/^[A-Z]{3}$/, 'ISO 4217 code, e.g. EUR')
-    .or(z.literal('')),
-})
+const buildSchema = (t: TFunction) =>
+  z.object({
+    componentTypeId: z.string().min(1, t('validation.componentTypeRequired')),
+    label: z.string().min(1, t('validation.labelRequired')),
+    manufacturer: z.string(),
+    model: z.string(),
+    serialNumber: z.string(),
+    vendor: z.string(),
+    purchaseDate: z.date().nullable(),
+    price: z
+      .string()
+      .regex(/^\d+(\.\d+)?$/, t('validation.priceFormat'))
+      .or(z.literal('')),
+    priceCurrency: z
+      .string()
+      .regex(/^[A-Z]{3}$/, t('validation.currencyFormat'))
+      .or(z.literal('')),
+  })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 const toISODate = (d: Date | null) => (d ? format(d, 'yyyy-MM-dd') : undefined)
 const fromISODate = (s: string | null | undefined) => (s ? parseISO(s) : null)
@@ -60,8 +63,10 @@ interface ComponentFormProps {
 }
 
 export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: componentTypes } = useQuery(componentTypesQuery())
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -95,7 +100,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
   }
 
   const createMut = useApiMutation(createComponent, {
-    successMessage: 'Component created',
+    successMessage: t('components.form.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -105,7 +110,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
   const updateMut = useApiMutation(
     (v: { id: string; data: ComponentInput }) => updateComponent(v.id, v.data),
     {
-      successMessage: 'Component updated',
+      successMessage: t('components.form.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -137,7 +142,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Component' : 'Add Component'}
+      title={initial ? t('components.form.editTitle') : t('components.form.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -150,7 +155,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             <TextField
               {...field}
               select
-              label="Component Type"
+              label={t('components.fields.componentType')}
               required
               error={!!errors.componentTypeId}
               helperText={errors.componentTypeId?.message}
@@ -169,7 +174,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
           render={({ field }) => (
             <TextField
               {...field}
-              label="Label"
+              label={t('components.fields.label')}
               required
               error={!!errors.label}
               helperText={errors.label?.message}
@@ -180,22 +185,22 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
         <Controller
           control={control}
           name="manufacturer"
-          render={({ field }) => <TextField {...field} label="Manufacturer" />}
+          render={({ field }) => <TextField {...field} label={t('components.fields.manufacturer')} />}
         />
         <Controller
           control={control}
           name="model"
-          render={({ field }) => <TextField {...field} label="Model" />}
+          render={({ field }) => <TextField {...field} label={t('components.fields.model')} />}
         />
         <Controller
           control={control}
           name="serialNumber"
-          render={({ field }) => <TextField {...field} label="Serial Number" />}
+          render={({ field }) => <TextField {...field} label={t('components.fields.serialNumber')} />}
         />
         <Controller
           control={control}
           name="vendor"
-          render={({ field }) => <TextField {...field} label="Vendor" />}
+          render={({ field }) => <TextField {...field} label={t('components.fields.vendor')} />}
         />
         <Stack direction="row" spacing={2}>
           <Controller
@@ -204,7 +209,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Purchase Price"
+                label={t('components.fields.purchasePrice')}
                 fullWidth
                 error={!!errors.price}
                 helperText={errors.price?.message}
@@ -217,7 +222,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Currency"
+                label={t('components.fields.currency')}
                 sx={{ width: 130 }}
                 error={!!errors.priceCurrency}
                 helperText={errors.priceCurrency?.message}
@@ -230,7 +235,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
           name="purchaseDate"
           render={({ field }) => (
             <DatePicker
-              label="Purchase Date"
+              label={t('components.fields.purchaseDate')}
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}

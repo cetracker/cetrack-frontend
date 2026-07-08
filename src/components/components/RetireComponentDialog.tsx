@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { MenuItem, Stack, TextField } from '@mui/material'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { componentQueryKey, componentsRootKey, retireComponent } from '@/api/components'
@@ -19,6 +20,7 @@ export const RetireComponentDialog = ({
   onClose,
   componentId,
 }: RetireComponentDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [at, setAt] = useState<Date | null>(new Date())
   const [kind, setKind] = useState<RetirementKind>('scrapped')
@@ -26,7 +28,7 @@ export const RetireComponentDialog = ({
   const retireMut = useApiMutation(
     (body: { at: string; kind: RetirementKind }) => retireComponent(componentId, body),
     {
-      successMessage: 'Component retired',
+      successMessage: t('components.retire.successMessage'),
       onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: componentsRootKey })
         await qc.invalidateQueries({ queryKey: componentQueryKey(componentId) })
@@ -43,28 +45,28 @@ export const RetireComponentDialog = ({
   return (
     <FormDialog
       open={open}
-      title="Retire component"
+      title={t('components.retire.title')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={retireMut.isPending}
       submitDisabled={!at}
-      submitLabel="Retire"
+      submitLabel={t('components.detail.retireButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         <DateTimePicker
-          label="Retired at"
+          label={t('components.retire.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { fullWidth: true, autoFocus: true } }}
         />
         <TextField
           select
-          label="Reason"
+          label={t('components.retire.reasonLabel')}
           value={kind}
           onChange={(e) => setKind(e.target.value as RetirementKind)}
         >
-          <MenuItem value="scrapped">Scrapped</MenuItem>
-          <MenuItem value="sold">Sold</MenuItem>
+          <MenuItem value="scrapped">{t('components.retire.scrapped')}</MenuItem>
+          <MenuItem value="sold">{t('components.retire.sold')}</MenuItem>
         </TextField>
       </Stack>
     </FormDialog>

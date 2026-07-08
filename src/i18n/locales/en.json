@@ -21,7 +21,8 @@
     "name": "Name",
     "description": "Description",
     "created": "Created",
-    "deleteConfirmMessage": "Delete \"{{name}}\"? This cannot be undone."
+    "deleteConfirmMessage": "Delete \"{{name}}\"? This cannot be undone.",
+    "loading": "Loading…"
   },
   "nav": {
     "components": "Components",
@@ -74,7 +75,85 @@
     "unexpected": "An unexpected error occurred"
   },
   "validation": {
-    "nameRequired": "Name required"
+    "nameRequired": "Name required",
+    "componentTypeRequired": "Component type required",
+    "labelRequired": "Label required",
+    "priceFormat": "Use a decimal like 10.57",
+    "currencyFormat": "ISO 4217 code, e.g. EUR"
+  },
+  "components": {
+    "fields": {
+      "manufacturer": "Manufacturer",
+      "model": "Model",
+      "serial": "Serial",
+      "serialNumber": "Serial Number",
+      "vendor": "Vendor",
+      "price": "Price",
+      "purchasePrice": "Purchase Price",
+      "currency": "Currency",
+      "purchaseDate": "Purchase Date",
+      "purchased": "Purchased",
+      "retiredDate": "Retired Date",
+      "retired": "Retired",
+      "firstUsed": "First used",
+      "componentType": "Component Type",
+      "label": "Label"
+    },
+    "list": {
+      "title": "Components",
+      "addButton": "Add component",
+      "statusLabel": "Status",
+      "all": "All",
+      "showDetails": "Show details",
+      "deleteTitle": "Delete component",
+      "deletedSuccess": "Component deleted",
+      "columns": {
+        "component": "Component",
+        "type": "Type",
+        "currentUsage": "Currently In Use As"
+      }
+    },
+    "form": {
+      "addTitle": "Add Component",
+      "editTitle": "Edit Component",
+      "createdSuccess": "Component created",
+      "updatedSuccess": "Component updated"
+    },
+    "detail": {
+      "fallbackTitle": "Component",
+      "closeDrawer": "Close drawer",
+      "mountingHistoryTitle": "Mounting history",
+      "mountButton": "Mount",
+      "dismountButton": "Dismount",
+      "retireButton": "Retire"
+    },
+    "infoCell": {
+      "detailsAriaLabel": "Component details"
+    },
+    "mount": {
+      "title": "Mount {{identity}}",
+      "mountPointLabel": "Mount point",
+      "occupantOption": "{{name}} — currently: {{identity}}",
+      "noCompatiblePoints": "No compatible mount points on this bike.",
+      "dismountWarning": "Mounting here will dismount {{identity}}.",
+      "atLabel": "Mounted at",
+      "successMessage": "Component mounted",
+      "autoClosedNotice_one": "Mounted — auto-closed {{count}} previous mounting",
+      "autoClosedNotice_other": "Mounted — auto-closed {{count}} previous mountings"
+    },
+    "dismount": {
+      "title": "Dismount component",
+      "atLabel": "Dismounted at",
+      "successMessage": "Component dismounted"
+    },
+    "retire": {
+      "title": "Retire component",
+      "atLabel": "Retired at",
+      "reasonLabel": "Reason",
+      "scrapped": "Scrapped",
+      "sold": "Sold",
+      "successMessage": "Component retired"
+    }
   },
   "catalog": {
     "page": {

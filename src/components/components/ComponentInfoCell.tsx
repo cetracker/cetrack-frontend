@@ -1,21 +1,23 @@
 import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { useTranslation } from 'react-i18next'
 import type { Component } from '@/types/api'
 import { componentDisambiguator, componentIdentity, formatDate } from '@/utils/formatters'
 
 export const ComponentInfoCell = ({ component }: { component: Component }) => {
+  const { t } = useTranslation()
   const price = component.price
     ? `${component.price} ${component.priceCurrency ?? ''}`.trim()
     : ''
   const details: [string, string][] = (
     [
-      ['Manufacturer', component.manufacturer ?? ''],
-      ['Model', component.model ?? ''],
-      ['Serial', component.serialNumber ?? ''],
-      ['Vendor', component.vendor ?? ''],
-      ['Price', price],
-      ['Purchased', formatDate(component.purchaseDate)],
-      ['Retired', formatDate(component.retiredAt)],
+      [t('components.fields.manufacturer'), component.manufacturer ?? ''],
+      [t('components.fields.model'), component.model ?? ''],
+      [t('components.fields.serial'), component.serialNumber ?? ''],
+      [t('components.fields.vendor'), component.vendor ?? ''],
+      [t('components.fields.price'), price],
+      [t('components.fields.purchased'), formatDate(component.purchaseDate)],
+      [t('components.fields.retired'), formatDate(component.retiredAt)],
     ] as [string, string][]
   ).filter(([, v]) => v)
 
@@ -65,7 +67,7 @@ export const ComponentInfoCell = ({ component }: { component: Component }) => {
         >
           <IconButton
             size="small"
-            aria-label="Component details"
+            aria-label={t('components.infoCell.detailsAriaLabel')}
             onClick={(e) => e.stopPropagation()}
           >
             <InfoOutlinedIcon fontSize="inherit" />
