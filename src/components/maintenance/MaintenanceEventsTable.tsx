@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { deleteMaintenanceEvent, invalidateMaintenance, maintenanceEventsQuery } from '@/api/maintenance'
 import { formatDateTime, formatDistanceKm } from '@/utils/formatters'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -22,12 +23,13 @@ interface MaintenanceEventsTableProps {
 }
 
 export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: events } = useQuery(maintenanceEventsQuery(taskId))
   const [toDelete, setToDelete] = useState<MaintenanceEvent | null>(null)
 
   const deleteMut = useApiMutation((eventId: string) => deleteMaintenanceEvent(taskId, eventId), {
-    successMessage: 'Event deleted',
+    successMessage: t('maintenance.events.deletedSuccess'),
     onSuccess: async () => {
       await invalidateMaintenance(qc)
       setToDelete(null)
@@ -39,7 +41,7 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
   if (sorted.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No events logged yet.
+        {t('maintenance.events.empty')}
       </Typography>
     )
   }
@@ -49,9 +51,9 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Performed at</TableCell>
-            <TableCell>Logged</TableCell>
-            <TableCell>Ridden since previous</TableCell>
+            <TableCell>{t('maintenance.events.performedAtHeader')}</TableCell>
+            <TableCell>{t('maintenance.events.loggedHeader')}</TableCell>
+            <TableCell>{t('maintenance.events.riddenSinceHeader')}</TableCell>
             <TableCell align="right" />
           </TableRow>
         </TableHead>
@@ -62,7 +64,7 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
               <TableCell>{formatDateTime(e.createdAt)}</TableCell>
               <TableCell>{e.distanceSincePrevious != null ? `${formatDistanceKm(e.distanceSincePrevious)} km` : ''}</TableCell>
               <TableCell align="right">
-                <Tooltip title="Delete">
+                <Tooltip title={t('common.delete')}>
                   <IconButton size="small" color="error" onClick={() => setToDelete(e)}>
                     <DeleteIcon fontSize="small" />
                   </IconButton>
@@ -75,11 +77,11 @@ export const MaintenanceEventsTable = ({ taskId }: MaintenanceEventsTableProps) 
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Remove event"
-        message="Remove this event? The task's due state will be recalculated."
+        title={t('maintenance.events.removeTitle')}
+        message={t('maintenance.events.removeMessage')}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Remove"
+        confirmLabel={t('maintenance.events.removeButton')}
         destructive
         busy={deleteMut.isPending}
       />

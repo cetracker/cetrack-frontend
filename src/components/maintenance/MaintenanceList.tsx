@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
 import {
   deleteMaintenanceTask,
   invalidateMaintenance,
@@ -21,6 +22,7 @@ import { buildMaintenanceColumns } from './columns'
 import { MaintenanceTaskForm } from './MaintenanceTaskForm'
 
 export const MaintenanceList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   const [bikeFilter, setBikeFilter] = useState<string | null>(null)
@@ -43,7 +45,7 @@ export const MaintenanceList = () => {
   const [toDelete, setToDelete] = useState<MaintenanceTask | null>(null)
 
   const deleteMut = useApiMutation(deleteMaintenanceTask, {
-    successMessage: 'Maintenance task deleted',
+    successMessage: t('maintenance.bikeTab.deletedSuccess'),
     onSuccess: async () => {
       await invalidateMaintenance(qc)
       setToDelete(null)
@@ -58,18 +60,19 @@ export const MaintenanceList = () => {
   const columns = useMemo(
     () =>
       buildMaintenanceColumns({
+        t,
         includeBike: true,
         bikeById,
         onEdit: handleEdit,
         onDelete: setToDelete,
       }),
-    [bikeById],
+    [t, bikeById],
   )
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Maintenance</Box>
+        <Box sx={{ typography: 'h5' }}>{t('maintenance.list.title')}</Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -78,7 +81,7 @@ export const MaintenanceList = () => {
             setFormOpen(true)
           }}
         >
-          Add task
+          {t('maintenance.bikeTab.addButton')}
         </Button>
       </Stack>
 
@@ -87,12 +90,12 @@ export const MaintenanceList = () => {
           value={bikeFilter}
           onChange={setBikeFilter}
           includeNone
-          noneLabel="All bikes"
+          noneLabel={t('maintenance.list.allBikesOption')}
           sx={{ maxWidth: 260 }}
         />
         <FormControlLabel
           control={<Checkbox checked={dueOnly} onChange={(e) => setDueOnly(e.target.checked)} />}
-          label="Due only"
+          label={t('maintenance.list.dueOnlyLabel')}
         />
       </Stack>
 
@@ -114,13 +117,13 @@ export const MaintenanceList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete maintenance task"
+        title={t('maintenance.bikeTab.deleteTitle')}
         message={
-          toDelete ? `Delete "${toDelete.name}"? This also deletes its event history.` : ''
+          toDelete ? t('maintenance.bikeTab.deleteMessage', { name: toDelete.name }) : ''
         }
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

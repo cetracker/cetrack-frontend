@@ -1,17 +1,21 @@
 import { Chip, Stack, Typography } from '@mui/material'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { TFunction } from 'i18next'
 import type { Bike, MaintenanceTask } from '@/types/api'
 import { RowActions } from '@/components/common/RowActions'
 import { bikeIdentity, formatDate } from '@/utils/formatters'
 import { deriveDueDisplay, formatIntervalSummary, type DueSeverity } from '@/utils/maintenanceDue'
 
-const DUE_CHIP: Record<DueSeverity, { label: string; color: 'error' | 'success' | 'default' }> = {
-  overdue: { label: 'Due', color: 'error' },
-  ok: { label: 'OK', color: 'success' },
-  none: { label: '—', color: 'default' },
-}
+const dueChip = (
+  t: TFunction,
+): Record<DueSeverity, { label: string; color: 'error' | 'success' | 'default' }> => ({
+  overdue: { label: t('maintenance.due.overdueChip'), color: 'error' },
+  ok: { label: t('maintenance.due.okChip'), color: 'success' },
+  none: { label: t('maintenance.due.noneChip'), color: 'default' },
+})
 
 interface BuildMaintenanceColumnsOptions {
+  t: TFunction
   includeBike: boolean
   bikeById: Map<string, Bike>
   onEdit: (task: MaintenanceTask) => void
@@ -19,34 +23,35 @@ interface BuildMaintenanceColumnsOptions {
 }
 
 export const buildMaintenanceColumns = ({
+  t,
   includeBike,
   bikeById,
   onEdit,
   onDelete,
 }: BuildMaintenanceColumnsOptions): ColumnDef<MaintenanceTask>[] => [
-  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'name', header: t('common.name') },
   ...(includeBike
     ? ([
         {
           id: 'bike',
-          header: 'Bike',
-          accessorFn: (t: MaintenanceTask) => bikeIdentity(bikeById.get(t.bikeId)),
+          header: t('common.bike'),
+          accessorFn: (task: MaintenanceTask) => bikeIdentity(bikeById.get(task.bikeId)),
         },
       ] as ColumnDef<MaintenanceTask>[])
     : []),
   {
     id: 'interval',
-    header: 'Interval',
+    header: t('maintenance.columns.interval'),
     enableSorting: false,
-    accessorFn: (t) => formatIntervalSummary(t),
+    accessorFn: (task) => formatIntervalSummary(task),
   },
   {
     id: 'due',
-    header: 'Due',
-    accessorFn: (t) => deriveDueDisplay(t).severity,
+    header: t('maintenance.columns.due'),
+    accessorFn: (task) => deriveDueDisplay(task).severity,
     cell: ({ row }) => {
       const display = deriveDueDisplay(row.original)
-      const chip = DUE_CHIP[display.severity]
+      const chip = dueChip(t)[display.severity]
       return (
         <Stack spacing={0}>
           <Chip size="small" label={chip.label} color={chip.color} />
@@ -59,7 +64,7 @@ export const buildMaintenanceColumns = ({
   },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: t('common.created'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },

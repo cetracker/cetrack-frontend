@@ -46,12 +46,13 @@ export const BikeMaintenanceTab = ({ bikeId }: BikeMaintenanceTabProps) => {
   const columns = useMemo(
     () =>
       buildMaintenanceColumns({
+        t,
         includeBike: false,
         bikeById,
         onEdit: handleEdit,
         onDelete: setToDelete,
       }),
-    [bikeById],
+    [t, bikeById],
   )
 
   return (

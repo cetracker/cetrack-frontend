@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Autocomplete, Stack, TextField } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { createMaintenanceTask, invalidateMaintenance, updateMaintenanceTask } from '@/api/maintenance'
@@ -16,40 +18,41 @@ const DAYS_TO_S = 86_400
 
 /** Validates the raw entry AND the rounded wire value — a sub-unit entry
  *  (e.g. 0.0004 km -> 0m) must never reach the server's `minimum: 1`. */
-const positiveRoundedIssue = (raw: string, factor: number): string | null => {
+const positiveRoundedIssue = (raw: string, factor: number, t: TFunction): string | null => {
   if (!raw.trim()) return null
   const n = Number(raw)
-  if (!Number.isFinite(n) || n <= 0) return 'Must be a positive number'
-  if (Math.round(n * factor) < 1) return 'Too small at this precision'
+  if (!Number.isFinite(n) || n <= 0) return t('maintenance.form.positiveNumber')
+  if (Math.round(n * factor) < 1) return t('maintenance.form.tooSmallPrecision')
   return null
 }
 
-const schema = z
-  .object({
-    name: z.string().min(1, 'Name required'),
-    bikeId: z.string().min(1, 'Bike required'),
-    distanceKm: z.string(),
-    timeDays: z.string(),
-  })
-  .superRefine((values, ctx) => {
-    const distanceIssue = positiveRoundedIssue(values.distanceKm, KM_TO_M)
-    if (distanceIssue) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['distanceKm'], message: distanceIssue })
-    }
-    const timeIssue = positiveRoundedIssue(values.timeDays, DAYS_TO_S)
-    if (timeIssue) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['timeDays'], message: timeIssue })
-    }
-    if (!values.distanceKm.trim() && !values.timeDays.trim()) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['distanceKm'],
-        message: 'Set a distance or a time interval (or both)',
-      })
-    }
-  })
+const buildSchema = (t: TFunction) =>
+  z
+    .object({
+      name: z.string().min(1, t('validation.nameRequired')),
+      bikeId: z.string().min(1, t('maintenance.form.bikeRequired')),
+      distanceKm: z.string(),
+      timeDays: z.string(),
+    })
+    .superRefine((values, ctx) => {
+      const distanceIssue = positiveRoundedIssue(values.distanceKm, KM_TO_M, t)
+      if (distanceIssue) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['distanceKm'], message: distanceIssue })
+      }
+      const timeIssue = positiveRoundedIssue(values.timeDays, DAYS_TO_S, t)
+      if (timeIssue) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['timeDays'], message: timeIssue })
+      }
+      if (!values.distanceKm.trim() && !values.timeDays.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['distanceKm'],
+          message: t('maintenance.form.setIntervalRequired'),
+        })
+      }
+    })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 interface MaintenanceTaskFormProps {
   open: boolean
@@ -64,10 +67,12 @@ export const MaintenanceTaskForm = ({
   initial,
   fixedBikeId,
 }: MaintenanceTaskFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: bikes } = useQuery(bikesQuery())
   const bikeOptions = (bikes ?? []).filter((b) => !b.retiredAt)
   const bikeLocked = !!initial || !!fixedBikeId
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -93,7 +98,7 @@ export const MaintenanceTaskForm = ({
   const invalidate = () => invalidateMaintenance(qc)
 
   const createMut = useApiMutation(createMaintenanceTask, {
-    successMessage: 'Maintenance task created',
+    successMessage: t('maintenance.form.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -103,7 +108,7 @@ export const MaintenanceTaskForm = ({
   const updateMut = useApiMutation(
     (v: { id: string; data: MaintenanceTaskInput }) => updateMaintenanceTask(v.id, v.data),
     {
-      successMessage: 'Maintenance task updated',
+      successMessage: t('maintenance.form.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -137,7 +142,7 @@ export const MaintenanceTaskForm = ({
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Maintenance Task' : 'Add Maintenance Task'}
+      title={initial ? t('maintenance.form.editTitle') : t('maintenance.form.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -149,7 +154,7 @@ export const MaintenanceTaskForm = ({
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               required
               error={!!errors.name}
               helperText={errors.name?.message}
@@ -158,7 +163,7 @@ export const MaintenanceTaskForm = ({
           )}
         />
         {bikeLocked ? (
-          <TextField label="Bike" value={lockedBikeName} disabled fullWidth />
+          <TextField label={t('common.bike')} value={lockedBikeName} disabled fullWidth />
         ) : (
           <Controller
             control={control}
@@ -173,7 +178,7 @@ export const MaintenanceTaskForm = ({
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    label="Bike"
+                    label={t('common.bike')}
                     required
                     error={!!errors.bikeId}
                     helperText={errors.bikeId?.message}
@@ -189,7 +194,7 @@ export const MaintenanceTaskForm = ({
           render={({ field }) => (
             <TextField
               {...field}
-              label="Distance interval (km)"
+              label={t('maintenance.form.distanceIntervalLabel')}
               error={!!errors.distanceKm}
               helperText={errors.distanceKm?.message}
             />
@@ -201,7 +206,7 @@ export const MaintenanceTaskForm = ({
           render={({ field }) => (
             <TextField
               {...field}
-              label="Time interval (days)"
+              label={t('maintenance.form.timeIntervalLabel')}
               error={!!errors.timeDays}
               helperText={errors.timeDays?.message}
             />

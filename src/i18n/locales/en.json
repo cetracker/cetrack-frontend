@@ -250,6 +250,173 @@
       "deletedSuccess": "Maintenance task deleted",
       "deleteTitle": "Delete maintenance task",
       "deleteMessage": "Delete \"{{name}}\"? This also deletes its event history."
+    },
+    "due": {
+      "overdueChip": "Due",
+      "okChip": "OK",
+      "noneChip": "—"
+    },
+    "columns": {
+      "interval": "Interval",
+      "due": "Due"
+    },
+    "list": {
+      "title": "Maintenance",
+      "allBikesOption": "All bikes",
+      "dueOnlyLabel": "Due only"
+    },
+    "form": {
+      "addTitle": "Add Maintenance Task",
+      "editTitle": "Edit Maintenance Task",
+      "bikeRequired": "Bike required",
+      "positiveNumber": "Must be a positive number",
+      "tooSmallPrecision": "Too small at this precision",
+      "setIntervalRequired": "Set a distance or a time interval (or both)",
+      "createdSuccess": "Maintenance task created",
+      "updatedSuccess": "Maintenance task updated",
+      "distanceIntervalLabel": "Distance interval (km)",
+      "timeIntervalLabel": "Time interval (days)"
+    },
+    "detail": {
+      "backButton": "Back to maintenance",
+      "fallbackTitle": "Maintenance task",
+      "logEventButton": "Log event",
+      "intervalLabel": "Interval: {{summary}}",
+      "lastPerformedLabel": "Last performed: {{value}}",
+      "neverPerformed": "Never — counting since the bike's first tour",
+      "distanceSinceLabel": "Distance since last: {{km}} km",
+      "timeSinceLabel": "Time since last: {{value}}",
+      "distanceRemainingLabel": "Distance remaining: {{value}}",
+      "timeRemainingLabel": "Time remaining: {{value}}"
+    },
+    "events": {
+      "empty": "No events logged yet.",
+      "performedAtHeader": "Performed at",
+      "loggedHeader": "Logged",
+      "riddenSinceHeader": "Ridden since previous",
+      "deletedSuccess": "Event deleted",
+      "removeTitle": "Remove event",
+      "removeMessage": "Remove this event? The task's due state will be recalculated.",
+      "removeButton": "Remove"
+    },
+    "logEvent": {
+      "title": "Log maintenance event",
+      "atLabel": "Performed at",
+      "logButton": "Log",
+      "loggedSuccess": "Event logged"
+    }
+  },
+  "assemblies": {
+    "list": {
+      "title": "Assemblies",
+      "addButton": "Add assembly",
+      "deleteTitle": "Delete assembly",
+      "deletedSuccess": "Assembly deleted",
+      "completeChip": "Complete",
+      "incompleteChip": "Incomplete",
+      "unmountedChip": "Unmounted"
+    },
+    "form": {
+      "addTitle": "Add Assembly",
+      "editTitle": "Edit Assembly",
+      "createdSuccess": "Assembly created",
+      "updatedSuccess": "Assembly updated"
+    },
+    "detail": {
+      "backButton": "Back to assemblies",
+      "fallbackTitle": "Assembly",
+      "mountButton": "Mount to bike",
+      "slotsTab": "Slots & Members",
+      "historyTab": "Mounting History"
+    },
+    "slot": {
+      "addTitle": "Add Slot",
+      "editTitle": "Edit Slot",
+      "validFromLabel": "Valid from",
+      "validToLabel": "Valid to",
+      "validFromRequired": "Valid from required",
+      "validToAfterFrom": "Valid to must be after valid from",
+      "createdSuccess": "Slot added",
+      "updatedSuccess": "Slot updated"
+    },
+    "slotsTable": {
+      "addButton": "Add slot",
+      "empty": "No slots yet.",
+      "slotHeader": "Slot",
+      "memberHeader": "Member",
+      "memberHistoryTooltip": "Member history",
+      "removeMemberTooltip": "Remove member",
+      "editSlotTooltip": "Edit slot",
+      "deleteSlotTooltip": "Delete slot",
+      "deleteTitle": "Delete slot",
+      "deletedSuccess": "Slot deleted"
+    },
+    "mountingHistory": {
+      "empty": "No mounting history yet."
+    },
+    "membershipHistory": {
+      "empty": "No members yet.",
+      "fromHeader": "From",
+      "toHeader": "To"
+    },
+    "mount": {
+      "title": "Mount {{name}}",
+      "nextButton": "Next",
+      "atLabel": "At",
+      "slotEmpty": "{{slotName}} — empty, add a member first —",
+      "resolvedByUniqueCandidate": "only candidate",
+      "resolvedByPositionFilter": "by position",
+      "resolvedBySlotMapping": "remembered",
+      "chooseMountPoint": "{{slotName}} — choose a mount point",
+      "willDismount": "Will dismount {{name}} from this mount point",
+      "successMessage": "Assembly mounted",
+      "rememberedAnswers_one": "remembered {{count}} answer for next time",
+      "rememberedAnswers_other": "remembered {{count}} answers for next time",
+      "autoClosed_one": "auto-closed {{count}} mounting",
+      "autoClosed_other": "auto-closed {{count}} mountings"
+    },
+    "dismount": {
+      "title": "Dismount assembly",
+      "atLabel": "Dismounted at",
+      "successMessage": "Assembly dismounted"
+    },
+    "removeMember": {
+      "title": "Remove member",
+      "removeButton": "Remove",
+      "atLabel": "Removed at",
+      "removedSuccess": "Member removed",
+      "removedWithClosed_one": "Member removed — closed {{count}} mounting",
+      "removedWithClosed_other": "Member removed — closed {{count}} mountings"
+    },
+    "addMember": {
+      "dialogTitleWithSlot": "Add member to {{slotName}}",
+      "dialogTitleFallback": "Add member",
+      "addButton": "Add",
+      "resolveAddButton": "Resolve & Add",
+      "fromLabel": "From",
+      "mountPointHelper": "This assembly ({{name}}) is mounted — pick where this member goes.",
+      "addedSuccess": "Member added",
+      "addedWithMounted_one": "Member added — mounted onto {{count}} mount point",
+      "addedWithMounted_other": "Member added — mounted onto {{count}} mount points"
+    },
+    "reuseMember": {
+      "dialogTitle": "Re-use {{name}}",
+      "reuseButton": "Re-use",
+      "resolveReuseButton": "Resolve & Re-use",
+      "mountPointHelper": "This assembly is mounted — pick where this member goes.",
+      "dismountWarningWithDismount": "Adding {{name}} will end {{active}}'s membership and dismount it.",
+      "dismountWarningNoDismount": "Adding {{name}} will end {{active}}'s membership.",
+      "reusedSuccess": "{{name}} re-used{{summary}}",
+      "summaryEndedMembership": "ended the previous member's membership",
+      "summaryMountedOnto_one": "mounted onto {{count}} mount point",
+      "summaryMountedOnto_other": "mounted onto {{count}} mount points",
+      "governedError": "Couldn't swap in {{name}}: this slot's mount point on {{bike}} is held by another assembly. {{occupant}} is unchanged.",
+      "unmountableError": "Couldn't swap in {{name}}: it can't be mounted at this slot's resolved mount point on {{bike}}. {{occupant}} is unchanged.",
+      "defaultOccupant": "The current member"
+    },
+    "slotMemberHistory": {
+      "fallbackTitle": "Slot",
+      "addOtherButton": "Add other component…"
     }
   },
   "catalog": {

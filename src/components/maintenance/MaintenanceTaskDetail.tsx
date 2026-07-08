@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Box, Button, Chip, Paper, Stack, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { deleteMaintenanceTask, invalidateMaintenance, maintenanceTaskQuery } from '@/api/maintenance'
 import { bikesQuery } from '@/api/bikes'
 import { MaintenanceTaskForm } from './MaintenanceTaskForm'
@@ -20,13 +21,13 @@ import {
   type DueSeverity,
 } from '@/utils/maintenanceDue'
 
-const DUE_CHIP: Record<DueSeverity, { label: string; color: 'error' | 'success' | 'default' }> = {
-  overdue: { label: 'Due', color: 'error' },
-  ok: { label: 'OK', color: 'success' },
-  none: { label: '—', color: 'default' },
-}
-
 export const MaintenanceTaskDetail = () => {
+  const { t } = useTranslation()
+  const dueChip: Record<DueSeverity, { label: string; color: 'error' | 'success' | 'default' }> = {
+    overdue: { label: t('maintenance.due.overdueChip'), color: 'error' },
+    ok: { label: t('maintenance.due.okChip'), color: 'success' },
+    none: { label: t('maintenance.due.noneChip'), color: 'default' },
+  }
   const { taskId } = useParams<{ taskId: string }>()
   const navigate = useNavigate()
   const qc = useQueryClient()
@@ -41,7 +42,7 @@ export const MaintenanceTaskDetail = () => {
   const [logOpen, setLogOpen] = useState(false)
 
   const deleteMut = useApiMutation(deleteMaintenanceTask, {
-    successMessage: 'Maintenance task deleted',
+    successMessage: t('maintenance.bikeTab.deletedSuccess'),
     onSuccess: async () => {
       await invalidateMaintenance(qc)
       navigate('/maintenance')
@@ -52,7 +53,7 @@ export const MaintenanceTaskDetail = () => {
 
   const bike = task ? bikes?.find((b) => b.id === task.bikeId) : undefined
   const dueDisplay = task ? deriveDueDisplay(task) : null
-  const chip = dueDisplay ? DUE_CHIP[dueDisplay.severity] : null
+  const chip = dueDisplay ? dueChip[dueDisplay.severity] : null
 
   return (
     <Box>
@@ -62,13 +63,13 @@ export const MaintenanceTaskDetail = () => {
         size="small"
         sx={{ mb: 1 }}
       >
-        Back to maintenance
+        {t('maintenance.detail.backButton')}
       </Button>
 
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <Box sx={{ typography: 'h5' }}>
-            {task?.name ?? (isLoading ? 'Loading…' : 'Maintenance task')}
+            {task?.name ?? (isLoading ? t('common.loading') : t('maintenance.detail.fallbackTitle'))}
           </Box>
           {bike && <Chip size="small" label={bikeIdentity(bike)} />}
           {chip && <Chip size="small" label={chip.label} color={chip.color} />}
@@ -76,13 +77,13 @@ export const MaintenanceTaskDetail = () => {
         {task && (
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" onClick={() => setEditOpen(true)}>
-              Edit
+              {t('common.edit')}
             </Button>
             <Button variant="outlined" color="error" onClick={() => setToDelete(true)}>
-              Delete
+              {t('common.delete')}
             </Button>
             <Button variant="contained" onClick={() => setLogOpen(true)}>
-              Log event
+              {t('maintenance.detail.logEventButton')}
             </Button>
           </Stack>
         )}
@@ -92,31 +93,38 @@ export const MaintenanceTaskDetail = () => {
         <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
           <Stack spacing={1}>
             <Typography variant="subtitle1">{dueDisplay?.label}</Typography>
-            <Typography variant="body2">Interval: {formatIntervalSummary(task)}</Typography>
             <Typography variant="body2">
-              Last performed:{' '}
-              {task.due?.lastPerformedAt
-                ? formatDateTime(task.due.lastPerformedAt)
-                : "Never — counting since the bike's first tour"}
+              {t('maintenance.detail.intervalLabel', { summary: formatIntervalSummary(task) })}
+            </Typography>
+            <Typography variant="body2">
+              {t('maintenance.detail.lastPerformedLabel', {
+                value: task.due?.lastPerformedAt
+                  ? formatDateTime(task.due.lastPerformedAt)
+                  : t('maintenance.detail.neverPerformed'),
+              })}
             </Typography>
             {task.due?.distanceSinceLast != null && (
               <Typography variant="body2">
-                Distance since last: {formatDistanceKm(task.due.distanceSinceLast)} km
+                {t('maintenance.detail.distanceSinceLabel', {
+                  km: formatDistanceKm(task.due.distanceSinceLast),
+                })}
               </Typography>
             )}
             {task.due?.timeSinceLast != null && (
               <Typography variant="body2">
-                Time since last: {formatDays(task.due.timeSinceLast)}
+                {t('maintenance.detail.timeSinceLabel', { value: formatDays(task.due.timeSinceLast) })}
               </Typography>
             )}
             {remainingDistanceLabel(task.due) && (
               <Typography variant="body2">
-                Distance remaining: {remainingDistanceLabel(task.due)}
+                {t('maintenance.detail.distanceRemainingLabel', {
+                  value: remainingDistanceLabel(task.due),
+                })}
               </Typography>
             )}
             {remainingTimeLabel(task.due) && (
               <Typography variant="body2">
-                Time remaining: {remainingTimeLabel(task.due)}
+                {t('maintenance.detail.timeRemainingLabel', { value: remainingTimeLabel(task.due) })}
               </Typography>
             )}
           </Stack>
@@ -130,11 +138,11 @@ export const MaintenanceTaskDetail = () => {
           <MaintenanceTaskForm open={editOpen} onClose={() => setEditOpen(false)} initial={task} />
           <ConfirmDialog
             open={toDelete}
-            title="Delete maintenance task"
-            message={`Delete "${task.name}"? This also deletes its event history.`}
+            title={t('maintenance.bikeTab.deleteTitle')}
+            message={t('maintenance.bikeTab.deleteMessage', { name: task.name })}
             onCancel={() => setToDelete(false)}
             onConfirm={() => deleteMut.mutate(taskId)}
-            confirmLabel="Delete"
+            confirmLabel={t('common.delete')}
             destructive
             busy={deleteMut.isPending}
           />

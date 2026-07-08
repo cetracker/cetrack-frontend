@@ -250,6 +250,173 @@
       "deletedSuccess": "Wartungsaufgabe gelöscht",
       "deleteTitle": "Wartungsaufgabe löschen",
       "deleteMessage": "\"{{name}}\" löschen? Dies löscht auch die Ereignishistorie."
+    },
+    "due": {
+      "overdueChip": "Fällig",
+      "okChip": "OK",
+      "noneChip": "—"
+    },
+    "columns": {
+      "interval": "Intervall",
+      "due": "Fällig"
+    },
+    "list": {
+      "title": "Wartung",
+      "allBikesOption": "Alle Fahrräder",
+      "dueOnlyLabel": "Nur fällige"
+    },
+    "form": {
+      "addTitle": "Wartungsaufgabe hinzufügen",
+      "editTitle": "Wartungsaufgabe bearbeiten",
+      "bikeRequired": "Fahrrad erforderlich",
+      "positiveNumber": "Muss eine positive Zahl sein",
+      "tooSmallPrecision": "Bei dieser Genauigkeit zu klein",
+      "setIntervalRequired": "Distanz- oder Zeitintervall festlegen (oder beides)",
+      "createdSuccess": "Wartungsaufgabe erstellt",
+      "updatedSuccess": "Wartungsaufgabe aktualisiert",
+      "distanceIntervalLabel": "Distanzintervall (km)",
+      "timeIntervalLabel": "Zeitintervall (Tage)"
+    },
+    "detail": {
+      "backButton": "Zurück zur Wartung",
+      "fallbackTitle": "Wartungsaufgabe",
+      "logEventButton": "Ereignis protokollieren",
+      "intervalLabel": "Intervall: {{summary}}",
+      "lastPerformedLabel": "Zuletzt durchgeführt: {{value}}",
+      "neverPerformed": "Nie — Zählung seit der ersten Tour des Fahrrads",
+      "distanceSinceLabel": "Distanz seit zuletzt: {{km}} km",
+      "timeSinceLabel": "Zeit seit zuletzt: {{value}}",
+      "distanceRemainingLabel": "Verbleibende Distanz: {{value}}",
+      "timeRemainingLabel": "Verbleibende Zeit: {{value}}"
+    },
+    "events": {
+      "empty": "Noch keine Ereignisse protokolliert.",
+      "performedAtHeader": "Durchgeführt am",
+      "loggedHeader": "Protokolliert",
+      "riddenSinceHeader": "Gefahren seit vorherigem",
+      "deletedSuccess": "Ereignis gelöscht",
+      "removeTitle": "Ereignis entfernen",
+      "removeMessage": "Dieses Ereignis entfernen? Der Fälligkeitsstatus der Aufgabe wird neu berechnet.",
+      "removeButton": "Entfernen"
+    },
+    "logEvent": {
+      "title": "Wartungsereignis protokollieren",
+      "atLabel": "Durchgeführt am",
+      "logButton": "Protokollieren",
+      "loggedSuccess": "Ereignis protokolliert"
+    }
+  },
+  "assemblies": {
+    "list": {
+      "title": "Baugruppen",
+      "addButton": "Baugruppe hinzufügen",
+      "deleteTitle": "Baugruppe löschen",
+      "deletedSuccess": "Baugruppe gelöscht",
+      "completeChip": "Vollständig",
+      "incompleteChip": "Unvollständig",
+      "unmountedChip": "Nicht montiert"
+    },
+    "form": {
+      "addTitle": "Baugruppe hinzufügen",
+      "editTitle": "Baugruppe bearbeiten",
+      "createdSuccess": "Baugruppe erstellt",
+      "updatedSuccess": "Baugruppe aktualisiert"
+    },
+    "detail": {
+      "backButton": "Zurück zu Baugruppen",
+      "fallbackTitle": "Baugruppe",
+      "mountButton": "An Fahrrad montieren",
+      "slotsTab": "Plätze & Mitglieder",
+      "historyTab": "Montageverlauf"
+    },
+    "slot": {
+      "addTitle": "Platz hinzufügen",
+      "editTitle": "Platz bearbeiten",
+      "validFromLabel": "Gültig ab",
+      "validToLabel": "Gültig bis",
+      "validFromRequired": "Gültig ab erforderlich",
+      "validToAfterFrom": "Gültig bis muss nach Gültig ab liegen",
+      "createdSuccess": "Platz hinzugefügt",
+      "updatedSuccess": "Platz aktualisiert"
+    },
+    "slotsTable": {
+      "addButton": "Platz hinzufügen",
+      "empty": "Noch keine Plätze.",
+      "slotHeader": "Platz",
+      "memberHeader": "Mitglied",
+      "memberHistoryTooltip": "Mitgliedshistorie",
+      "removeMemberTooltip": "Mitglied entfernen",
+      "editSlotTooltip": "Platz bearbeiten",
+      "deleteSlotTooltip": "Platz löschen",
+      "deleteTitle": "Platz löschen",
+      "deletedSuccess": "Platz gelöscht"
+    },
+    "mountingHistory": {
+      "empty": "Noch kein Montageverlauf."
+    },
+    "membershipHistory": {
+      "empty": "Noch keine Mitglieder.",
+      "fromHeader": "Von",
+      "toHeader": "Bis"
+    },
+    "mount": {
+      "title": "{{name}} montieren",
+      "nextButton": "Weiter",
+      "atLabel": "Am",
+      "slotEmpty": "{{slotName}} — leer, zuerst ein Mitglied hinzufügen —",
+      "resolvedByUniqueCandidate": "einziger Kandidat",
+      "resolvedByPositionFilter": "nach Position",
+      "resolvedBySlotMapping": "gemerkt",
+      "chooseMountPoint": "{{slotName}} — Montagepunkt wählen",
+      "willDismount": "Demontiert {{name}} von diesem Montagepunkt",
+      "successMessage": "Baugruppe montiert",
+      "rememberedAnswers_one": "{{count}} Antwort für nächstes Mal gemerkt",
+      "rememberedAnswers_other": "{{count}} Antworten für nächstes Mal gemerkt",
+      "autoClosed_one": "{{count}} Montage automatisch beendet",
+      "autoClosed_other": "{{count}} Montagen automatisch beendet"
+    },
+    "dismount": {
+      "title": "Baugruppe demontieren",
+      "atLabel": "Demontiert am",
+      "successMessage": "Baugruppe demontiert"
+    },
+    "removeMember": {
+      "title": "Mitglied entfernen",
+      "removeButton": "Entfernen",
+      "atLabel": "Entfernt am",
+      "removedSuccess": "Mitglied entfernt",
+      "removedWithClosed_one": "Mitglied entfernt — {{count}} Montage beendet",
+      "removedWithClosed_other": "Mitglied entfernt — {{count}} Montagen beendet"
+    },
+    "addMember": {
+      "dialogTitleWithSlot": "Mitglied zu {{slotName}} hinzufügen",
+      "dialogTitleFallback": "Mitglied hinzufügen",
+      "addButton": "Hinzufügen",
+      "resolveAddButton": "Auflösen & Hinzufügen",
+      "fromLabel": "Von",
+      "mountPointHelper": "Diese Baugruppe ({{name}}) ist montiert — wählen Sie, wohin dieses Mitglied geht.",
+      "addedSuccess": "Mitglied hinzugefügt",
+      "addedWithMounted_one": "Mitglied hinzugefügt — an {{count}} Montagepunkt montiert",
+      "addedWithMounted_other": "Mitglied hinzugefügt — an {{count}} Montagepunkte montiert"
+    },
+    "reuseMember": {
+      "dialogTitle": "{{name}} wiederverwenden",
+      "reuseButton": "Wiederverwenden",
+      "resolveReuseButton": "Auflösen & Wiederverwenden",
+      "mountPointHelper": "Diese Baugruppe ist montiert — wählen Sie, wohin dieses Mitglied geht.",
+      "dismountWarningWithDismount": "Durch Hinzufügen von {{name}} endet die Mitgliedschaft von {{active}} und es wird demontiert.",
+      "dismountWarningNoDismount": "Durch Hinzufügen von {{name}} endet die Mitgliedschaft von {{active}}.",
+      "reusedSuccess": "{{name}} wiederverwendet{{summary}}",
+      "summaryEndedMembership": "Mitgliedschaft des vorherigen Mitglieds beendet",
+      "summaryMountedOnto_one": "an {{count}} Montagepunkt montiert",
+      "summaryMountedOnto_other": "an {{count}} Montagepunkte montiert",
+      "governedError": "{{name}} konnte nicht eingetauscht werden: Der Montagepunkt dieses Platzes an {{bike}} wird von einer anderen Baugruppe belegt. {{occupant}} bleibt unverändert.",
+      "unmountableError": "{{name}} konnte nicht eingetauscht werden: Kann nicht am aufgelösten Montagepunkt dieses Platzes an {{bike}} montiert werden. {{occupant}} bleibt unverändert.",
+      "defaultOccupant": "Das aktuelle Mitglied"
+    },
+    "slotMemberHistory": {
+      "fallbackTitle": "Platz",
+      "addOtherButton": "Andere Komponente hinzufügen…"
     }
   },
   "catalog": {

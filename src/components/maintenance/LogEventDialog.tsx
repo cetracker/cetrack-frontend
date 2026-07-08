@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { Stack } from '@mui/material'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { createMaintenanceEvent, invalidateMaintenance } from '@/api/maintenance'
@@ -14,13 +15,14 @@ interface LogEventDialogProps {
 }
 
 export const LogEventDialog = ({ open, onClose, taskId }: LogEventDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [at, setAt] = useState<Date | null>(new Date())
 
   const logMut = useApiMutation(
     (body: { performedAt: string }) => createMaintenanceEvent(taskId, body),
     {
-      successMessage: 'Event logged',
+      successMessage: t('maintenance.logEvent.loggedSuccess'),
       onSuccess: async () => {
         await invalidateMaintenance(qc)
         onClose()
@@ -36,16 +38,16 @@ export const LogEventDialog = ({ open, onClose, taskId }: LogEventDialogProps) =
   return (
     <FormDialog
       open={open}
-      title="Log maintenance event"
+      title={t('maintenance.logEvent.title')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={logMut.isPending}
       submitDisabled={!at}
-      submitLabel="Log"
+      submitLabel={t('maintenance.logEvent.logButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         <DateTimePicker
-          label="Performed at"
+          label={t('maintenance.logEvent.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { fullWidth: true, autoFocus: true } }}
