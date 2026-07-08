@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import HistoryIcon from '@mui/icons-material/History'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { deleteAssemblySlot, assemblyQueryKey } from '@/api/assemblies'
@@ -34,6 +35,7 @@ interface AssemblySlotsTableProps {
 }
 
 export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: componentTypes } = useQuery(componentTypesQuery())
   const { data: components } = useQuery(componentsQuery())
@@ -50,7 +52,7 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
   const deleteMut = useApiMutation(
     (slotId: string) => deleteAssemblySlot(assembly.id, slotId),
     {
-      successMessage: 'Slot deleted',
+      successMessage: t('assemblies.slotsTable.deletedSuccess'),
       onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: assemblyQueryKey(assembly.id) })
         setToDelete(null)
@@ -71,23 +73,23 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
             setFormOpen(true)
           }}
         >
-          Add slot
+          {t('assemblies.slotsTable.addButton')}
         </Button>
       </Stack>
 
       {rows.length === 0 ? (
         <Typography color="text.secondary" sx={{ py: 2 }}>
-          No slots yet.
+          {t('assemblies.slotsTable.empty')}
         </Typography>
       ) : (
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Slot</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Valid from</TableCell>
-              <TableCell>Valid to</TableCell>
-              <TableCell>Member</TableCell>
+              <TableCell>{t('assemblies.slotsTable.slotHeader')}</TableCell>
+              <TableCell>{t('common.type')}</TableCell>
+              <TableCell>{t('assemblies.slot.validFromLabel')}</TableCell>
+              <TableCell>{t('assemblies.slot.validToLabel')}</TableCell>
+              <TableCell>{t('assemblies.slotsTable.memberHeader')}</TableCell>
               <TableCell align="right" />
             </TableRow>
           </TableHead>
@@ -107,7 +109,7 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                       <>
                         {componentIdentity(member)}{' '}
                         <Typography component="span" variant="caption" color="text.secondary">
-                          since {formatDateTime(slot.memberFrom)}
+                          {t('bikes.composition.sincePrefix', { date: formatDateTime(slot.memberFrom) })}
                         </Typography>
                       </>
                     ) : (
@@ -116,13 +118,13 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                   </TableCell>
                   <TableCell align="right">
                     <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                      <Tooltip title="Member history">
+                      <Tooltip title={t('assemblies.slotsTable.memberHistoryTooltip')}>
                         <IconButton size="small" onClick={() => setHistorySlot(slot)}>
                           <HistoryIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       {slot.memberComponentId && (
-                        <Tooltip title="Remove member">
+                        <Tooltip title={t('assemblies.slotsTable.removeMemberTooltip')}>
                           <IconButton
                             size="small"
                             onClick={() => setRemoveMemberComponentId(slot.memberComponentId!)}
@@ -131,7 +133,7 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                           </IconButton>
                         </Tooltip>
                       )}
-                      <Tooltip title="Edit slot">
+                      <Tooltip title={t('assemblies.slotsTable.editSlotTooltip')}>
                         <IconButton
                           size="small"
                           onClick={() => {
@@ -142,7 +144,7 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
                           <EditIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete slot">
+                      <Tooltip title={t('assemblies.slotsTable.deleteSlotTooltip')}>
                         <IconButton size="small" color="error" onClick={() => setToDelete(slot)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
@@ -165,11 +167,11 @@ export const AssemblySlotsTable = ({ assembly }: AssemblySlotsTableProps) => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete slot"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        title={t('assemblies.slotsTable.deleteTitle')}
+        message={toDelete ? t('common.deleteConfirmMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

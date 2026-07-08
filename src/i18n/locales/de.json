@@ -367,7 +367,7 @@
       "resolvedByUniqueCandidate": "einziger Kandidat",
       "resolvedByPositionFilter": "nach Position",
       "resolvedBySlotMapping": "gemerkt",
-      "chooseMountPoint": "{{slotName}} — Montagepunkt wählen",
+      "chooseMountPointSuffix": "— Montagepunkt wählen",
       "willDismount": "Demontiert {{name}} von diesem Montagepunkt",
       "successMessage": "Baugruppe montiert",
       "rememberedAnswers_one": "{{count}} Antwort für nächstes Mal gemerkt",

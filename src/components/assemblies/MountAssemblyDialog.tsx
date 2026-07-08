@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Alert, Autocomplete, Chip, Radio, RadioGroup, FormControlLabel, Stack, TextField, Typography } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
@@ -22,13 +24,14 @@ interface MountAssemblyDialogProps {
   assembly: Assembly
 }
 
-const RESOLVED_BY_LABEL: Record<NonNullable<PlannedSlot['resolvedBy']>, string> = {
-  uniqueCandidate: 'only candidate',
-  positionFilter: 'by position',
-  slotMapping: 'remembered',
-}
+const resolvedByLabel = (t: TFunction): Record<NonNullable<PlannedSlot['resolvedBy']>, string> => ({
+  uniqueCandidate: t('assemblies.mount.resolvedByUniqueCandidate'),
+  positionFilter: t('assemblies.mount.resolvedByPositionFilter'),
+  slotMapping: t('assemblies.mount.resolvedBySlotMapping'),
+})
 
 export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { notify } = useNotify()
   const [step, setStep] = useState<1 | 2>(1)
@@ -79,16 +82,14 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
     {
       onSuccess: async (result) => {
         await invalidateAfterAssemblyMountingChanges(qc, assembly.id)
-        const parts: string[] = ['Assembly mounted']
+        const parts: string[] = [t('assemblies.mount.successMessage')]
         if (result.rememberedSlotMappings?.length) {
           parts.push(
-            `remembered ${result.rememberedSlotMappings.length} answer${result.rememberedSlotMappings.length > 1 ? 's' : ''} for next time`,
+            t('assemblies.mount.rememberedAnswers', { count: result.rememberedSlotMappings.length }),
           )
         }
         if (result.changes.closed?.length) {
-          parts.push(
-            `auto-closed ${result.changes.closed.length} mounting${result.changes.closed.length > 1 ? 's' : ''}`,
-          )
+          parts.push(t('assemblies.mount.autoClosed', { count: result.changes.closed.length }))
         }
         notify(parts.join(' — '), 'success')
         handleClose()
@@ -115,12 +116,12 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
   return (
     <FormDialog
       open={open}
-      title={`Mount ${assembly.name}`}
+      title={t('assemblies.mount.title', { name: assembly.name })}
       onCancel={handleClose}
       onSubmit={step === 1 ? submitStep1 : submitStep2}
       submitting={planMut.isPending || mountMut.isPending}
       submitDisabled={step === 1 ? !bikeId || !at : step2Disabled}
-      submitLabel={step === 1 ? 'Next' : 'Mount'}
+      submitLabel={step === 1 ? t('assemblies.mount.nextButton') : t('components.detail.mountButton')}
     >
       {step === 1 ? (
         <Stack spacing={2} sx={{ pt: 1 }}>
@@ -131,11 +132,11 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
             getOptionLabel={(b) => bikeIdentity(b)}
             isOptionEqualToValue={(opt, val) => opt.id === val.id}
             renderInput={(params) => (
-              <TextField {...params} label="Bike" required autoFocus />
+              <TextField {...params} label={t('common.bike')} required autoFocus />
             )}
           />
           <DateTimePicker
-            label="At"
+            label={t('assemblies.mount.atLabel')}
             value={at}
             onChange={setAt}
             slotProps={{ textField: { fullWidth: true } }}
@@ -148,7 +149,7 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
             if (ps.state === 'empty') {
               return (
                 <Typography key={ps.slotId} color="text.secondary">
-                  {slotName} — empty, add a member first —
+                  {t('assemblies.mount.slotEmpty', { slotName })}
                 </Typography>
               )
             }
@@ -171,12 +172,12 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
                       {ps.mountPointId ? mountPointNameById.get(ps.mountPointId) ?? ps.mountPointId : ''}
                     </Typography>
                     {ps.resolvedBy && (
-                      <Chip size="small" label={RESOLVED_BY_LABEL[ps.resolvedBy]} />
+                      <Chip size="small" label={resolvedByLabel(t)[ps.resolvedBy]} />
                     )}
                   </Stack>
                   {evicted && (
                     <Alert severity="warning">
-                      Will dismount {componentIdentity(evicted)} from this mount point
+                      {t('assemblies.mount.willDismount', { name: componentIdentity(evicted) })}
                     </Alert>
                   )}
                 </Stack>
@@ -186,7 +187,7 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
             return (
               <Stack key={ps.slotId} spacing={0.5}>
                 <Typography>
-                  <strong>{slotName}</strong> — choose a mount point
+                  <strong>{slotName}</strong> {t('assemblies.mount.chooseMountPointSuffix')}
                 </Typography>
                 <RadioGroup
                   value={answers[ps.slotId] ?? ''}

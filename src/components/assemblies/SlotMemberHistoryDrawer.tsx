@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Box, Button, Drawer, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
 import { membershipsQuery } from '@/api/memberships'
 import { MembershipHistoryTable } from './MembershipHistoryTable'
@@ -28,6 +29,7 @@ export const SlotMemberHistoryDrawer = ({
   assembly,
   slot,
 }: SlotMemberHistoryDrawerProps) => {
+  const { t } = useTranslation()
   const [addOtherOpen, setAddOtherOpen] = useState(false)
   const [reuseComponentId, setReuseComponentId] = useState<string | null>(null)
 
@@ -84,9 +86,9 @@ export const SlotMemberHistoryDrawer = ({
       >
         <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {slot?.name ?? 'Slot'}
+            {slot?.name ?? t('assemblies.slotMemberHistory.fallbackTitle')}
           </Typography>
-          <IconButton onClick={onClose} aria-label="Close drawer">
+          <IconButton onClick={onClose} aria-label={t('components.detail.closeDrawer')}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -99,13 +101,13 @@ export const SlotMemberHistoryDrawer = ({
               reuseComponentIds={reuseIds}
             />
           ) : (
-            <Typography color="text.secondary">Loading…</Typography>
+            <Typography color="text.secondary">{t('common.loading')}</Typography>
           )}
         </Box>
 
         <Stack sx={{ pt: 2 }}>
           <Button variant="outlined" onClick={() => setAddOtherOpen(true)} fullWidth>
-            Add other component…
+            {t('assemblies.slotMemberHistory.addOtherButton')}
           </Button>
         </Stack>
       </Box>

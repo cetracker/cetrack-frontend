@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 import CachedIcon from '@mui/icons-material/Cached'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
 import type { AssemblyMembership } from '@/types/api'
 import { componentIdentity, formatDateTime } from '@/utils/formatters'
@@ -26,6 +27,7 @@ export const MembershipHistoryTable = ({
   onReuse,
   reuseComponentIds,
 }: MembershipHistoryTableProps) => {
+  const { t } = useTranslation()
   const { data: components } = useQuery(componentsQuery())
 
   const componentMap = new Map((components ?? []).map((c) => [c.id, c]))
@@ -38,7 +40,7 @@ export const MembershipHistoryTable = ({
   if (sorted.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No members yet.
+        {t('assemblies.membershipHistory.empty')}
       </Typography>
     )
   }
@@ -48,9 +50,9 @@ export const MembershipHistoryTable = ({
       <TableHead>
         <TableRow>
           {onReuse && <TableCell />}
-          <TableCell>Component</TableCell>
-          <TableCell>From</TableCell>
-          <TableCell>To</TableCell>
+          <TableCell>{t('components.list.columns.component')}</TableCell>
+          <TableCell>{t('assemblies.membershipHistory.fromHeader')}</TableCell>
+          <TableCell>{t('assemblies.membershipHistory.toHeader')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -63,7 +65,7 @@ export const MembershipHistoryTable = ({
               {onReuse && (
                 <TableCell>
                   {showReuse && (
-                    <Tooltip title="Re-use">
+                    <Tooltip title={t('mountings.history.reuseTooltip')}>
                       <IconButton size="small" onClick={() => onReuse(m.componentId)}>
                         <CachedIcon fontSize="small" />
                       </IconButton>
@@ -77,7 +79,7 @@ export const MembershipHistoryTable = ({
                 {m.memberTo ? (
                   formatDateTime(m.memberTo)
                 ) : (
-                  <Chip label="active" color="success" size="small" />
+                  <Chip label={t('mountings.history.activeChip')} color="success" size="small" />
                 )}
               </TableCell>
             </TableRow>

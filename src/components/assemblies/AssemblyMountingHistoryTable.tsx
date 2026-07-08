@@ -1,5 +1,6 @@
 import { Chip, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { assemblyMountingsQuery } from '@/api/assemblies'
 import { bikesQuery } from '@/api/bikes'
 import { bikeIdentity, formatDateTime } from '@/utils/formatters'
@@ -11,6 +12,7 @@ interface AssemblyMountingHistoryTableProps {
 export const AssemblyMountingHistoryTable = ({
   assemblyId,
 }: AssemblyMountingHistoryTableProps) => {
+  const { t } = useTranslation()
   const { data: mountings } = useQuery(assemblyMountingsQuery(assemblyId))
   const { data: bikes } = useQuery(bikesQuery())
 
@@ -20,7 +22,7 @@ export const AssemblyMountingHistoryTable = ({
   if (sorted.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No mounting history yet.
+        {t('assemblies.mountingHistory.empty')}
       </Typography>
     )
   }
@@ -29,9 +31,9 @@ export const AssemblyMountingHistoryTable = ({
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>Bike</TableCell>
-          <TableCell>Mounted</TableCell>
-          <TableCell>Dismounted</TableCell>
+          <TableCell>{t('common.bike')}</TableCell>
+          <TableCell>{t('status.mounted')}</TableCell>
+          <TableCell>{t('mountings.history.dismountedHeader')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -43,7 +45,7 @@ export const AssemblyMountingHistoryTable = ({
               {m.dismountedAt ? (
                 formatDateTime(m.dismountedAt)
               ) : (
-                <Chip label="active" color="success" size="small" />
+                <Chip label={t('mountings.history.activeChip')} color="success" size="small" />
               )}
             </TableCell>
           </TableRow>

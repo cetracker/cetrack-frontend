@@ -367,7 +367,7 @@
       "resolvedByUniqueCandidate": "only candidate",
       "resolvedByPositionFilter": "by position",
       "resolvedBySlotMapping": "remembered",
-      "chooseMountPoint": "{{slotName}} — choose a mount point",
+      "chooseMountPointSuffix": "— choose a mount point",
       "willDismount": "Will dismount {{name}} from this mount point",
       "successMessage": "Assembly mounted",
       "rememberedAnswers_one": "remembered {{count}} answer for next time",

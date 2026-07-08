@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Autocomplete, Chip, MenuItem, Stack, TextField } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
@@ -28,6 +29,7 @@ export const AddMemberDialog = ({
   assembly,
   slot,
 }: AddMemberDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { notify } = useNotify()
   const [componentId, setComponentId] = useState<string | null>(null)
@@ -68,8 +70,8 @@ export const AddMemberDialog = ({
         await invalidateAfterAssemblyMountingChanges(qc, assemblyId)
         notify(
           changes.created?.length
-            ? `Member added — mounted onto ${changes.created.length} mount point${changes.created.length > 1 ? 's' : ''}`
-            : 'Member added',
+            ? t('assemblies.addMember.addedWithMounted', { count: changes.created.length })
+            : t('assemblies.addMember.addedSuccess'),
           'success',
         )
         handleClose()
@@ -102,12 +104,12 @@ export const AddMemberDialog = ({
   return (
     <FormDialog
       open={open}
-      title={slot ? `Add member to ${slot.name}` : 'Add member'}
+      title={slot ? t('assemblies.addMember.dialogTitleWithSlot', { slotName: slot.name }) : t('assemblies.addMember.dialogTitleFallback')}
       onCancel={handleClose}
       onSubmit={submit}
       submitting={addMemberMut.isPending}
       submitDisabled={submitDisabled}
-      submitLabel={candidates ? 'Resolve & Add' : 'Add'}
+      submitLabel={candidates ? t('assemblies.addMember.resolveAddButton') : t('assemblies.addMember.addButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         {!candidates && (
@@ -129,16 +131,16 @@ export const AddMemberDialog = ({
                         </span>
                       )}
                     </Stack>
-                    {c.directlyMounted && <Chip label="Mounted" size="small" />}
+                    {c.directlyMounted && <Chip label={t('status.mounted')} size="small" />}
                   </Stack>
                 </li>
               )}
               renderInput={(params) => (
-                <TextField {...params} label="Component" required autoFocus />
+                <TextField {...params} label={t('components.list.columns.component')} required autoFocus />
               )}
             />
             <DateTimePicker
-              label="From"
+              label={t('assemblies.addMember.fromLabel')}
               value={at}
               onChange={setAt}
               slotProps={{ textField: { fullWidth: true } }}
@@ -148,11 +150,11 @@ export const AddMemberDialog = ({
         {candidates && (
           <TextField
             select
-            label="Mount point"
+            label={t('components.mount.mountPointLabel')}
             required
             value={mountPointId ?? ''}
             onChange={(e) => setMountPointId(e.target.value)}
-            helperText={`This assembly (${assembly.name}) is mounted — pick where this member goes.`}
+            helperText={t('assemblies.addMember.mountPointHelper', { name: assembly.name })}
           >
             {candidates.map((c) => (
               <MenuItem key={c.mountPointId} value={c.mountPointId}>

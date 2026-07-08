@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { MenuItem, Stack, TextField } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { createAssembly, updateAssembly, assembliesQueryKey } from '@/api/assemblies'
@@ -12,12 +14,13 @@ import type { Assembly, AssemblyInput } from '@/types/api'
 
 const NONE = '__none__'
 
-const schema = z.object({
-  name: z.string().min(1, 'Name required'),
-  positionId: z.string(),
-})
+const buildSchema = (t: TFunction) =>
+  z.object({
+    name: z.string().min(1, t('validation.nameRequired')),
+    positionId: z.string(),
+  })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 interface AssemblyFormProps {
   open: boolean
@@ -26,8 +29,10 @@ interface AssemblyFormProps {
 }
 
 export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: positions } = useQuery(positionsQuery())
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -52,7 +57,7 @@ export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
     qc.invalidateQueries({ queryKey: assembliesQueryKey })
 
   const createMut = useApiMutation(createAssembly, {
-    successMessage: 'Assembly created',
+    successMessage: t('assemblies.form.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -62,7 +67,7 @@ export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
   const updateMut = useApiMutation(
     (v: { id: string; data: AssemblyInput }) => updateAssembly(v.id, v.data),
     {
-      successMessage: 'Assembly updated',
+      successMessage: t('assemblies.form.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -87,7 +92,7 @@ export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Assembly' : 'Add Assembly'}
+      title={initial ? t('assemblies.form.editTitle') : t('assemblies.form.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -99,7 +104,7 @@ export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               required
               error={!!errors.name}
               helperText={errors.name?.message}
@@ -111,8 +116,8 @@ export const AssemblyForm = ({ open, onClose, initial }: AssemblyFormProps) => {
           control={control}
           name="positionId"
           render={({ field }) => (
-            <TextField {...field} select label="Position">
-              <MenuItem value={NONE}>(none)</MenuItem>
+            <TextField {...field} select label={t('common.position')}>
+              <MenuItem value={NONE}>{t('bikes.mountPoint.noneOption')}</MenuItem>
               {(positions ?? []).map((p) => (
                 <MenuItem key={p.id} value={p.id}>
                   {p.name}

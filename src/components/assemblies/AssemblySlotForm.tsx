@@ -1,10 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { MenuItem, Stack, TextField } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -16,19 +18,20 @@ import { componentTypesQuery } from '@/api/catalog'
 import { withLocalOffset } from '@/utils/formatters'
 import type { AssemblySlot, AssemblySlotInput } from '@/types/api'
 
-const schema = z
-  .object({
-    name: z.string().min(1, 'Name required'),
-    componentTypeId: z.string().min(1, 'Component type required'),
-    validFrom: z.date({ message: 'Valid from required' }),
-    validTo: z.date().nullable(),
-  })
-  .refine((v) => !v.validTo || v.validTo > v.validFrom, {
-    message: 'Valid to must be after valid from',
-    path: ['validTo'],
-  })
+const buildSchema = (t: TFunction) =>
+  z
+    .object({
+      name: z.string().min(1, t('validation.nameRequired')),
+      componentTypeId: z.string().min(1, t('validation.componentTypeRequired')),
+      validFrom: z.date({ message: t('assemblies.slot.validFromRequired') }),
+      validTo: z.date().nullable(),
+    })
+    .refine((v) => !v.validTo || v.validTo > v.validFrom, {
+      message: t('assemblies.slot.validToAfterFrom'),
+      path: ['validTo'],
+    })
 
-type Values = z.infer<typeof schema>
+type Values = z.infer<ReturnType<typeof buildSchema>>
 
 interface AssemblySlotFormProps {
   open: boolean
@@ -43,8 +46,10 @@ export const AssemblySlotForm = ({
   assemblyId,
   initial,
 }: AssemblySlotFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: componentTypes } = useQuery(componentTypesQuery())
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -78,7 +83,7 @@ export const AssemblySlotForm = ({
   const createMut = useApiMutation(
     (data: AssemblySlotInput) => createAssemblySlot(assemblyId, data),
     {
-      successMessage: 'Slot added',
+      successMessage: t('assemblies.slot.createdSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -90,7 +95,7 @@ export const AssemblySlotForm = ({
     (v: { id: string; data: AssemblySlotInput }) =>
       updateAssemblySlot(assemblyId, v.id, v.data),
     {
-      successMessage: 'Slot updated',
+      successMessage: t('assemblies.slot.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -117,7 +122,7 @@ export const AssemblySlotForm = ({
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Slot' : 'Add Slot'}
+      title={initial ? t('assemblies.slot.editTitle') : t('assemblies.slot.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -129,7 +134,7 @@ export const AssemblySlotForm = ({
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               required
               error={!!errors.name}
               helperText={errors.name?.message}
@@ -144,7 +149,7 @@ export const AssemblySlotForm = ({
             <TextField
               {...field}
               select
-              label="Component Type"
+              label={t('common.componentType')}
               required
               error={!!errors.componentTypeId}
               helperText={errors.componentTypeId?.message}
@@ -162,7 +167,7 @@ export const AssemblySlotForm = ({
           name="validFrom"
           render={({ field }) => (
             <DateTimePicker
-              label="Valid from"
+              label={t('assemblies.slot.validFromLabel')}
               value={field.value}
               onChange={field.onChange}
               slotProps={{
@@ -181,7 +186,7 @@ export const AssemblySlotForm = ({
           name="validTo"
           render={({ field }) => (
             <DateTimePicker
-              label="Valid to"
+              label={t('assemblies.slot.validToLabel')}
               value={field.value}
               onChange={field.onChange}
               slotProps={{

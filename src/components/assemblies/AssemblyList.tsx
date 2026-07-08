@@ -4,6 +4,8 @@ import AddIcon from '@mui/icons-material/Add'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { assembliesQuery, assembliesQueryKey, deleteAssembly } from '@/api/assemblies'
 import { positionsQuery } from '@/api/catalog'
 import type { Assembly } from '@/types/api'
@@ -26,43 +28,44 @@ const ActionsCell = ({ assembly, onEdit, onDelete }: ActionsCellProps) => (
 )
 
 const buildColumns = (
+  t: TFunction,
   positionNameById: Map<string, string>,
   onEdit: (assembly: Assembly) => void,
   onDelete: (assembly: Assembly) => void,
 ): ColumnDef<Assembly>[] => [
-  { accessorKey: 'name', header: 'Name' },
+  { accessorKey: 'name', header: t('common.name') },
   {
     id: 'position',
-    header: 'Position',
+    header: t('common.position'),
     accessorFn: (a) => (a.positionId ? positionNameById.get(a.positionId) ?? '' : ''),
   },
   {
     id: 'complete',
-    header: 'Complete',
+    header: t('assemblies.list.completeChip'),
     accessorFn: (a) => a.complete,
     cell: (c) => (
       <Chip
         size="small"
-        label={c.getValue<boolean>() ? 'Complete' : 'Incomplete'}
+        label={c.getValue<boolean>() ? t('assemblies.list.completeChip') : t('assemblies.list.incompleteChip')}
         color={c.getValue<boolean>() ? 'success' : 'default'}
       />
     ),
   },
   {
     id: 'mounted',
-    header: 'Mounted',
+    header: t('status.mounted'),
     accessorFn: (a) => a.mounted,
     cell: (c) => (
       <Chip
         size="small"
-        label={c.getValue<boolean>() ? 'Mounted' : 'Unmounted'}
+        label={c.getValue<boolean>() ? t('status.mounted') : t('assemblies.list.unmountedChip')}
         color={c.getValue<boolean>() ? 'primary' : 'default'}
       />
     ),
   },
   {
     accessorKey: 'createdAt',
-    header: 'Created',
+    header: t('common.created'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -78,6 +81,7 @@ const buildColumns = (
 ]
 
 export const AssemblyList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   const { data, isLoading, error, refetch } = useQuery(assembliesQuery())
@@ -96,7 +100,7 @@ export const AssemblyList = () => {
   const [toDelete, setToDelete] = useState<Assembly | null>(null)
 
   const deleteMut = useApiMutation(deleteAssembly, {
-    successMessage: 'Assembly deleted',
+    successMessage: t('assemblies.list.deletedSuccess'),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: assembliesQueryKey })
       setToDelete(null)
@@ -109,14 +113,14 @@ export const AssemblyList = () => {
   }
 
   const columns = useMemo(
-    () => buildColumns(positionNameById, handleEdit, setToDelete),
-    [positionNameById],
+    () => buildColumns(t, positionNameById, handleEdit, setToDelete),
+    [t, positionNameById],
   )
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Assemblies</Box>
+        <Box sx={{ typography: 'h5' }}>{t('assemblies.list.title')}</Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -125,7 +129,7 @@ export const AssemblyList = () => {
             setEditOpen(true)
           }}
         >
-          Add assembly
+          {t('assemblies.list.addButton')}
         </Button>
       </Stack>
 
@@ -147,11 +151,11 @@ export const AssemblyList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete assembly"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        title={t('assemblies.list.deleteTitle')}
+        message={toDelete ? t('common.deleteConfirmMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />
