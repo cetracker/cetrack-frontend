@@ -158,6 +158,66 @@
       "successMessage": "Component retired"
     }
   },
+  "report": {
+    "title": "Usage Report",
+    "fromLabel": "From",
+    "toLabel": "To",
+    "uphillHeader": "Uphill (m)",
+    "downhillHeader": "Downhill (m)",
+    "sumWorkHeader": "Sum Work (kJ)"
+  },
+  "landing": {
+    "guide": {
+      "toggleLabel": "Getting started",
+      "steps": {
+        "componentTypes": "Define the component types you want to track — chain, tyres, brake pads…",
+        "bikes": "Create your bikes and give each one mount points — the places a component type fits.",
+        "components": "Add your physical components and mount them at a bike's mount points.",
+        "assemblies": "Group components, e.g. into a wheelset, and mount or swap them as one unit.",
+        "tourImport": "Import tours from a .FIT file or a MyTourbook export.",
+        "tours": "Inspect the tours you have imported.",
+        "maintenance": "Set up recurring maintenance tasks per bike and log when they're done.",
+        "report": "Inspect usage statistics to plan maintenance."
+      }
+    },
+    "stepCard": {
+      "stepLabel": "Step {{number}}"
+    },
+    "index": {
+      "tagline": "Every component, every ride — see how your gear wears and plan maintenance before it's overdue.",
+      "takeTourButton": "Take the tour"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to CETracker 👋",
+      "body": "Want a quick tour of how to track your bikes, components, and rides?",
+      "exploreButton": "I'll explore",
+      "showMeButton": "Show me"
+    },
+    "tour": {
+      "ariaLabel": "Guided tour",
+      "skipButton": "Skip",
+      "backButton": "Back",
+      "nextButton": "Next",
+      "finishButton": "Finish",
+      "steps": {
+        "componentTypes": "Define the component types you want to track, e.g. chain or tyres.",
+        "bikes": "Create your bikes and give each one mount points.",
+        "components": "Add your physical components and mount them to a bike.",
+        "assemblies": "Group components, e.g. into a wheelset, and mount or swap them as one unit.",
+        "tourImport": "Import tours from a .FIT file or a MyTourbook export.",
+        "tours": "Review the tours you have imported.",
+        "maintenance": "Set up recurring maintenance tasks and log when they're done.",
+        "report": "Inspect usage statistics to plan maintenance."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "The page you were looking for doesn't exist.",
+    "backHome": "Back home"
+  },
   "tours": {
     "list": {
       "title": "Tours",

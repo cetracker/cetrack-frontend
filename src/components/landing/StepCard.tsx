@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 interface StepCardProps {
   step: number
@@ -10,7 +11,9 @@ interface StepCardProps {
   imgSrc: string
 }
 
-export const StepCard = ({ step, title, body, to, imgSrc }: StepCardProps) => (
+export const StepCard = ({ step, title, body, to, imgSrc }: StepCardProps) => {
+  const { t } = useTranslation()
+  return (
   <Paper
     component={RouterLink}
     to={to}
@@ -31,7 +34,7 @@ export const StepCard = ({ step, title, body, to, imgSrc }: StepCardProps) => (
       sx={{ width: '100%', display: 'block', borderRadius: 1, mb: 1 }}
     />
     <Typography variant="overline" color="text.secondary">
-      Step {step}
+      {t('landing.stepCard.stepLabel', { number: step })}
     </Typography>
     <Typography variant="h6" gutterBottom>
       {title}
@@ -40,4 +43,5 @@ export const StepCard = ({ step, title, body, to, imgSrc }: StepCardProps) => (
       {body}
     </Typography>
   </Paper>
-)
+  )
+}

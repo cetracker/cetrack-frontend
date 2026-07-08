@@ -3,6 +3,7 @@ import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { useQuery } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
 import { mileageQuery } from '@/api/reports'
 import type { MileageItem, MileageScope } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
@@ -22,6 +23,7 @@ const rowIdentity = (item: MileageItem, scope: MileageScope): string =>
   scope === 'bikes' ? item.bikeName || item.bikeModel || '' : componentIdentity(item)
 
 export const MileageReport = () => {
+  const { t } = useTranslation()
   const [scope, setScope] = useState<MileageScope>('components')
   const [from, setFrom] = useState<Date | null>(null)
   const [to, setTo] = useState<Date | null>(null)
@@ -42,61 +44,62 @@ export const MileageReport = () => {
     () => [
       {
         id: 'identity',
-        header: scope === 'bikes' ? 'Bike' : 'Component',
+        header: scope === 'bikes' ? t('common.bike') : t('components.list.columns.component'),
         accessorFn: (r) => rowIdentity(r, scope),
         cell: ({ row }) =>
           scope === 'bikes' ? rowIdentity(row.original, scope) : (
             <ReportItemInfoCell item={row.original} />
           ),
-        footer: () => `${(data ?? []).length} ${scope}`,
+        footer: () =>
+          `${(data ?? []).length} ${scope === 'bikes' ? t('bikes.list.title') : t('components.list.title')}`,
       },
       {
         accessorKey: 'distance',
-        header: 'Distance (km)',
+        header: t('tours.list.columns.distance'),
         cell: (c) => formatDistanceKm(c.getValue<number>()),
         meta: { align: 'right' },
       },
       {
         accessorKey: 'durationMoving',
-        header: 'Duration Moving',
+        header: t('tours.list.columns.durationMoving'),
         cell: (c) => formatDuration(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
         accessorKey: 'ascent',
-        header: 'Uphill (m)',
+        header: t('report.uphillHeader'),
         cell: (c) => formatNumber(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
         accessorKey: 'descent',
-        header: 'Downhill (m)',
+        header: t('report.downhillHeader'),
         cell: (c) => formatNumber(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
         accessorKey: 'powerTotal',
-        header: 'Sum Work (kJ)',
+        header: t('report.sumWorkHeader'),
         cell: (c) => formatKJ(c.getValue<number | undefined>()),
         meta: { align: 'right', hideOnMobile: true },
       },
     ],
-    [data, scope],
+    [data, scope, t],
   )
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Usage Report</Box>
+        <Box sx={{ typography: 'h5' }}>{t('report.title')}</Box>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <DatePicker
-            label="From"
+            label={t('report.fromLabel')}
             value={from}
             onChange={setFrom}
             slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
           />
           <DatePicker
-            label="To"
+            label={t('report.toLabel')}
             value={to}
             onChange={setTo}
             slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
@@ -107,8 +110,8 @@ export const MileageReport = () => {
             size="small"
             onChange={(_, v: MileageScope | null) => v && setScope(v)}
           >
-            <ToggleButton value="components">Components</ToggleButton>
-            <ToggleButton value="bikes">Bikes</ToggleButton>
+            <ToggleButton value="components">{t('components.list.title')}</ToggleButton>
+            <ToggleButton value="bikes">{t('bikes.list.title')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       </Box>

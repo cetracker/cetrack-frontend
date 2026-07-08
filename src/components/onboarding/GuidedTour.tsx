@@ -1,28 +1,31 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Box, Button, Paper, Popper, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import type { ParseKeys } from 'i18next'
 import { useOnboarding } from '@/hooks/useOnboarding'
 
 interface TourStep {
   nav: string
-  title: string
-  body: string
+  titleKey: ParseKeys
+  bodyKey: ParseKeys
 }
 
 const steps: TourStep[] = [
-  { nav: 'componentTypes', title: 'Component Types', body: 'Define the component types you want to track, e.g. chain or tyres.' },
-  { nav: 'bikes', title: 'Bikes', body: 'Create your bikes and give each one mount points.' },
-  { nav: 'components', title: 'Components', body: 'Add your physical components and mount them to a bike.' },
-  { nav: 'assemblies', title: 'Assemblies', body: 'Group components, e.g. into a wheelset, and mount or swap them as one unit.' },
-  { nav: 'tourImport', title: 'Import Tours', body: 'Import tours from a .FIT file or a MyTourbook export.' },
-  { nav: 'tours', title: 'Tours', body: 'Review the tours you have imported.' },
-  { nav: 'maintenance', title: 'Maintenance', body: "Set up recurring maintenance tasks and log when they're done." },
-  { nav: 'report', title: 'Report', body: 'Inspect usage statistics to plan maintenance.' },
+  { nav: 'componentTypes', titleKey: 'nav.componentTypes', bodyKey: 'onboarding.tour.steps.componentTypes' },
+  { nav: 'bikes', titleKey: 'nav.bikes', bodyKey: 'onboarding.tour.steps.bikes' },
+  { nav: 'components', titleKey: 'nav.components', bodyKey: 'onboarding.tour.steps.components' },
+  { nav: 'assemblies', titleKey: 'nav.assemblies', bodyKey: 'onboarding.tour.steps.assemblies' },
+  { nav: 'tourImport', titleKey: 'nav.tourImport', bodyKey: 'onboarding.tour.steps.tourImport' },
+  { nav: 'tours', titleKey: 'nav.tours', bodyKey: 'onboarding.tour.steps.tours' },
+  { nav: 'maintenance', titleKey: 'nav.maintenance', bodyKey: 'onboarding.tour.steps.maintenance' },
+  { nav: 'report', titleKey: 'nav.report', bodyKey: 'onboarding.tour.steps.report' },
 ]
 
 const useReducedMotion = () =>
   useMediaQuery('(prefers-reduced-motion: reduce)', { noSsr: true })
 
 export const GuidedTour = () => {
+  const { t } = useTranslation()
   const { tourOpen, finishTour } = useOnboarding()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -105,15 +108,15 @@ export const GuidedTour = () => {
       >
         <Paper
           role="dialog"
-          aria-label="Guided tour"
+          aria-label={t('onboarding.tour.ariaLabel')}
           elevation={4}
           sx={{ p: 2, maxWidth: 280 }}
         >
           <Typography aria-live="polite" variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
-            {step.title}
+            {t(step.titleKey)}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            {step.body}
+            {t(step.bodyKey)}
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.75, mb: 2 }}>
             {steps.map((s, i) => (
@@ -131,16 +134,16 @@ export const GuidedTour = () => {
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button size="small" onClick={finishTour}>
-              Skip
+              {t('onboarding.tour.skipButton')}
             </Button>
             <Box sx={{ display: 'flex', gap: 1 }}>
               {stepIndex > 0 && (
                 <Button size="small" onClick={handleBack}>
-                  Back
+                  {t('onboarding.tour.backButton')}
                 </Button>
               )}
               <Button ref={primaryButtonRef} size="small" variant="contained" onClick={handleNext}>
-                {isLast ? 'Finish' : 'Next'}
+                {isLast ? t('onboarding.tour.finishButton') : t('onboarding.tour.nextButton')}
               </Button>
             </Box>
           </Box>

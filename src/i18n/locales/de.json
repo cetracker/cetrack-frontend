@@ -158,6 +158,66 @@
       "successMessage": "Komponente ausgemustert"
     }
   },
+  "report": {
+    "title": "Nutzungsbericht",
+    "fromLabel": "Von",
+    "toLabel": "Bis",
+    "uphillHeader": "Anstieg (m)",
+    "downhillHeader": "Abstieg (m)",
+    "sumWorkHeader": "Gesamtarbeit (kJ)"
+  },
+  "landing": {
+    "guide": {
+      "toggleLabel": "Erste Schritte",
+      "steps": {
+        "componentTypes": "Definieren Sie die Komponententypen, die Sie verfolgen möchten — Kette, Reifen, Bremsbeläge…",
+        "bikes": "Erstellen Sie Ihre Fahrräder und geben Sie jedem Montagepunkte — die Stellen, an denen ein Komponententyp passt.",
+        "components": "Fügen Sie Ihre physischen Komponenten hinzu und montieren Sie sie an den Montagepunkten eines Fahrrads.",
+        "assemblies": "Gruppieren Sie Komponenten, z. B. zu einem Laufradsatz, und montieren oder tauschen Sie sie als eine Einheit.",
+        "tourImport": "Importieren Sie Touren aus einer .FIT-Datei oder einem MyTourbook-Export.",
+        "tours": "Überprüfen Sie die importierten Touren.",
+        "maintenance": "Richten Sie wiederkehrende Wartungsaufgaben pro Fahrrad ein und protokollieren Sie deren Erledigung.",
+        "report": "Überprüfen Sie Nutzungsstatistiken, um Wartungen zu planen."
+      }
+    },
+    "stepCard": {
+      "stepLabel": "Schritt {{number}}"
+    },
+    "index": {
+      "tagline": "Jede Komponente, jede Fahrt — sehen Sie, wie Ihr Material verschleißt, und planen Sie Wartungen, bevor sie fällig werden.",
+      "takeTourButton": "Tour starten"
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Willkommen bei CETracker 👋",
+      "body": "Möchten Sie eine kurze Tour, wie Sie Ihre Fahrräder, Komponenten und Fahrten verfolgen?",
+      "exploreButton": "Ich schaue mich um",
+      "showMeButton": "Zeig es mir"
+    },
+    "tour": {
+      "ariaLabel": "Geführte Tour",
+      "skipButton": "Überspringen",
+      "backButton": "Zurück",
+      "nextButton": "Weiter",
+      "finishButton": "Fertig",
+      "steps": {
+        "componentTypes": "Definieren Sie die Komponententypen, die Sie verfolgen möchten, z. B. Kette oder Reifen.",
+        "bikes": "Erstellen Sie Ihre Fahrräder und geben Sie jedem Montagepunkte.",
+        "components": "Fügen Sie Ihre physischen Komponenten hinzu und montieren Sie sie an einem Fahrrad.",
+        "assemblies": "Gruppieren Sie Komponenten, z. B. zu einem Laufradsatz, und montieren oder tauschen Sie sie als eine Einheit.",
+        "tourImport": "Importieren Sie Touren aus einer .FIT-Datei oder einem MyTourbook-Export.",
+        "tours": "Überprüfen Sie die importierten Touren.",
+        "maintenance": "Richten Sie wiederkehrende Wartungsaufgaben ein und protokollieren Sie deren Erledigung.",
+        "report": "Überprüfen Sie Nutzungsstatistiken, um Wartungen zu planen."
+      }
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Die gesuchte Seite existiert nicht.",
+    "backHome": "Zurück zur Startseite"
+  },
   "tours": {
     "list": {
       "title": "Touren",

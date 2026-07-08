@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Box, Collapse, Typography, useTheme } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import { useTranslation } from 'react-i18next'
+import type { ParseKeys } from 'i18next'
 import { StepCard } from './StepCard'
 import componentTypesLight from '@/assets/landing/componentTypes_light.png'
 import componentTypesDark from '@/assets/landing/componentTypes_dark.png'
@@ -19,66 +21,67 @@ import maintenanceDark from '@/assets/landing/maintenance_dark.png'
 import reportLight from '@/assets/landing/report_light.png'
 import reportDark from '@/assets/landing/report_dark.png'
 
-const steps = [
+const steps: { to: string; titleKey: ParseKeys; bodyKey: ParseKeys; light: string; dark: string }[] = [
   {
     to: '/catalog',
-    title: 'Component Types',
-    body: 'Define the component types you want to track — chain, tyres, brake pads…',
+    titleKey: 'nav.componentTypes',
+    bodyKey: 'landing.guide.steps.componentTypes',
     light: componentTypesLight,
     dark: componentTypesDark,
   },
   {
     to: '/bikes',
-    title: 'Bikes',
-    body: "Create your bikes and give each one mount points — the places a component type fits.",
+    titleKey: 'nav.bikes',
+    bodyKey: 'landing.guide.steps.bikes',
     light: bikesLight,
     dark: bikesDark,
   },
   {
     to: '/components',
-    title: 'Components',
-    body: "Add your physical components and mount them at a bike's mount points.",
+    titleKey: 'nav.components',
+    bodyKey: 'landing.guide.steps.components',
     light: componentsLight,
     dark: componentsDark,
   },
   {
     to: '/assemblies',
-    title: 'Assemblies',
-    body: 'Group components, e.g. into a wheelset, and mount or swap them as one unit.',
+    titleKey: 'nav.assemblies',
+    bodyKey: 'landing.guide.steps.assemblies',
     light: assembliesLight,
     dark: assembliesDark,
   },
   {
     to: '/tourImport',
-    title: 'Import Tours',
-    body: 'Import tours from a .FIT file or a MyTourbook export.',
+    titleKey: 'nav.tourImport',
+    bodyKey: 'landing.guide.steps.tourImport',
     light: tourImportLight,
     dark: tourImportDark,
   },
   {
     to: '/tours',
-    title: 'Tours',
-    body: 'Inspect the tours you have imported.',
+    titleKey: 'nav.tours',
+    bodyKey: 'landing.guide.steps.tours',
     light: toursLight,
     dark: toursDark,
   },
   {
     to: '/maintenance',
-    title: 'Maintenance',
-    body: "Set up recurring maintenance tasks per bike and log when they're done.",
+    titleKey: 'nav.maintenance',
+    bodyKey: 'landing.guide.steps.maintenance',
     light: maintenanceLight,
     dark: maintenanceDark,
   },
   {
     to: '/report',
-    title: 'Report',
-    body: 'Inspect usage statistics to plan maintenance.',
+    titleKey: 'nav.report',
+    bodyKey: 'landing.guide.steps.report',
     light: reportLight,
     dark: reportDark,
   },
 ]
 
 export const OnboardingGuide = () => {
+  const { t } = useTranslation()
   const isDark = useTheme().palette.mode === 'dark'
   const [open, setOpen] = useState(true)
   return (
@@ -101,7 +104,7 @@ export const OnboardingGuide = () => {
             cursor: 'pointer',
           }}
         >
-          Getting started
+          {t('landing.guide.toggleLabel')}
           <ExpandMoreIcon
             fontSize="small"
             sx={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none' }}
@@ -125,8 +128,8 @@ export const OnboardingGuide = () => {
             <StepCard
               key={step.to}
               step={i + 1}
-              title={step.title}
-              body={step.body}
+              title={t(step.titleKey)}
+              body={t(step.bodyKey)}
               to={step.to}
               imgSrc={isDark ? step.dark : step.light}
             />

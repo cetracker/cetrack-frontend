@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/hooks/useOnboarding'
 import { OnboardingGuide } from './landing/OnboardingGuide'
 import { BackgroundGraphic } from './landing/BackgroundGraphic'
 import { WelcomeDialog } from './onboarding/WelcomeDialog'
 
-const TAGLINE =
-  "Every component, every ride — see how your gear wears and plan maintenance before it's overdue."
-
 export const Index = () => {
+  const { t } = useTranslation()
   const { onboarded, startTour, finishTour } = useOnboarding()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -41,10 +40,10 @@ export const Index = () => {
         }}
       >
         <Typography variant="h5" sx={{ maxWidth: 620 }}>
-          {TAGLINE}
+          {t('landing.index.tagline')}
         </Typography>
         <Button size="small" onClick={startTour} sx={{ flexShrink: 0 }}>
-          Take the tour
+          {t('landing.index.takeTourButton')}
         </Button>
       </Box>
       <OnboardingGuide />
