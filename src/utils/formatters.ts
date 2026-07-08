@@ -1,5 +1,5 @@
 import { format, parseISO } from 'date-fns'
-import { dateFnsLocale, getFormatProfile } from '@/i18n/formatProfile'
+import { dateFnsLocale, getFormatProfile, numberFormatter } from '@/i18n/formatProfile'
 import type { Bike, Component } from '@/types/api'
 
 export const formatDate = (iso?: string | null): string => {
@@ -19,6 +19,8 @@ export const formatDateTime = (iso?: string | null): string => {
     return ''
   }
 }
+
+export const formatNumber = (n: number): string => numberFormatter(getFormatProfile()).format(n)
 
 /**
  * Convert a local-calendar `Date` (e.g. from a date picker where the user

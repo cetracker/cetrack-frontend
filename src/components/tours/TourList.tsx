@@ -27,6 +27,7 @@ import {
   formatDistanceKm,
   formatDuration,
   formatKJ,
+  formatNumber,
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
@@ -105,18 +106,24 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
     accessorKey: 'ascent',
     header: 'Up (m)',
     enableGrouping: false,
-    cell: (c) => c.getValue<number>().toLocaleString(),
-    aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-    footer: () => totals.ascent.toLocaleString(),
+    cell: (c) => formatNumber(c.getValue<number>()),
+    aggregatedCell: (c) => {
+      const v = c.getValue<number>()
+      return v != null ? formatNumber(v) : ''
+    },
+    footer: () => formatNumber(totals.ascent),
     meta: { align: 'right', hideOnMobile: true },
   },
   {
     accessorKey: 'descent',
     header: 'Down (m)',
     enableGrouping: false,
-    cell: (c) => c.getValue<number>().toLocaleString(),
-    aggregatedCell: (c) => c.getValue<number>()?.toLocaleString() ?? '',
-    footer: () => totals.descent.toLocaleString(),
+    cell: (c) => formatNumber(c.getValue<number>()),
+    aggregatedCell: (c) => {
+      const v = c.getValue<number>()
+      return v != null ? formatNumber(v) : ''
+    },
+    footer: () => formatNumber(totals.descent),
     meta: { align: 'right', hideOnMobile: true },
   },
   {

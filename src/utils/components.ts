@@ -1,3 +1,5 @@
+import i18n from '@/i18n'
+import type { ParseKeys } from 'i18next'
 import type {
   AssemblyMembership,
   Component,
@@ -13,12 +15,18 @@ export const isComponentRetired = (component: Component): boolean =>
 export const activeMounting = (mountings: Mounting[]): Mounting | undefined =>
   mountings.find((m) => !m.dismountedAt)
 
-export const STATUS_LABEL: Record<ComponentStatus, string> = {
-  inStock: 'In stock',
-  inAssembly: 'In assembly',
-  mounted: 'Mounted',
-  retired: 'Retired',
+export const STATUS_LABEL_KEY: Record<ComponentStatus, ParseKeys> = {
+  inStock: 'status.inStock',
+  inAssembly: 'status.inAssembly',
+  mounted: 'status.mounted',
+  retired: 'status.retired',
 }
+
+/** Translated status labels, keyed by `ComponentStatus`; re-derive on language change. */
+export const statusLabels = (): Record<ComponentStatus, string> =>
+  Object.fromEntries(
+    Object.entries(STATUS_LABEL_KEY).map(([status, key]) => [status, i18n.t(key)]),
+  ) as Record<ComponentStatus, string>
 
 /**
  * Mounted covers both a component's own direct mounting and one it only holds
@@ -27,9 +35,9 @@ export const STATUS_LABEL: Record<ComponentStatus, string> = {
  */
 export const componentStatusLabel = (component: Component): string =>
   component.status === 'mounted' && !component.directlyMounted
-    ? 'Mounted (via assembly)'
+    ? i18n.t('status.mountedViaAssembly')
     : component.status
-      ? STATUS_LABEL[component.status]
+      ? i18n.t(STATUS_LABEL_KEY[component.status])
       : ''
 
 /**

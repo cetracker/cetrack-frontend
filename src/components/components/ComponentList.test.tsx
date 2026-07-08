@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NotifyProvider } from '@/hooks/NotifyProvider'
+import i18n from '@/i18n'
 import type { Bike, Component, ComponentType, Mounting } from '@/types/api'
 import { ComponentList } from './ComponentList'
 
@@ -130,5 +132,36 @@ describe('ComponentList', () => {
 
     expect(await screen.findByText('Wheel A')).toBeInTheDocument()
     expect(screen.getByLabelText('Show details')).toBeInTheDocument()
+  })
+
+  describe('status filter menu', () => {
+    afterEach(() => void i18n.changeLanguage('en'))
+
+    it('shows translated status options in English', async () => {
+      const user = userEvent.setup()
+      componentsData = []
+      mountingsData = []
+
+      renderList()
+
+      await user.click(screen.getByLabelText('Status'))
+      expect(await screen.findByRole('option', { name: 'In stock' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Mounted' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Retired' })).toBeInTheDocument()
+    })
+
+    it('shows translated status options in German', async () => {
+      await i18n.changeLanguage('de')
+      const user = userEvent.setup()
+      componentsData = []
+      mountingsData = []
+
+      renderList()
+
+      await user.click(screen.getByLabelText('Status'))
+      expect(await screen.findByRole('option', { name: 'Auf Lager' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Montiert' })).toBeInTheDocument()
+      expect(screen.getByRole('option', { name: 'Ausgemustert' })).toBeInTheDocument()
+    })
   })
 })

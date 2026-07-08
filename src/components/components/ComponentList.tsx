@@ -14,8 +14,9 @@ import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { ComponentForm } from './ComponentForm'
 import { ComponentDetail } from './ComponentDetail'
 import { ComponentInfoCell } from './ComponentInfoCell'
+import { useTranslation } from 'react-i18next'
 import { bikeIdentity, componentIdentity, formatDate } from '@/utils/formatters'
-import { STATUS_LABEL, componentStatusLabel } from '@/utils/components'
+import { statusLabels, componentStatusLabel } from '@/utils/components'
 import { createErrorDisplay } from '@/utils/errors'
 import { useApiMutation } from '@/hooks/useApiMutation'
 
@@ -95,6 +96,7 @@ const buildColumns = (
 ]
 
 export const ComponentList = () => {
+  useTranslation()
   const qc = useQueryClient()
   const [statusFilter, setStatusFilter] = useState<ComponentStatus | ''>('')
   const { data, isLoading, error, refetch } = useQuery(
@@ -171,9 +173,9 @@ export const ComponentList = () => {
             sx={{ minWidth: 140 }}
           >
             <MenuItem value="">All</MenuItem>
-            {(Object.keys(STATUS_LABEL) as ComponentStatus[]).map((s) => (
+            {Object.entries(statusLabels()).map(([s, label]) => (
               <MenuItem key={s} value={s}>
-                {STATUS_LABEL[s]}
+                {label}
               </MenuItem>
             ))}
           </TextField>

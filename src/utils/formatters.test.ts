@@ -1,5 +1,13 @@
-import { describe, expect, it } from 'vitest'
-import { bikeIdentity, componentDisambiguator, componentIdentity } from './formatters'
+import { afterEach, describe, expect, it } from 'vitest'
+import {
+  bikeIdentity,
+  componentDisambiguator,
+  componentIdentity,
+  formatDate,
+  formatDateTime,
+  formatNumber,
+} from './formatters'
+import { setFormatProfile } from '@/i18n/formatProfile'
 import type { Bike, Component } from '@/types/api'
 
 describe('bikeIdentity', () => {
@@ -76,5 +84,24 @@ describe('componentDisambiguator', () => {
 
   it('returns empty string for null', () => {
     expect(componentDisambiguator(null)).toBe('')
+  })
+})
+
+describe('format profile', () => {
+  afterEach(() => setFormatProfile('iso'))
+
+  it('formats dates and numbers per profile: iso/de/us', () => {
+    setFormatProfile('iso')
+    expect(formatDate('2026-01-15')).toBe('2026-01-15')
+    expect(formatDateTime('2026-01-15T14:30:00Z')).toMatch(/^2026-01-15 \d{2}:\d{2}$/)
+    expect(formatNumber(1234.5)).toBe('1234.5')
+
+    setFormatProfile('de')
+    expect(formatDate('2026-01-15')).toBe('15.01.2026')
+    expect(formatNumber(1234.5)).toBe('1.234,5')
+
+    setFormatProfile('us')
+    expect(formatDate('2026-01-15')).toBe('01/15/2026')
+    expect(formatNumber(1234.5)).toBe('1,234.5')
   })
 })

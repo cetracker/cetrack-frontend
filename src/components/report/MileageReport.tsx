@@ -12,6 +12,7 @@ import {
   formatDistanceKm,
   formatDuration,
   formatKJ,
+  formatNumber,
   toLocalDayEndISO,
   toLocalDayStartISO,
 } from '@/utils/formatters'
@@ -64,13 +65,13 @@ export const MileageReport = () => {
       {
         accessorKey: 'ascent',
         header: 'Uphill (m)',
-        cell: (c) => c.getValue<number>().toLocaleString(),
+        cell: (c) => formatNumber(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
         accessorKey: 'descent',
         header: 'Downhill (m)',
-        cell: (c) => c.getValue<number>().toLocaleString(),
+        cell: (c) => formatNumber(c.getValue<number>()),
         meta: { align: 'right', hideOnMobile: true },
       },
       {
