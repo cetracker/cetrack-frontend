@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { bikesQuery } from '@/api/bikes'
 import {
   commitMyTourbookImport,
@@ -47,13 +48,14 @@ interface CandidateListProps {
 }
 
 const CandidateList = ({ candidates, checked, onToggle, onToggleAll, bikeLabel }: CandidateListProps) => {
+  const { t } = useTranslation()
   const allChecked = candidates.length > 0 && candidates.every((c) => checked.has(c.mtTourId))
   const someChecked = candidates.some((c) => checked.has(c.mtTourId))
 
   return (
     <Paper>
       <Typography variant="h6" sx={{ p: 2, pb: 0 }}>
-        Candidates ({candidates.length})
+        {t('import.mytourbook.candidatesTitle', { count: candidates.length })}
       </Typography>
       <Table size="small">
         <TableHead>
@@ -63,14 +65,14 @@ const CandidateList = ({ candidates, checked, onToggle, onToggleAll, bikeLabel }
                 checked={allChecked}
                 indeterminate={someChecked && !allChecked}
                 onChange={onToggleAll}
-                aria-label="select all"
+                aria-label={t('import.mytourbook.selectAllAria')}
               />
             </TableCell>
-            <TableCell>Title</TableCell>
-            <TableCell>Date</TableCell>
-            <TableCell align="right">Distance</TableCell>
-            <TableCell align="right">Duration</TableCell>
-            <TableCell>Bike</TableCell>
+            <TableCell>{t('tours.list.columns.title')}</TableCell>
+            <TableCell>{t('import.page.dateHeader')}</TableCell>
+            <TableCell align="right">{t('import.mytourbook.distanceHeader')}</TableCell>
+            <TableCell align="right">{t('import.mytourbook.durationHeader')}</TableCell>
+            <TableCell>{t('common.bike')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -103,44 +105,47 @@ interface TourComparisonTableProps {
   bikeLabel: (id?: string) => string
 }
 
-const TourComparisonTable = ({ existing, incoming, bikeLabel }: TourComparisonTableProps) => (
-  <Table size="small">
-    <TableHead>
-      <TableRow>
-        <TableCell />
-        <TableCell>Existing</TableCell>
-        <TableCell>Incoming</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      <TableRow>
-        <TableCell>Title</TableCell>
-        <TableCell>{existing.title}</TableCell>
-        <TableCell>{incoming.title}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Date</TableCell>
-        <TableCell>{formatDateTime(existing.startedAt)}</TableCell>
-        <TableCell>{formatDateTime(incoming.startedAt)}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Distance</TableCell>
-        <TableCell>{formatDistanceKm(existing.distance)} km</TableCell>
-        <TableCell>{formatDistanceKm(incoming.distance)} km</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Duration</TableCell>
-        <TableCell>{formatDuration(existing.durationMoving)}</TableCell>
-        <TableCell>{formatDuration(incoming.durationMoving)}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Bike</TableCell>
-        <TableCell>{bikeLabel(existing.bikeId)}</TableCell>
-        <TableCell>{bikeLabel(incoming.bikeId)}</TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
-)
+const TourComparisonTable = ({ existing, incoming, bikeLabel }: TourComparisonTableProps) => {
+  const { t } = useTranslation()
+  return (
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell />
+          <TableCell>{t('import.mytourbook.existingHeader')}</TableCell>
+          <TableCell>{t('import.mytourbook.incomingHeader')}</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        <TableRow>
+          <TableCell>{t('tours.list.columns.title')}</TableCell>
+          <TableCell>{existing.title}</TableCell>
+          <TableCell>{incoming.title}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{t('import.page.dateHeader')}</TableCell>
+          <TableCell>{formatDateTime(existing.startedAt)}</TableCell>
+          <TableCell>{formatDateTime(incoming.startedAt)}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{t('import.mytourbook.distanceHeader')}</TableCell>
+          <TableCell>{formatDistanceKm(existing.distance)} km</TableCell>
+          <TableCell>{formatDistanceKm(incoming.distance)} km</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{t('import.mytourbook.durationHeader')}</TableCell>
+          <TableCell>{formatDuration(existing.durationMoving)}</TableCell>
+          <TableCell>{formatDuration(incoming.durationMoving)}</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>{t('common.bike')}</TableCell>
+          <TableCell>{bikeLabel(existing.bikeId)}</TableCell>
+          <TableCell>{bikeLabel(incoming.bikeId)}</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  )
+}
 
 // --- WarningCard -------------------------------------------------------------
 
@@ -152,10 +157,11 @@ interface WarningCardProps {
 }
 
 const WarningCard = ({ warning, resolution, onResolve, bikeLabel }: WarningCardProps) => {
+  const { t } = useTranslation()
   if (warning.type === 'AMBIGUOUS_BIKE') {
     return (
       <Alert severity="info">
-        <strong>Ambiguous bike:</strong> {warning.message}
+        <strong>{t('import.mytourbook.ambiguousBikeLabel')}</strong> {warning.message}
       </Alert>
     )
   }
@@ -167,11 +173,11 @@ const WarningCard = ({ warning, resolution, onResolve, bikeLabel }: WarningCardP
   return (
     <Paper sx={{ p: 2 }}>
       <Typography variant="subtitle1" gutterBottom>
-        Duplicate: {incoming.title}
+        {t('import.mytourbook.duplicateTitle', { title: incoming.title })}
       </Typography>
       {(warning.matchedTours?.length ?? 0) > 1 && (
         <Alert severity="warning" sx={{ mb: 1 }}>
-          {warning.matchedTours!.length} existing tours matched — Replace is not available
+          {t('import.mytourbook.multipleMatchedWarning', { count: warning.matchedTours!.length })}
         </Alert>
       )}
       <TourComparisonTable existing={matched} incoming={incoming} bikeLabel={bikeLabel} />
@@ -182,13 +188,13 @@ const WarningCard = ({ warning, resolution, onResolve, bikeLabel }: WarningCardP
         sx={{ mt: 1 }}
       >
         {actions.includes('REPLACE') && (
-          <FormControlLabel value="REPLACE" control={<Radio />} label="Replace" />
+          <FormControlLabel value="REPLACE" control={<Radio />} label={t('import.mytourbook.replaceAction')} />
         )}
         {actions.includes('IMPORT_NEW') && (
-          <FormControlLabel value="IMPORT_NEW" control={<Radio />} label="Import as new" />
+          <FormControlLabel value="IMPORT_NEW" control={<Radio />} label={t('import.mytourbook.importNewAction')} />
         )}
         {actions.includes('SUPPRESS') && (
-          <FormControlLabel value="SUPPRESS" control={<Radio />} label="Suppress" />
+          <FormControlLabel value="SUPPRESS" control={<Radio />} label={t('import.mytourbook.suppressAction')} />
         )}
       </RadioGroup>
     </Paper>
@@ -198,6 +204,7 @@ const WarningCard = ({ warning, resolution, onResolve, bikeLabel }: WarningCardP
 // --- MyTourbookImportReview --------------------------------------------------
 
 export const MyTourbookImportReview = () => {
+  const { t } = useTranslation()
   const { data: session, isLoading } = useQuery(pendingMyTourbookSessionQuery())
   const { data: bikes } = useQuery(bikesQuery())
   const qc = useQueryClient()
@@ -227,7 +234,7 @@ export const MyTourbookImportReview = () => {
       notifyOnError: false,
       onSuccess: () => {
         qc.invalidateQueries({ queryKey: pendingMyTourbookSessionQueryKey })
-        notify('Import committed successfully', 'success')
+        notify(t('import.mytourbook.committedSuccess'), 'success')
       },
       onError: (error) => {
         if (error.status === 409) {
@@ -252,7 +259,7 @@ export const MyTourbookImportReview = () => {
     return (
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          No import awaiting review
+          {t('import.mytourbook.noImportAwaiting')}
         </Typography>
       </Box>
     )
@@ -262,7 +269,7 @@ export const MyTourbookImportReview = () => {
     return (
       <Box sx={{ textAlign: 'center', mt: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          No new tours found in this upload
+          {t('import.mytourbook.noNewTours')}
         </Typography>
       </Box>
     )
@@ -295,18 +302,15 @@ export const MyTourbookImportReview = () => {
 
   return (
     <Stack spacing={3}>
-      <Typography variant="h5">Review Import</Typography>
+      <Typography variant="h5">{t('import.mytourbook.reviewTitle')}</Typography>
 
       {supersededNotice && (
-        <Alert severity="warning">
-          This upload was replaced by a newer one. Your selections were discarded — review the
-          new session.
-        </Alert>
+        <Alert severity="warning">{t('import.mytourbook.supersededNotice')}</Alert>
       )}
 
       {session.hasDrift && !driftDismissed && (
         <Alert severity="info" onClose={() => setDriftDismissed(true)}>
-          Database schema version has drifted from baseline (v{session.dbVersion}).
+          {t('import.mytourbook.driftNotice', { version: session.dbVersion })}
         </Alert>
       )}
 
@@ -320,7 +324,7 @@ export const MyTourbookImportReview = () => {
 
       {session.warnings.length > 0 && (
         <Stack spacing={2}>
-          <Typography variant="h6">Warnings ({session.warnings.length})</Typography>
+          <Typography variant="h6">{t('import.mytourbook.warningsTitle', { count: session.warnings.length })}</Typography>
           {session.warnings.map((w, i) => (
             <WarningCard
               key={w.mtTourId ?? i}
@@ -337,8 +341,7 @@ export const MyTourbookImportReview = () => {
 
       {unresolvedDuplicates.length > 0 && (
         <Alert severity="info">
-          {unresolvedDuplicates.length} duplicate
-          {unresolvedDuplicates.length > 1 ? 's' : ''} unresolved — will reappear next upload
+          {t('import.mytourbook.unresolvedDuplicates', { count: unresolvedDuplicates.length })}
         </Alert>
       )}
 
@@ -348,7 +351,7 @@ export const MyTourbookImportReview = () => {
           onClick={handleSubmit}
           disabled={commitMutation.isPending}
         >
-          {commitMutation.isPending ? 'Committing…' : 'Commit Import'}
+          {commitMutation.isPending ? t('import.mytourbook.committing') : t('import.mytourbook.commitButton')}
         </Button>
       </Box>
     </Stack>

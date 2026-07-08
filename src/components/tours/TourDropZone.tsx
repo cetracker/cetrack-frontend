@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState, type DragEvent, type ChangeEvent } from 'react'
 import { Box, Typography, useTheme } from '@mui/material'
 import styled from '@emotion/styled'
+import { useTranslation } from 'react-i18next'
 
 const Zone = styled.div<{ $dragging: boolean }>`
   border: 2px dashed ${({ $dragging }) => ($dragging ? '#00897B' : '#b0bec5')};
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export default function TourDropZone({ onFileSelect }: Props) {
+  const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
   const theme = useTheme()
@@ -167,10 +169,10 @@ export default function TourDropZone({ onFileSelect }: Props) {
       {/* CTA bar */}
       <Box sx={{ p: '12px 16px', textAlign: 'center', background: ctaBg }}>
         <Typography component="span" sx={{ fontSize: 12, color: ctaText }}>
-          Drop a file here or{' '}
+          {t('import.dropZone.ctaPrefix')}{' '}
         </Typography>
         <Typography component="span" sx={{ fontSize: 12, color: ctaAction, fontWeight: 600 }}>
-          click to select
+          {t('import.dropZone.ctaAction')}
         </Typography>
       </Box>
 

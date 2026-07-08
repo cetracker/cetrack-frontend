@@ -158,6 +158,90 @@
       "successMessage": "Komponente ausgemustert"
     }
   },
+  "tours": {
+    "list": {
+      "title": "Touren",
+      "groupingHint": "Verwenden Sie das Gruppierungssymbol in der Symbolleiste, um nach Jahr, Monat oder Fahrrad zu gruppieren.",
+      "assignedSuccess": "Fahrrad zugewiesen",
+      "assignBikeLabel": "Fahrrad zuweisen",
+      "noBikesAvailable": "Keine Fahrräder verfügbar",
+      "columns": {
+        "title": "Titel",
+        "titleFooter_one": "{{count}} Tour",
+        "titleFooter_other": "{{count}} Touren",
+        "year": "Jahr",
+        "month": "Monat",
+        "started": "Gestartet",
+        "distance": "Distanz (km)",
+        "durationMoving": "Fahrzeit",
+        "up": "Hoch (m)",
+        "down": "Runter (m)",
+        "work": "Arbeit (kJ)"
+      }
+    }
+  },
+  "import": {
+    "dropZone": {
+      "ctaPrefix": "Datei hier ablegen oder",
+      "ctaAction": "zum Auswählen klicken"
+    },
+    "page": {
+      "title": "Touren importieren",
+      "exportInstructionsTitle": "Export-Anleitung (nur MyTourbook!)",
+      "exportInstructionsBody": "Öffnen Sie die MyTourBook-Derby-Datenbank in DBeaver und führen Sie die folgende Abfrage aus. Exportieren Sie das Ergebnis als JSON und legen Sie die Datei dann unten ab.",
+      "invalidJson": "Ungültiges JSON",
+      "failedParseFit": "FIT-Datei konnte nicht analysiert werden",
+      "resetButton": "Zurücksetzen",
+      "clearButton": "Leeren",
+      "pleaseSelectBike": "Bitte ein Fahrrad auswählen",
+      "uploadButton_one": "{{count}} Tour hochladen",
+      "uploadButton_other": "{{count}} Touren hochladen",
+      "toursReady_one": "{{count}} Tour bereit zum Import",
+      "toursReady_other": "{{count}} Touren bereit zum Import",
+      "sessionsParsed_one": "{{count}} Sitzung analysiert",
+      "sessionsParsed_other": "{{count}} Sitzungen analysiert",
+      "importedSuccess": "Touren importiert",
+      "dateHeader": "Datum",
+      "bikeFileHeader": "Fahrrad (Datei)",
+      "bikeCetrackerHeader": "Fahrrad (CETracker)",
+      "noMatch": "Keine Übereinstimmung"
+    },
+    "fit": {
+      "noSessions": "Keine Sitzungen in dieser FIT-Datei gefunden.",
+      "duplicateWarning": "Mögliches Duplikat — passende Touren existieren bereits:",
+      "createAnywayNote": "Trotzdem erstellen, falls dies ein anderes Fahrrad war.",
+      "createdLabel": "✓ Erstellt",
+      "createButton": "Erstellen",
+      "conflictError": "Für dieses Fahrrad existiert bereits eine Tour",
+      "unexpectedError": "Unerwarteter Fehler"
+    },
+    "mytourbook": {
+      "reviewTitle": "Import überprüfen",
+      "supersededNotice": "Dieser Upload wurde durch einen neueren ersetzt. Ihre Auswahl wurde verworfen — überprüfen Sie die neue Sitzung.",
+      "driftNotice": "Die Datenbankschemaversion weicht von der Baseline ab (v{{version}}).",
+      "candidatesTitle": "Kandidaten ({{count}})",
+      "selectAllAria": "alle auswählen",
+      "distanceHeader": "Distanz",
+      "durationHeader": "Dauer",
+      "existingHeader": "Vorhanden",
+      "incomingHeader": "Eingehend",
+      "ambiguousBikeLabel": "Mehrdeutiges Fahrrad:",
+      "duplicateTitle": "Duplikat: {{title}}",
+      "multipleMatchedWarning_one": "{{count}} vorhandene Tour passt — Ersetzen ist nicht verfügbar",
+      "multipleMatchedWarning_other": "{{count}} vorhandene Touren passen — Ersetzen ist nicht verfügbar",
+      "replaceAction": "Ersetzen",
+      "importNewAction": "Als neu importieren",
+      "suppressAction": "Unterdrücken",
+      "noImportAwaiting": "Kein Import zur Überprüfung ausstehend",
+      "noNewTours": "Keine neuen Touren in diesem Upload gefunden",
+      "warningsTitle": "Warnungen ({{count}})",
+      "unresolvedDuplicates_one": "{{count}} ungelöstes Duplikat — erscheint beim nächsten Upload erneut",
+      "unresolvedDuplicates_other": "{{count}} ungelöste Duplikate — erscheinen beim nächsten Upload erneut",
+      "committing": "Wird übernommen…",
+      "commitButton": "Import übernehmen",
+      "committedSuccess": "Import erfolgreich übernommen"
+    }
+  },
   "bikes": {
     "list": {
       "title": "Fahrräder",

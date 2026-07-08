@@ -158,6 +158,90 @@
       "successMessage": "Component retired"
     }
   },
+  "tours": {
+    "list": {
+      "title": "Tours",
+      "groupingHint": "Use the grouping icon in the toolbar to group by Year, Month, or Bike.",
+      "assignedSuccess": "Bike assigned",
+      "assignBikeLabel": "Assign bike",
+      "noBikesAvailable": "No bikes available",
+      "columns": {
+        "title": "Title",
+        "titleFooter_one": "{{count}} tour",
+        "titleFooter_other": "{{count}} tours",
+        "year": "Year",
+        "month": "Month",
+        "started": "Started",
+        "distance": "Distance (km)",
+        "durationMoving": "Duration Moving",
+        "up": "Up (m)",
+        "down": "Down (m)",
+        "work": "Work (kJ)"
+      }
+    }
+  },
+  "import": {
+    "dropZone": {
+      "ctaPrefix": "Drop a file here or",
+      "ctaAction": "click to select"
+    },
+    "page": {
+      "title": "Import Tours",
+      "exportInstructionsTitle": "Export Instructions (MyTourbook Only!)",
+      "exportInstructionsBody": "Open the MyTourBook Derby database in DBeaver and run the following query. Export the result as JSON, then drop the file below.",
+      "invalidJson": "Invalid JSON",
+      "failedParseFit": "Failed to parse FIT file",
+      "resetButton": "Reset",
+      "clearButton": "Clear",
+      "pleaseSelectBike": "Please select a bike",
+      "uploadButton_one": "Upload {{count}} tour",
+      "uploadButton_other": "Upload {{count}} tours",
+      "toursReady_one": "{{count}} tour ready to import",
+      "toursReady_other": "{{count}} tours ready to import",
+      "sessionsParsed_one": "{{count}} session parsed",
+      "sessionsParsed_other": "{{count}} sessions parsed",
+      "importedSuccess": "Tours imported",
+      "dateHeader": "Date",
+      "bikeFileHeader": "Bike (file)",
+      "bikeCetrackerHeader": "Bike (CETracker)",
+      "noMatch": "No match"
+    },
+    "fit": {
+      "noSessions": "No sessions found in this FIT file.",
+      "duplicateWarning": "Possible duplicate — matching tours already exist:",
+      "createAnywayNote": "Create anyway if this was a different bike.",
+      "createdLabel": "✓ Created",
+      "createButton": "Create",
+      "conflictError": "A tour for this bike already exists",
+      "unexpectedError": "Unexpected error"
+    },
+    "mytourbook": {
+      "reviewTitle": "Review Import",
+      "supersededNotice": "This upload was replaced by a newer one. Your selections were discarded — review the new session.",
+      "driftNotice": "Database schema version has drifted from baseline (v{{version}}).",
+      "candidatesTitle": "Candidates ({{count}})",
+      "selectAllAria": "select all",
+      "distanceHeader": "Distance",
+      "durationHeader": "Duration",
+      "existingHeader": "Existing",
+      "incomingHeader": "Incoming",
+      "ambiguousBikeLabel": "Ambiguous bike:",
+      "duplicateTitle": "Duplicate: {{title}}",
+      "multipleMatchedWarning_one": "{{count}} existing tour matched — Replace is not available",
+      "multipleMatchedWarning_other": "{{count}} existing tours matched — Replace is not available",
+      "replaceAction": "Replace",
+      "importNewAction": "Import as new",
+      "suppressAction": "Suppress",
+      "noImportAwaiting": "No import awaiting review",
+      "noNewTours": "No new tours found in this upload",
+      "warningsTitle": "Warnings ({{count}})",
+      "unresolvedDuplicates_one": "{{count}} duplicate unresolved — will reappear next upload",
+      "unresolvedDuplicates_other": "{{count}} duplicates unresolved — will reappear next upload",
+      "committing": "Committing…",
+      "commitButton": "Commit Import",
+      "committedSuccess": "Import committed successfully"
+    }
+  },
   "bikes": {
     "list": {
       "title": "Bikes",

@@ -19,6 +19,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { importTours, parseFit, toursQueryKey } from '@/api/tours'
 import type { Bike, FitDraftTour, MTTour } from '@/types/api'
 import { BikeSelect, FROM_FILE } from '@/components/common/BikeSelect'
@@ -70,6 +71,7 @@ const previewDate = (t: MTTour): string =>
   ).padStart(2, '0')}`
 
 export const TourImport = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [fileName, setFileName] = useState<string | null>(null)
   const [tours, setTours] = useState<MTTour[] | null>(null)
@@ -87,7 +89,7 @@ export const TourImport = () => {
     hasBikeIds && (tours ?? []).every((t) => bikeMap.has(t.BIKEID ?? ''))
 
    const importMut = useApiMutation(importTours, {
-     successMessage: 'Tours imported',
+     successMessage: t('import.page.importedSuccess'),
      onSuccess: async () => {
        await qc.invalidateQueries({ queryKey: toursQueryKey })
        reset()
@@ -120,7 +122,7 @@ export const TourImport = () => {
         setBikeId(FROM_FILE)
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Invalid JSON')
+      setError(e instanceof Error ? e.message : t('import.page.invalidJson'))
     }
   }
 
@@ -135,7 +137,7 @@ export const TourImport = () => {
       const drafts = await parseFit(file)
       setFitDrafts(drafts)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to parse FIT file')
+      setError(e instanceof Error ? e.message : t('import.page.failedParseFit'))
     }
   }
 
@@ -164,17 +166,16 @@ export const TourImport = () => {
   return (
     <Box>
       <Typography variant="h5" gutterBottom>
-        Import Tours
+        {t('import.page.title')}
       </Typography>
 
       <Accordion sx={{ mb: 2 }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Export Instructions (MyTourbook Only!)</Typography>
+          <Typography>{t('import.page.exportInstructionsTitle')}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            Open the MyTourBook Derby database in DBeaver and run the following
-            query. Export the result as JSON, then drop the file below.
+            {t('import.page.exportInstructionsBody')}
           </Typography>
           <Paper
             variant="outlined"
@@ -201,12 +202,12 @@ export const TourImport = () => {
           </Typography>
           {tours && (
             <Typography variant="body2" color="success.main">
-              {tours.length} tour{tours.length === 1 ? '' : 's'} ready to import
+              {t('import.page.toursReady', { count: tours.length })}
             </Typography>
           )}
           {fitDrafts && (
             <Typography variant="body2" color="success.main">
-              {fitDrafts.length} session{fitDrafts.length === 1 ? '' : 's'} parsed
+              {t('import.page.sessionsParsed', { count: fitDrafts.length })}
             </Typography>
           )}
         </Box>
@@ -218,7 +219,7 @@ export const TourImport = () => {
           sx={{ mt: 2 }}
           action={
             <Button color="inherit" size="small" onClick={reset}>
-              Reset
+              {t('import.page.resetButton')}
             </Button>
           }
         >
@@ -243,7 +244,7 @@ export const TourImport = () => {
               startIcon={<DeleteIcon />}
               onClick={reset}
             >
-              Clear
+              {t('import.page.clearButton')}
             </Button>
           </Stack>
           <FitImportReview drafts={fitDrafts} />
@@ -267,10 +268,10 @@ export const TourImport = () => {
                 includeNone={false}
                 includeFromFile={hasBikeIds}
                 disabled={hasBikeIds}
-                label="Bike"
+                label={t('common.bike')}
                 required={!hasBikeIds}
                 error={bikeError}
-                helperText={bikeError ? 'Please select a bike' : undefined}
+                helperText={bikeError ? t('import.page.pleaseSelectBike') : undefined}
               />
             </Box>
             <Box sx={{ flexGrow: 1 }} />
@@ -281,7 +282,7 @@ export const TourImport = () => {
               onClick={reset}
               disabled={importMut.isPending}
             >
-              Clear
+              {t('import.page.clearButton')}
             </Button>
             <Button
               variant="contained"
@@ -293,7 +294,7 @@ export const TourImport = () => {
                 (hasBikeIds ? !allMatched : !bikeId)
               }
             >
-              Upload {tours.length} tour{tours.length === 1 ? '' : 's'}
+              {t('import.page.uploadButton', { count: tours.length })}
             </Button>
           </Stack>
 
@@ -301,34 +302,34 @@ export const TourImport = () => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ whiteSpace: 'nowrap' }}>Date</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell align="right">Distance (km)</TableCell>
-                  {hasBikeIds && <TableCell>Bike (file)</TableCell>}
-                  {hasBikeIds && <TableCell>Bike (CETracker)</TableCell>}
+                  <TableCell sx={{ whiteSpace: 'nowrap' }}>{t('import.page.dateHeader')}</TableCell>
+                  <TableCell>{t('tours.list.columns.title')}</TableCell>
+                  <TableCell align="right">{t('tours.list.columns.distance')}</TableCell>
+                  {hasBikeIds && <TableCell>{t('import.page.bikeFileHeader')}</TableCell>}
+                  {hasBikeIds && <TableCell>{t('import.page.bikeCetrackerHeader')}</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {tours.map((t) => {
-                  const matched = t.BIKEID ? bikeMap.get(t.BIKEID) : undefined
+                {tours.map((tour) => {
+                  const matched = tour.BIKEID ? bikeMap.get(tour.BIKEID) : undefined
                   const noMatch = hasBikeIds && !matched
                   return (
-                    <TableRow key={t.MTTOURID}>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{previewDate(t)}</TableCell>
-                      <TableCell>{t.TITLE}</TableCell>
+                    <TableRow key={tour.MTTOURID}>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{previewDate(tour)}</TableCell>
+                      <TableCell>{tour.TITLE}</TableCell>
                       <TableCell align="right">
-                        {formatDistanceKm(t.DISTANCE)}
+                        {formatDistanceKm(tour.DISTANCE)}
                       </TableCell>
                       {hasBikeIds && (
                         <TableCell>
-                          {t.BIKENAME?.split('\n')[0].trim() ?? '—'}
+                          {tour.BIKENAME?.split('\n')[0].trim() ?? '—'}
                         </TableCell>
                       )}
                       {hasBikeIds && (
                         <TableCell
                           sx={noMatch ? { color: 'error.main', fontWeight: 600 } : undefined}
                         >
-                          {matched ? bikeIdentity(matched) : 'No match'}
+                          {matched ? bikeIdentity(matched) : t('import.page.noMatch')}
                         </TableCell>
                       )}
                     </TableRow>

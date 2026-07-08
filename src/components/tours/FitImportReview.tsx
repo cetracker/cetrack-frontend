@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import { useTranslation } from 'react-i18next'
 import { bikesQuery } from '@/api/bikes'
 import { createTour, toursQueryKey } from '@/api/tours'
 import { isApiError } from '@/api/client'
@@ -23,6 +24,7 @@ import { draftToCreateRequest, suggestTitle } from '@/utils/fitImport'
 type DraftStatus = 'editing' | 'creating' | 'created' | 'error'
 
 const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: bikes } = useQuery(bikesQuery())
   const bikeMap = new Map((bikes ?? []).map((b) => [b.id, b]))
@@ -42,8 +44,8 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
       setStatus('error')
       setErrorMsg(
         isApiError(err) && err.status === 409
-          ? 'A tour for this bike already exists'
-          : (err.message ?? 'Unexpected error'),
+          ? t('import.fit.conflictError')
+          : (err.message ?? t('import.fit.unexpectedError')),
       )
     },
   })
@@ -76,19 +78,19 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
         {draft.duplicateHint && (
           <Alert severity="warning" sx={{ mb: 2 }}>
             <Typography variant="body2" sx={{ mb: 0.5 }}>
-              Possible duplicate — matching tours already exist:
+              {t('import.fit.duplicateWarning')}
             </Typography>
-            {draft.duplicateHint.matchedTours.map((t) => {
-              const bike = t.bikeId ? bikeMap.get(t.bikeId) : undefined
+            {draft.duplicateHint.matchedTours.map((mt) => {
+              const bike = mt.bikeId ? bikeMap.get(mt.bikeId) : undefined
               const bikeLabel = bike ? bikeIdentity(bike) : '—'
               return (
-                <Typography key={t.tourId} variant="body2">
-                  {t.title} · {formatDate(t.startedAt)} · {bikeLabel}
+                <Typography key={mt.tourId} variant="body2">
+                  {mt.title} · {formatDate(mt.startedAt)} · {bikeLabel}
                 </Typography>
               )
             })}
             <Typography variant="body2" sx={{ mt: 0.5, fontStyle: 'italic' }}>
-              Create anyway if this was a different bike.
+              {t('import.fit.createAnywayNote')}
             </Typography>
           </Alert>
         )}
@@ -96,12 +98,12 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
         {status === 'created' ? (
           <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1 }}>
             <CheckCircleIcon color="success" />
-            <Typography color="success.main">✓ Created</Typography>
+            <Typography color="success.main">{t('import.fit.createdLabel')}</Typography>
           </Stack>
         ) : (
           <Stack sx={{ gap: 2 }}>
             <TextField
-              label="Title"
+              label={t('tours.list.columns.title')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onFocus={(e) => e.target.select()}
@@ -127,7 +129,7 @@ const FitDraftCard = ({ draft }: { draft: FitDraftTour }) => {
                 onClick={handleCreate}
                 disabled={!title.trim() || !bikeId || status === 'creating'}
               >
-                Create
+                {t('import.fit.createButton')}
               </Button>
             </Box>
           </Stack>
@@ -142,8 +144,9 @@ interface FitImportReviewProps {
 }
 
 export const FitImportReview = ({ drafts }: FitImportReviewProps) => {
+  const { t } = useTranslation()
   if (drafts.length === 0) {
-    return <Alert severity="warning">No sessions found in this FIT file.</Alert>
+    return <Alert severity="warning">{t('import.fit.noSessions')}</Alert>
   }
   return (
     <Stack sx={{ gap: 2 }}>

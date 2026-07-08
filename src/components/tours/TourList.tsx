@@ -17,6 +17,8 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { toursQuery, toursQueryKey, assignTourBike } from '@/api/tours'
 import { bikesQuery } from '@/api/bikes'
 import type { Bike, Tour } from '@/types/api'
@@ -58,35 +60,38 @@ interface TourColumnExtras {
   onOpenMenu: (tour: Tour, el: HTMLElement) => void
 }
 
-const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef<Tour>[] => [
+const buildColumns = (
+  t: TFunction,
+  { data, totals, onOpenMenu }: TourColumnExtras,
+): ColumnDef<Tour>[] => [
   {
     accessorKey: 'title',
-    header: 'Title',
+    header: t('tours.list.columns.title'),
     enableGrouping: false,
-    footer: () => `${(data ?? []).length} tours`,
+    footer: () => t('tours.list.columns.titleFooter', { count: (data ?? []).length }),
   },
   {
     accessorKey: 'startYear',
-    header: 'Year',
+    header: t('tours.list.columns.year'),
     enableGrouping: true,
     meta: { align: 'right' },
   },
   {
     accessorKey: 'startMonth',
-    header: 'Month',
+    header: t('tours.list.columns.month'),
     enableGrouping: true,
     meta: { align: 'right' },
   },
   {
     accessorKey: 'startedAt',
-    header: 'Started',
+    header: t('tours.list.columns.started'),
     enableGrouping: false,
     cell: (c) => formatDateTime(c.getValue<string>()),
     meta: { align: 'right' },
   },
   {
     accessorKey: 'distance',
-    header: 'Distance (km)',
+    header: t('tours.list.columns.distance'),
     enableGrouping: false,
     cell: (c) => formatDistanceKm(c.getValue<number>()),
     aggregatedCell: (c) => formatDistanceKm(c.getValue<number>()),
@@ -95,7 +100,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     accessorKey: 'durationMoving',
-    header: 'Duration Moving',
+    header: t('tours.list.columns.durationMoving'),
     enableGrouping: false,
     cell: (c) => formatDuration(c.getValue<number>()),
     aggregatedCell: (c) => formatDuration(c.getValue<number>()),
@@ -104,7 +109,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     accessorKey: 'ascent',
-    header: 'Up (m)',
+    header: t('tours.list.columns.up'),
     enableGrouping: false,
     cell: (c) => formatNumber(c.getValue<number>()),
     aggregatedCell: (c) => {
@@ -116,7 +121,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     accessorKey: 'descent',
-    header: 'Down (m)',
+    header: t('tours.list.columns.down'),
     enableGrouping: false,
     cell: (c) => formatNumber(c.getValue<number>()),
     aggregatedCell: (c) => {
@@ -128,7 +133,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     accessorKey: 'powerTotal',
-    header: 'Work (kJ)',
+    header: t('tours.list.columns.work'),
     enableGrouping: false,
     cell: (c) => formatKJ(c.getValue<number>()),
     aggregatedCell: (c) => formatKJ(c.getValue<number>()),
@@ -137,8 +142,8 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
   },
   {
     id: 'bike',
-    header: 'Bike',
-    accessorFn: (t) => bikeIdentity(t.bike),
+    header: t('common.bike'),
+    accessorFn: (tour) => bikeIdentity(tour.bike),
     enableGrouping: true,
     filterFn: 'equalsString',
   },
@@ -154,6 +159,7 @@ const buildColumns = ({ data, totals, onOpenMenu }: TourColumnExtras): ColumnDef
 ]
 
 export const TourList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data, isLoading, error, refetch } = useQuery(toursQuery())
   const { data: bikes } = useQuery(bikesQuery())
@@ -176,7 +182,7 @@ export const TourList = () => {
     (v: { tourId: string; bikeId: string }) =>
       assignTourBike(v.tourId, v.bikeId),
     {
-      successMessage: 'Bike assigned',
+      successMessage: t('tours.list.assignedSuccess'),
       onSuccess: () => qc.invalidateQueries({ queryKey: toursQueryKey }),
     },
   )
@@ -198,16 +204,16 @@ export const TourList = () => {
   }
 
   const columns = useMemo(
-    () => buildColumns({ data, totals, onOpenMenu: handleOpenMenu }),
-    [data, totals],
+    () => buildColumns(t, { data, totals, onOpenMenu: handleOpenMenu }),
+    [t, data, totals],
   )
 
    return (
      <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
        <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-         <Box sx={{ typography: 'h5' }}>Tours</Box>
+         <Box sx={{ typography: 'h5' }}>{t('tours.list.title')}</Box>
          <Typography variant="body2" color="text.secondary">
-           Use the grouping icon in the toolbar to group by Year, Month, or Bike.
+           {t('tours.list.groupingHint')}
          </Typography>
        </Stack>
 
@@ -239,7 +245,7 @@ export const TourList = () => {
         }}
       >
         <MenuItem disabled>
-          <Typography variant="caption">Assign bike</Typography>
+          <Typography variant="caption">{t('tours.list.assignBikeLabel')}</Typography>
         </MenuItem>
         {(bikes ?? []).map((b: Bike) => (
           <MenuItem
@@ -259,7 +265,7 @@ export const TourList = () => {
           </MenuItem>
         ))}
         {(bikes ?? []).length === 0 && (
-          <MenuItem disabled>No bikes available</MenuItem>
+          <MenuItem disabled>{t('tours.list.noBikesAvailable')}</MenuItem>
         )}
       </Menu>
     </Box>
