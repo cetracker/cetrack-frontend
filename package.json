@@ -25,9 +25,11 @@
     "@tanstack/react-table": "8.21.3",
     "axios": "1.16.1",
     "date-fns": "4.1.0",
+    "i18next": "26.3.4",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-hook-form": "7.80.0",
+    "react-i18next": "17.0.8",
     "react-router-dom": "7.16.0",
     "zod": "4.4.1"
   },

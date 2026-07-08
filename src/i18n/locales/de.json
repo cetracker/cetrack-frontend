@@ -1,0 +1,54 @@
+{
+  "common": {},
+  "nav": {
+    "components": "Komponenten",
+    "componentTypes": "Komponententypen",
+    "bikes": "Fahrräder",
+    "assemblies": "Baugruppen",
+    "maintenance": "Wartung",
+    "tours": "Touren",
+    "tourImport": "Touren importieren",
+    "report": "Bericht"
+  },
+  "appShell": {
+    "title": "Cycling Equipment Usage Tracker",
+    "openNavigation": "Navigation öffnen",
+    "home": "Startseite",
+    "reviewImport": "Import prüfen",
+    "importAttentionTooltip": "Import benötigt Aufmerksamkeit — doppelte Touren erkannt",
+    "importPendingTooltip": "Import wartet auf Prüfung",
+    "lightMode": "Heller Modus",
+    "darkMode": "Dunkler Modus",
+    "language": "Sprache",
+    "dateFormat": "Datums- und Zahlenformat"
+  },
+  "status": {
+    "inStock": "Auf Lager",
+    "inAssembly": "In Baugruppe",
+    "mounted": "Montiert",
+    "mountedViaAssembly": "Montiert (über Baugruppe)",
+    "retired": "Ausgemustert"
+  },
+  "errors": {
+    "TYPE_MISMATCH": "Dieser Komponententyp passt nicht zu diesem Montagepunkt.",
+    "COMPONENT_RETIRED": "Diese Komponente ist ausgemustert und kann nicht mehr verwendet werden.",
+    "MOUNTING_OVERLAP": "Diese Änderung würde eine andere Montage überschneiden.",
+    "IN_USE": "Dieser Eintrag wird noch verwendet und kann nicht gelöscht werden.",
+    "ASSEMBLY_MEMBER_GUIDED_CHOICE": "Diese Komponente ist Teil einer Baugruppe. Montieren Sie die Baugruppe, oder entfernen Sie die Komponente zuerst aus der Baugruppe.",
+    "ASSEMBLY_INCOMPLETE": "Diese Baugruppe hat leere Plätze — füllen Sie alle Plätze, bevor Sie sie montieren.",
+    "UNRESOLVED_SLOTS": "Einige Plätze benötigen eine Montagepunktwahl, bevor diese Baugruppe montiert werden kann.",
+    "SLOT_UNMOUNTABLE": "Ein Mitglied dieser Baugruppe kann an seinem zugeordneten Montagepunkt nicht montiert werden.",
+    "SLOT_TARGET_COLLISION": "Zwei Plätze würden denselben Montagepunkt ergeben — wählen Sie unterschiedliche Montagepunkte.",
+    "MEMBER_MOUNTED_ELSEWHERE": "Ein Mitglied dieser Baugruppe ist bereits an anderer Stelle montiert.",
+    "MOUNTING_GOVERNED": "Diese Montage wird von einer Baugruppe verwaltet — montieren/demontieren Sie die Baugruppe, um sie zu ändern.",
+    "ASSEMBLY_ALREADY_MOUNTED": "Diese Baugruppe ist bereits an einem Fahrrad montiert.",
+    "ASSEMBLY_NOT_MOUNTED": "Diese Baugruppe ist derzeit nicht montiert.",
+    "BIKE_RETIRED": "Dieses Fahrrad ist ausgemustert und kann keine Montagen mehr erhalten.",
+    "ASSEMBLY_IN_USE": "Diese Baugruppe hat noch Mitgliedschafts- oder Montagehistorie und kann nicht gelöscht werden.",
+    "ASSEMBLY_SLOT_IN_USE": "Dieser Platz hat noch Mitgliedschaftshistorie — beenden Sie seine Gültigkeit, statt ihn zu löschen.",
+    "ALREADY_MEMBER": "Diese Komponente gehört bereits zu einer Baugruppe.",
+    "generic": "Ein Fehler ist aufgetreten",
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
+  },
+  "validation": {}
+}

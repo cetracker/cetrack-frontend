@@ -42,6 +42,7 @@ export default defineConfig({
           )
             return 'vendor-forms'
           if (id.includes('date-fns')) return 'vendor-date-fns'
+          if (id.includes('i18next')) return 'vendor-i18n'
           if (
             id.includes('/react/') ||
             id.includes('/react-dom/') ||
