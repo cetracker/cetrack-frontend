@@ -19,6 +19,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import LinkOffIcon from '@mui/icons-material/LinkOff'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import {
@@ -41,6 +42,7 @@ interface CompositionTableProps {
 }
 
 export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const now = useMemo(() => new Date().toISOString(), [])
 
@@ -63,7 +65,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
   const deleteMut = useApiMutation(
     (mpId: string) => deleteMountPoint(bikeId, mpId),
     {
-      successMessage: 'Mount point deleted',
+      successMessage: t('bikes.composition.deletedSuccess'),
       onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: mountPointsQueryKey(bikeId) })
         setToDelete(null)
@@ -84,23 +86,23 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
             setFormOpen(true)
           }}
         >
-          Add mount point
+          {t('bikes.composition.addButton')}
         </Button>
       </Stack>
 
       {rows.length === 0 ? (
         <Typography color="text.secondary" sx={{ py: 2 }}>
-          No mount points yet.
+          {t('bikes.composition.empty')}
         </Typography>
       ) : (
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>Position</TableCell>
-              <TableCell>Mandatory</TableCell>
-              <TableCell>Mounted</TableCell>
+              <TableCell>{t('common.name')}</TableCell>
+              <TableCell>{t('common.type')}</TableCell>
+              <TableCell>{t('common.position')}</TableCell>
+              <TableCell>{t('common.mandatory')}</TableCell>
+              <TableCell>{t('status.mounted')}</TableCell>
               <TableCell align="right" />
             </TableRow>
           </TableHead>
@@ -123,7 +125,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                       <>
                         {componentIdentity(mountedComponent)}{' '}
                         <Typography component="span" variant="caption" color="text.secondary">
-                          since {formatDateTime(active.mountedAt)}
+                          {t('bikes.composition.sincePrefix', { date: formatDateTime(active.mountedAt) })}
                         </Typography>
                       </>
                     ) : (
@@ -132,13 +134,13 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                   </TableCell>
                   <TableCell align="right">
                     <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                      <Tooltip title={active ? 'Swap' : 'Mount'}>
+                      <Tooltip title={active ? t('bikes.composition.swapTooltip') : t('components.detail.mountButton')}>
                         <IconButton size="small" onClick={() => setHistoryTarget(mp)}>
                           <SwapHorizIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       {active && (
-                        <Tooltip title="Dismount">
+                        <Tooltip title={t('components.detail.dismountButton')}>
                           <IconButton
                             size="small"
                             onClick={() => setDismountComponentId(active.componentId)}
@@ -147,7 +149,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                           </IconButton>
                         </Tooltip>
                       )}
-                      <Tooltip title="Edit">
+                      <Tooltip title={t('common.edit')}>
                         <IconButton
                           size="small"
                           onClick={() => {
@@ -158,7 +160,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                           <EditIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title="Delete">
+                      <Tooltip title={t('common.delete')}>
                         <IconButton size="small" color="error" onClick={() => setToDelete(mp)}>
                           <DeleteIcon fontSize="small" />
                         </IconButton>
@@ -196,11 +198,11 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete mount point"
-        message={toDelete ? `Delete "${toDelete.name}"? This cannot be undone.` : ''}
+        title={t('bikes.composition.deleteTitle')}
+        message={toDelete ? t('common.deleteConfirmMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

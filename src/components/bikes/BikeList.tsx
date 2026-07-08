@@ -5,6 +5,8 @@ import EventBusyIcon from '@mui/icons-material/EventBusy'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { bikesQuery, bikesQueryKey, deleteBike } from '@/api/bikes'
 import type { Bike } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
@@ -23,39 +25,43 @@ interface ActionsCellProps {
   onRetire: (bike: Bike) => void
 }
 
-const ActionsCell = ({ bike, onEdit, onDelete, onRetire }: ActionsCellProps) => (
-  <RowActions
-    onEdit={() => onEdit(bike)}
-    onDelete={() => onDelete(bike)}
-    extra={
-      !bike.retiredAt && (
-        <Tooltip title="Retire">
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation()
-              onRetire(bike)
-            }}
-          >
-            <EventBusyIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      )
-    }
-  />
-)
+const ActionsCell = ({ bike, onEdit, onDelete, onRetire }: ActionsCellProps) => {
+  const { t } = useTranslation()
+  return (
+    <RowActions
+      onEdit={() => onEdit(bike)}
+      onDelete={() => onDelete(bike)}
+      extra={
+        !bike.retiredAt && (
+          <Tooltip title={t('bikes.list.retireTooltip')}>
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation()
+                onRetire(bike)
+              }}
+            >
+              <EventBusyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )
+      }
+    />
+  )
+}
 
 const buildColumns = (
+  t: TFunction,
   onEdit: (bike: Bike) => void,
   onDelete: (bike: Bike) => void,
   onRetire: (bike: Bike) => void,
 ): ColumnDef<Bike>[] => [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'manufacturer', header: 'Manufacturer' },
-  { accessorKey: 'model', header: 'Model' },
+  { accessorKey: 'name', header: t('common.name') },
+  { accessorKey: 'manufacturer', header: t('common.manufacturer') },
+  { accessorKey: 'model', header: t('common.model') },
   {
     accessorKey: 'purchaseDate',
-    header: 'Purchase Date',
+    header: t('common.purchaseDate'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },
@@ -76,6 +82,7 @@ const buildColumns = (
 ]
 
 export const BikeList = () => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   const { data, isLoading, error, refetch } = useQuery(bikesQuery())
@@ -92,7 +99,7 @@ export const BikeList = () => {
   const [toRetire, setToRetire] = useState<Bike | null>(null)
 
   const deleteMut = useApiMutation(deleteBike, {
-    successMessage: 'Bike deleted',
+    successMessage: t('bikes.list.deletedSuccess'),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: bikesQueryKey })
       setToDelete(null)
@@ -105,14 +112,14 @@ export const BikeList = () => {
   }
 
   const columns = useMemo(
-    () => buildColumns(handleEdit, setToDelete, setToRetire),
-    [],
+    () => buildColumns(t, handleEdit, setToDelete, setToRetire),
+    [t],
   )
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Box sx={{ typography: 'h5' }}>Bikes</Box>
+        <Box sx={{ typography: 'h5' }}>{t('bikes.list.title')}</Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -121,7 +128,7 @@ export const BikeList = () => {
             setEditOpen(true)
           }}
         >
-          Add bike
+          {t('bikes.list.addButton')}
         </Button>
       </Stack>
 
@@ -155,15 +162,15 @@ export const BikeList = () => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete bike"
+        title={t('bikes.list.deleteTitle')}
         message={
           toDelete
-            ? `Delete "${bikeIdentity(toDelete)}"? This cannot be undone.`
+            ? t('common.deleteConfirmMessage', { name: bikeIdentity(toDelete) })
             : ''
         }
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

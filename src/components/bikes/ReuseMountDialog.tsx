@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Alert, Stack } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
@@ -28,6 +29,7 @@ export const ReuseMountDialog = ({
   componentName,
   activeComponentName,
 }: ReuseMountDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { notify } = useNotify()
   const [at, setAt] = useState<Date | null>(new Date())
@@ -39,11 +41,11 @@ export const ReuseMountDialog = ({
         await invalidateAfterMountingChanges(qc)
         if (changes.closed?.length) {
           notify(
-            `Mounted — auto-closed ${changes.closed.length} previous mounting${changes.closed.length > 1 ? 's' : ''}`,
+            t('components.mount.autoClosedNotice', { count: changes.closed.length }),
             'success',
           )
         } else {
-          notify('Component mounted', 'success')
+          notify(t('components.mount.successMessage'), 'success')
         }
         onClose()
       },
@@ -58,21 +60,21 @@ export const ReuseMountDialog = ({
   return (
     <FormDialog
       open={open}
-      title={`Re-mount ${componentName}`}
+      title={t('bikes.reuseMount.title', { name: componentName })}
       onCancel={onClose}
       onSubmit={submit}
       submitting={mountMut.isPending}
       submitDisabled={!at}
-      submitLabel="Mount"
+      submitLabel={t('components.detail.mountButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         {activeComponentName && (
           <Alert severity="warning">
-            Mounting this component will dismount {activeComponentName}.
+            {t('bikes.reuseMount.dismountWarning', { name: activeComponentName })}
           </Alert>
         )}
         <DateTimePicker
-          label="Mounted at"
+          label={t('components.mount.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { fullWidth: true, autoFocus: true } }}

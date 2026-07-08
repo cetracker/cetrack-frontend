@@ -8,6 +8,7 @@ import {
 } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { useNotify } from '@/hooks/useNotify'
@@ -26,6 +27,7 @@ interface MountDialogProps {
 }
 
 export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { notify } = useNotify()
   const [componentId, setComponentId] = useState<string | null>(null)
@@ -50,11 +52,11 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
         await invalidateAfterMountingChanges(qc)
         if (changes.closed?.length) {
           notify(
-            `Mounted — auto-closed ${changes.closed.length} previous mounting${changes.closed.length > 1 ? 's' : ''}`,
+            t('components.mount.autoClosedNotice', { count: changes.closed.length }),
             'success',
           )
         } else {
-          notify('Component mounted', 'success')
+          notify(t('components.mount.successMessage'), 'success')
         }
         onClose()
       },
@@ -75,7 +77,7 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
   return (
     <FormDialog
       open={open}
-      title={mountPoint ? `Mount to ${mountPoint.name}` : 'Mount'}
+      title={mountPoint ? t('bikes.mountDialog.titleWithPoint', { name: mountPoint.name }) : t('components.detail.mountButton')}
       onCancel={() => {
         reset()
         onClose()
@@ -83,7 +85,7 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
       onSubmit={submit}
       submitting={mountMut.isPending}
       submitDisabled={!componentId || !at}
-      submitLabel="Mount"
+      submitLabel={t('components.detail.mountButton')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
         <Autocomplete<Component>
@@ -105,7 +107,7 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
             </li>
           )}
           renderInput={(params) => (
-            <TextField {...params} label="Component" required autoFocus />
+            <TextField {...params} label={t('components.list.columns.component')} required autoFocus />
           )}
         />
         <FormControlLabel
@@ -118,10 +120,10 @@ export const MountDialog = ({ open, onClose, bikeId, mountPoint }: MountDialogPr
               }}
             />
           }
-          label="Include currently mounted (swap)"
+          label={t('bikes.mountDialog.includeMountedLabel')}
         />
         <DateTimePicker
-          label="Mounted at"
+          label={t('components.mount.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { fullWidth: true } }}

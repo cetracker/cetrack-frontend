@@ -22,7 +22,16 @@
     "description": "Description",
     "created": "Created",
     "deleteConfirmMessage": "Delete \"{{name}}\"? This cannot be undone.",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "manufacturer": "Manufacturer",
+    "model": "Model",
+    "purchaseDate": "Purchase Date",
+    "purchasePrice": "Purchase Price",
+    "currency": "Currency",
+    "componentType": "Component Type",
+    "type": "Type",
+    "position": "Position",
+    "mandatory": "Mandatory"
   },
   "nav": {
     "components": "Components",
@@ -83,20 +92,14 @@
   },
   "components": {
     "fields": {
-      "manufacturer": "Manufacturer",
-      "model": "Model",
       "serial": "Serial",
       "serialNumber": "Serial Number",
       "vendor": "Vendor",
       "price": "Price",
-      "purchasePrice": "Purchase Price",
-      "currency": "Currency",
-      "purchaseDate": "Purchase Date",
       "purchased": "Purchased",
       "retiredDate": "Retired Date",
       "retired": "Retired",
       "firstUsed": "First used",
-      "componentType": "Component Type",
       "label": "Label"
     },
     "list": {
@@ -153,6 +156,100 @@
       "scrapped": "Scrapped",
       "sold": "Sold",
       "successMessage": "Component retired"
+    }
+  },
+  "bikes": {
+    "list": {
+      "title": "Bikes",
+      "addButton": "Add bike",
+      "retireTooltip": "Retire",
+      "deleteTitle": "Delete bike",
+      "deletedSuccess": "Bike deleted"
+    },
+    "form": {
+      "addTitle": "Add Bike",
+      "editTitle": "Edit Bike",
+      "nameOrModelRequired": "Name or model required",
+      "createdSuccess": "Bike created",
+      "updatedSuccess": "Bike updated"
+    },
+    "detail": {
+      "backButton": "Back to bikes",
+      "fallbackTitle": "Bike",
+      "editButton": "Edit",
+      "retireButton": "Retire",
+      "retiredBanner": "Retired — no new tours or mountings.",
+      "compositionTab": "Composition",
+      "historyTab": "History",
+      "maintenanceTab": "Maintenance"
+    },
+    "mountPoint": {
+      "addTitle": "Add Mount Point",
+      "editTitle": "Edit Mount Point",
+      "positionLabel": "Position",
+      "noneOption": "(none)",
+      "mandatoryLabel": "Mandatory (bike cannot be ridden without this mount point filled)",
+      "createdSuccess": "Mount point added",
+      "updatedSuccess": "Mount point updated"
+    },
+    "composition": {
+      "addButton": "Add mount point",
+      "empty": "No mount points yet.",
+      "deletedSuccess": "Mount point deleted",
+      "deleteTitle": "Delete mount point",
+      "swapTooltip": "Swap",
+      "sincePrefix": "since {{date}}"
+    },
+    "compositionAtDate": {
+      "title": "Composition snapshot",
+      "atLabel": "Composition at"
+    },
+    "mountDialog": {
+      "titleWithPoint": "Mount to {{name}}",
+      "componentLabel": "Component",
+      "includeMountedLabel": "Include currently mounted (swap)"
+    },
+    "mountPointHistory": {
+      "fallbackTitle": "Mount point",
+      "mountOtherButton": "Mount other component…"
+    },
+    "reuseMount": {
+      "title": "Re-mount {{name}}",
+      "dismountWarning": "Mounting this component will dismount {{name}}."
+    },
+    "retire": {
+      "title": "Retire bike",
+      "atLabel": "Retired at",
+      "successMessage": "Bike retired"
+    }
+  },
+  "mountings": {
+    "correct": {
+      "title": "Correct mounting",
+      "reopenLabel": "Re-open (clear dismount time, make active again)",
+      "successMessage": "Mounting corrected"
+    },
+    "history": {
+      "voidedSuccess": "Mounting voided",
+      "empty": "No mountings yet.",
+      "mountPointHeader": "Mount Point",
+      "dismountedHeader": "Dismounted",
+      "activeChip": "active",
+      "reuseTooltip": "Re-use",
+      "correctTooltip": "Correct",
+      "voidTooltip": "Void",
+      "governedTooltip": "Governed by an assembly mounting",
+      "voidTitle": "Void mounting",
+      "voidMessage": "Void this mounting? The fact is erased, not closed. This cannot be undone.",
+      "voidConfirm": "Void"
+    }
+  },
+  "maintenance": {
+    "bikeTab": {
+      "addButton": "Add task",
+      "deletedSuccess": "Maintenance task deleted",
+      "deleteTitle": "Delete maintenance task",
+      "deleteMessage": "Delete \"{{name}}\"? This also deletes its event history."
     }
   },
   "catalog": {

@@ -155,7 +155,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             <TextField
               {...field}
               select
-              label={t('components.fields.componentType')}
+              label={t('common.componentType')}
               required
               error={!!errors.componentTypeId}
               helperText={errors.componentTypeId?.message}
@@ -185,12 +185,12 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
         <Controller
           control={control}
           name="manufacturer"
-          render={({ field }) => <TextField {...field} label={t('components.fields.manufacturer')} />}
+          render={({ field }) => <TextField {...field} label={t('common.manufacturer')} />}
         />
         <Controller
           control={control}
           name="model"
-          render={({ field }) => <TextField {...field} label={t('components.fields.model')} />}
+          render={({ field }) => <TextField {...field} label={t('common.model')} />}
         />
         <Controller
           control={control}
@@ -209,7 +209,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             render={({ field }) => (
               <TextField
                 {...field}
-                label={t('components.fields.purchasePrice')}
+                label={t('common.purchasePrice')}
                 fullWidth
                 error={!!errors.price}
                 helperText={errors.price?.message}
@@ -222,7 +222,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
             render={({ field }) => (
               <TextField
                 {...field}
-                label={t('components.fields.currency')}
+                label={t('common.currency')}
                 sx={{ width: 130 }}
                 error={!!errors.priceCurrency}
                 helperText={errors.priceCurrency?.message}
@@ -235,7 +235,7 @@ export const ComponentForm = ({ open, onClose, initial }: ComponentFormProps) =>
           name="purchaseDate"
           render={({ field }) => (
             <DatePicker
-              label={t('components.fields.purchaseDate')}
+              label={t('common.purchaseDate')}
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}

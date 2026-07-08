@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Alert, Box, Button, Stack, Tab, Tabs } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { bikeQuery } from '@/api/bikes'
 import { mountingsQuery } from '@/api/mountings'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
@@ -14,6 +15,7 @@ import { BikeMaintenanceTab } from './BikeMaintenanceTab'
 import { bikeIdentity } from '@/utils/formatters'
 
 export const BikeDetail = () => {
+  const { t } = useTranslation()
   const { bikeId } = useParams<{ bikeId: string }>()
   const navigate = useNavigate()
   const { data: bike, isLoading } = useQuery({
@@ -39,17 +41,17 @@ export const BikeDetail = () => {
         size="small"
         sx={{ mb: 1 }}
       >
-        Back to bikes
+        {t('bikes.detail.backButton')}
       </Button>
 
       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Box sx={{ typography: 'h5' }}>
-          {bikeIdentity(bike) || (isLoading ? 'Loading…' : 'Bike')}
+          {bikeIdentity(bike) || (isLoading ? t('common.loading') : t('bikes.detail.fallbackTitle'))}
         </Box>
         {bike && (
           <Stack direction="row" spacing={1}>
             <Button variant="outlined" onClick={() => setEditOpen(true)}>
-              Edit
+              {t('bikes.detail.editButton')}
             </Button>
             <Button
               variant="outlined"
@@ -57,7 +59,7 @@ export const BikeDetail = () => {
               onClick={() => setRetireOpen(true)}
               disabled={!!bike.retiredAt}
             >
-              Retire
+              {t('bikes.detail.retireButton')}
             </Button>
           </Stack>
         )}
@@ -65,14 +67,14 @@ export const BikeDetail = () => {
 
       {bike?.retiredAt && (
         <Alert severity="warning" sx={{ mb: 2 }}>
-          Retired — no new tours or mountings.
+          {t('bikes.detail.retiredBanner')}
         </Alert>
       )}
 
       <Tabs value={tab} onChange={(_, v: number) => setTab(v)} sx={{ mb: 2 }}>
-        <Tab label="Composition" />
-        <Tab label="History" />
-        <Tab label="Maintenance" />
+        <Tab label={t('bikes.detail.compositionTab')} />
+        <Tab label={t('bikes.detail.historyTab')} />
+        <Tab label={t('bikes.detail.maintenanceTab')} />
       </Tabs>
 
       {tab === 0 && <CompositionTable bikeId={bikeId} />}

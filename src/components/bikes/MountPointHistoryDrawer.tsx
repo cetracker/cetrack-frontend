@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Box, Button, Drawer, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
@@ -26,6 +27,7 @@ export const MountPointHistoryDrawer = ({
   bikeId,
   mountPoint,
 }: MountPointHistoryDrawerProps) => {
+  const { t } = useTranslation()
   const [mountOtherOpen, setMountOtherOpen] = useState(false)
   const [reuseComponentId, setReuseComponentId] = useState<string | null>(null)
 
@@ -79,9 +81,9 @@ export const MountPointHistoryDrawer = ({
       >
         <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 1, mb: 1 }}>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            {mountPoint?.name ?? 'Mount point'}
+            {mountPoint?.name ?? t('bikes.mountPointHistory.fallbackTitle')}
           </Typography>
-          <IconButton onClick={onClose} aria-label="Close drawer">
+          <IconButton onClick={onClose} aria-label={t('components.detail.closeDrawer')}>
             <CloseIcon />
           </IconButton>
         </Stack>
@@ -95,13 +97,13 @@ export const MountPointHistoryDrawer = ({
               reuseComponentIds={reuseIds}
             />
           ) : (
-            <Typography color="text.secondary">Loading…</Typography>
+            <Typography color="text.secondary">{t('common.loading')}</Typography>
           )}
         </Box>
 
         <Stack sx={{ pt: 2 }}>
           <Button variant="outlined" onClick={() => setMountOtherOpen(true)} fullWidth>
-            Mount other component…
+            {t('bikes.mountPointHistory.mountOtherButton')}
           </Button>
         </Stack>
       </Box>

@@ -22,7 +22,16 @@
     "description": "Beschreibung",
     "created": "Erstellt",
     "deleteConfirmMessage": "\"{{name}}\" löschen? Dies kann nicht rückgängig gemacht werden.",
-    "loading": "Wird geladen…"
+    "loading": "Wird geladen…",
+    "manufacturer": "Hersteller",
+    "model": "Modell",
+    "purchaseDate": "Kaufdatum",
+    "purchasePrice": "Kaufpreis",
+    "currency": "Währung",
+    "componentType": "Komponententyp",
+    "type": "Typ",
+    "position": "Position",
+    "mandatory": "Pflicht"
   },
   "nav": {
     "components": "Komponenten",
@@ -83,20 +92,14 @@
   },
   "components": {
     "fields": {
-      "manufacturer": "Hersteller",
-      "model": "Modell",
       "serial": "Seriennummer",
       "serialNumber": "Seriennummer",
       "vendor": "Händler",
       "price": "Preis",
-      "purchasePrice": "Kaufpreis",
-      "currency": "Währung",
-      "purchaseDate": "Kaufdatum",
       "purchased": "Gekauft",
       "retiredDate": "Ausmusterungsdatum",
       "retired": "Ausgemustert",
       "firstUsed": "Erstmals verwendet",
-      "componentType": "Komponententyp",
       "label": "Bezeichnung"
     },
     "list": {
@@ -153,6 +156,100 @@
       "scrapped": "Verschrottet",
       "sold": "Verkauft",
       "successMessage": "Komponente ausgemustert"
+    }
+  },
+  "bikes": {
+    "list": {
+      "title": "Fahrräder",
+      "addButton": "Fahrrad hinzufügen",
+      "retireTooltip": "Ausmustern",
+      "deleteTitle": "Fahrrad löschen",
+      "deletedSuccess": "Fahrrad gelöscht"
+    },
+    "form": {
+      "addTitle": "Fahrrad hinzufügen",
+      "editTitle": "Fahrrad bearbeiten",
+      "nameOrModelRequired": "Name oder Modell erforderlich",
+      "createdSuccess": "Fahrrad erstellt",
+      "updatedSuccess": "Fahrrad aktualisiert"
+    },
+    "detail": {
+      "backButton": "Zurück zu Fahrrädern",
+      "fallbackTitle": "Fahrrad",
+      "editButton": "Bearbeiten",
+      "retireButton": "Ausmustern",
+      "retiredBanner": "Ausgemustert — keine neuen Touren oder Montagen.",
+      "compositionTab": "Zusammensetzung",
+      "historyTab": "Verlauf",
+      "maintenanceTab": "Wartung"
+    },
+    "mountPoint": {
+      "addTitle": "Montagepunkt hinzufügen",
+      "editTitle": "Montagepunkt bearbeiten",
+      "positionLabel": "Position",
+      "noneOption": "(keine)",
+      "mandatoryLabel": "Pflicht (Fahrrad kann ohne diesen Montagepunkt nicht gefahren werden)",
+      "createdSuccess": "Montagepunkt hinzugefügt",
+      "updatedSuccess": "Montagepunkt aktualisiert"
+    },
+    "composition": {
+      "addButton": "Montagepunkt hinzufügen",
+      "empty": "Noch keine Montagepunkte.",
+      "deletedSuccess": "Montagepunkt gelöscht",
+      "deleteTitle": "Montagepunkt löschen",
+      "swapTooltip": "Tauschen",
+      "sincePrefix": "seit {{date}}"
+    },
+    "compositionAtDate": {
+      "title": "Zusammensetzung zum Zeitpunkt",
+      "atLabel": "Zusammensetzung am"
+    },
+    "mountDialog": {
+      "titleWithPoint": "An {{name}} montieren",
+      "componentLabel": "Komponente",
+      "includeMountedLabel": "Aktuell montierte einbeziehen (Tausch)"
+    },
+    "mountPointHistory": {
+      "fallbackTitle": "Montagepunkt",
+      "mountOtherButton": "Andere Komponente montieren…"
+    },
+    "reuseMount": {
+      "title": "{{name}} erneut montieren",
+      "dismountWarning": "Durch die Montage wird {{name}} demontiert."
+    },
+    "retire": {
+      "title": "Fahrrad ausmustern",
+      "atLabel": "Ausgemustert am",
+      "successMessage": "Fahrrad ausgemustert"
+    }
+  },
+  "mountings": {
+    "correct": {
+      "title": "Montage korrigieren",
+      "reopenLabel": "Wieder öffnen (Demontagezeit löschen, wieder aktiv machen)",
+      "successMessage": "Montage korrigiert"
+    },
+    "history": {
+      "voidedSuccess": "Montage aufgehoben",
+      "empty": "Noch keine Montagen.",
+      "mountPointHeader": "Montagepunkt",
+      "dismountedHeader": "Demontiert",
+      "activeChip": "aktiv",
+      "reuseTooltip": "Wiederverwenden",
+      "correctTooltip": "Korrigieren",
+      "voidTooltip": "Aufheben",
+      "governedTooltip": "Wird von einer Baugruppenmontage verwaltet",
+      "voidTitle": "Montage aufheben",
+      "voidMessage": "Diese Montage aufheben? Der Vorgang wird gelöscht, nicht beendet. Dies kann nicht rückgängig gemacht werden.",
+      "voidConfirm": "Aufheben"
+    }
+  },
+  "maintenance": {
+    "bikeTab": {
+      "addButton": "Aufgabe hinzufügen",
+      "deletedSuccess": "Wartungsaufgabe gelöscht",
+      "deleteTitle": "Wartungsaufgabe löschen",
+      "deleteMessage": "\"{{name}}\" löschen? Dies löscht auch die Ereignishistorie."
     }
   },
   "catalog": {

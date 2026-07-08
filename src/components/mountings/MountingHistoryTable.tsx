@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import EditIcon from '@mui/icons-material/Edit'
 import CachedIcon from '@mui/icons-material/Cached'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { invalidateAfterMountingChanges, voidMounting } from '@/api/mountings'
@@ -37,6 +38,7 @@ export const MountingHistoryTable = ({
   onReuse,
   reuseComponentIds,
 }: MountingHistoryTableProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const { data: bikes } = useQuery(bikesQuery())
   const { data: components } = useQuery(componentsQuery())
@@ -44,7 +46,7 @@ export const MountingHistoryTable = ({
   const [toCorrect, setToCorrect] = useState<Mounting | null>(null)
 
   const voidMut = useApiMutation(voidMounting, {
-    successMessage: 'Mounting voided',
+    successMessage: t('mountings.history.voidedSuccess'),
     onSuccess: async () => {
       await invalidateAfterMountingChanges(qc)
       setToVoid(null)
@@ -67,7 +69,7 @@ export const MountingHistoryTable = ({
   if (sorted.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ py: 2 }}>
-        No mountings yet.
+        {t('mountings.history.empty')}
       </Typography>
     )
   }
@@ -78,9 +80,13 @@ export const MountingHistoryTable = ({
         <TableHead>
           <TableRow>
             {onReuse && <TableCell />}
-            <TableCell>{perspective === 'component' ? 'Mount Point' : 'Component'}</TableCell>
-            <TableCell>Mounted</TableCell>
-            <TableCell>Dismounted</TableCell>
+            <TableCell>
+              {perspective === 'component'
+                ? t('mountings.history.mountPointHeader')
+                : t('components.list.columns.component')}
+            </TableCell>
+            <TableCell>{t('status.mounted')}</TableCell>
+            <TableCell>{t('mountings.history.dismountedHeader')}</TableCell>
             <TableCell align="right" />
           </TableRow>
         </TableHead>
@@ -95,7 +101,7 @@ export const MountingHistoryTable = ({
                 {onReuse && (
                   <TableCell>
                     {showReuse && (
-                      <Tooltip title="Re-use">
+                      <Tooltip title={t('mountings.history.reuseTooltip')}>
                         <IconButton size="small" onClick={() => onReuse(m.componentId)}>
                           <CachedIcon fontSize="small" />
                         </IconButton>
@@ -109,12 +115,12 @@ export const MountingHistoryTable = ({
                   {m.dismountedAt ? (
                     formatDateTime(m.dismountedAt)
                   ) : (
-                    <Chip label="active" color="success" size="small" />
+                    <Chip label={t('mountings.history.activeChip')} color="success" size="small" />
                   )}
                 </TableCell>
                 <TableCell align="right">
                   <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-                    <Tooltip title={locked ? 'Governed by an assembly mounting' : 'Correct'}>
+                    <Tooltip title={locked ? t('mountings.history.governedTooltip') : t('mountings.history.correctTooltip')}>
                       <span>
                         <IconButton
                           size="small"
@@ -125,7 +131,7 @@ export const MountingHistoryTable = ({
                         </IconButton>
                       </span>
                     </Tooltip>
-                    <Tooltip title={locked ? 'Governed by an assembly mounting' : 'Void'}>
+                    <Tooltip title={locked ? t('mountings.history.governedTooltip') : t('mountings.history.voidTooltip')}>
                       <span>
                         <IconButton
                           size="small"
@@ -147,11 +153,11 @@ export const MountingHistoryTable = ({
 
       <ConfirmDialog
         open={!!toVoid}
-        title="Void mounting"
-        message="Void this mounting? The fact is erased, not closed. This cannot be undone."
+        title={t('mountings.history.voidTitle')}
+        message={t('mountings.history.voidMessage')}
         onCancel={() => setToVoid(null)}
         onConfirm={() => toVoid && voidMut.mutate(toVoid.id)}
-        confirmLabel="Void"
+        confirmLabel={t('mountings.history.voidConfirm')}
         destructive
         busy={voidMut.isPending}
       />

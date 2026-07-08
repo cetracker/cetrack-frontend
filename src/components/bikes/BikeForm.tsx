@@ -1,37 +1,40 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Stack, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format, parseISO } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { createBike, updateBike, bikesQueryKey } from '@/api/bikes'
 import type { Bike, BikeInput } from '@/types/api'
 import { useQueryClient } from '@tanstack/react-query'
 
-const schema = z
-  .object({
-    name: z.string(),
-    manufacturer: z.string(),
-    model: z.string(),
-    purchaseDate: z.date().nullable(),
-    price: z
-      .string()
-      .regex(/^\d+(\.\d+)?$/, 'Use a decimal like 10.57')
-      .or(z.literal('')),
-    priceCurrency: z
-      .string()
-      .regex(/^[A-Z]{3}$/, 'ISO 4217 code, e.g. EUR')
-      .or(z.literal('')),
-  })
-  .refine((v) => v.name.trim() || v.model.trim(), {
-    message: 'Name or model required',
-    path: ['name'],
-  })
+const buildSchema = (t: TFunction) =>
+  z
+    .object({
+      name: z.string(),
+      manufacturer: z.string(),
+      model: z.string(),
+      purchaseDate: z.date().nullable(),
+      price: z
+        .string()
+        .regex(/^\d+(\.\d+)?$/, t('validation.priceFormat'))
+        .or(z.literal('')),
+      priceCurrency: z
+        .string()
+        .regex(/^[A-Z]{3}$/, t('validation.currencyFormat'))
+        .or(z.literal('')),
+    })
+    .refine((v) => v.name.trim() || v.model.trim(), {
+      message: t('bikes.form.nameOrModelRequired'),
+      path: ['name'],
+    })
 
-export type BikeFormValues = z.infer<typeof schema>
+export type BikeFormValues = z.infer<ReturnType<typeof buildSchema>>
 
 const toISODate = (d: Date | null) => (d ? format(d, 'yyyy-MM-dd') : undefined)
 const fromISODate = (s: string | null | undefined) => (s ? parseISO(s) : null)
@@ -44,7 +47,9 @@ interface BikeFormProps {
 }
 
 export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
+  const schema = useMemo(() => buildSchema(t), [t])
 
   const {
     control,
@@ -79,7 +84,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   const invalidate = async () => qc.invalidateQueries({ queryKey: bikesQueryKey })
 
   const createMut = useApiMutation(createBike, {
-    successMessage: 'Bike created',
+    successMessage: t('bikes.form.createdSuccess'),
     onSuccess: () => {
       invalidate()
       onClose()
@@ -89,7 +94,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   const updateMut = useApiMutation(
     (v: { id: string; bike: BikeInput }) => updateBike(v.id, v.bike),
     {
-      successMessage: 'Bike updated',
+      successMessage: t('bikes.form.updatedSuccess'),
       onSuccess: () => {
         invalidate()
         onClose()
@@ -118,7 +123,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
   return (
     <FormDialog
       open={open}
-      title={initial ? 'Edit Bike' : 'Add Bike'}
+      title={initial ? t('bikes.form.editTitle') : t('bikes.form.addTitle')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={submitting}
@@ -130,9 +135,9 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
           render={({ field }) => (
             <TextField
               {...field}
-              label="Name"
+              label={t('common.name')}
               error={!!errors.name}
-              helperText={errors.name?.message ?? 'Name or model required'}
+              helperText={errors.name?.message ?? t('bikes.form.nameOrModelRequired')}
               autoFocus
             />
           )}
@@ -140,19 +145,19 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
         <Controller
           control={control}
           name="manufacturer"
-          render={({ field }) => <TextField {...field} label="Manufacturer" />}
+          render={({ field }) => <TextField {...field} label={t('common.manufacturer')} />}
         />
         <Controller
           control={control}
           name="model"
-          render={({ field }) => <TextField {...field} label="Model" />}
+          render={({ field }) => <TextField {...field} label={t('common.model')} />}
         />
         <Controller
           control={control}
           name="purchaseDate"
           render={({ field }) => (
             <DatePicker
-              label="Purchase Date"
+              label={t('common.purchaseDate')}
               displayWeekNumber
               value={field.value}
               onChange={field.onChange}
@@ -167,7 +172,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Purchase Price"
+                label={t('common.purchasePrice')}
                 fullWidth
                 error={!!errors.price}
                 helperText={errors.price?.message}
@@ -180,7 +185,7 @@ export const BikeForm = ({ open, onClose, initial }: BikeFormProps) => {
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Currency"
+                label={t('common.currency')}
                 sx={{ width: 130 }}
                 error={!!errors.priceCurrency}
                 helperText={errors.priceCurrency?.message}

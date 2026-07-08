@@ -14,6 +14,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { mountPointsQuery } from '@/api/bikes'
 import { componentTypesQuery, positionsQuery } from '@/api/catalog'
 import { componentsQuery } from '@/api/components'
@@ -26,6 +27,7 @@ interface BikeCompositionAtDateProps {
 }
 
 export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) => {
+  const { t } = useTranslation()
   const [at, setAt] = useState<Date | null>(new Date())
   const activeAt = at ? withLocalOffset(at) : undefined
 
@@ -47,12 +49,12 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
   return (
     <Accordion defaultExpanded disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography>Composition snapshot</Typography>
+        <Typography>{t('bikes.compositionAtDate.title')}</Typography>
       </AccordionSummary>
       <AccordionDetails>
       <Stack sx={{ mb: 1, alignItems: 'flex-start' }}>
         <DateTimePicker
-          label="Composition at"
+          label={t('bikes.compositionAtDate.atLabel')}
           value={at}
           onChange={setAt}
           slotProps={{ textField: { size: 'small' } }}
@@ -62,16 +64,16 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
       {at && (
         rows.length === 0 ? (
           <Typography color="text.secondary" sx={{ py: 2 }}>
-            No mount points yet.
+            {t('bikes.composition.empty')}
           </Typography>
         ) : (
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Position</TableCell>
-                <TableCell>Component</TableCell>
+                <TableCell>{t('common.name')}</TableCell>
+                <TableCell>{t('common.type')}</TableCell>
+                <TableCell>{t('common.position')}</TableCell>
+                <TableCell>{t('components.list.columns.component')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -88,7 +90,7 @@ export const BikeCompositionAtDate = ({ bikeId }: BikeCompositionAtDateProps) =>
                         <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
                           <ComponentInfoCell component={component} />
                           <Typography component="span" variant="caption" color="text.secondary">
-                            since {formatDateTime(mounting.mountedAt)}
+                            {t('bikes.composition.sincePrefix', { date: formatDateTime(mounting.mountedAt) })}
                           </Typography>
                         </Stack>
                       ) : (

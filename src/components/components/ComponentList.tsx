@@ -74,7 +74,7 @@ const buildColumns = (
   },
   {
     accessorKey: 'purchaseDate',
-    header: t('components.fields.purchaseDate'),
+    header: t('common.purchaseDate'),
     cell: (c) => formatDate(c.getValue<string | null>()),
     meta: { hideOnMobile: true },
   },

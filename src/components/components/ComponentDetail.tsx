@@ -93,8 +93,8 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           <Box sx={{ mb: 2 }}>
             {(
               [
-                [t('components.fields.manufacturer'), component.manufacturer ?? ''],
-                [t('components.fields.model'), component.model ?? ''],
+                [t('common.manufacturer'), component.manufacturer ?? ''],
+                [t('common.model'), component.model ?? ''],
                 [t('components.fields.serial'), component.serialNumber ?? ''],
                 [t('components.fields.vendor'), component.vendor ?? ''],
                 [

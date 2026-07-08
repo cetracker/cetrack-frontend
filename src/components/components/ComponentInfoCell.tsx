@@ -11,8 +11,8 @@ export const ComponentInfoCell = ({ component }: { component: Component }) => {
     : ''
   const details: [string, string][] = (
     [
-      [t('components.fields.manufacturer'), component.manufacturer ?? ''],
-      [t('components.fields.model'), component.model ?? ''],
+      [t('common.manufacturer'), component.manufacturer ?? ''],
+      [t('common.model'), component.model ?? ''],
       [t('components.fields.serial'), component.serialNumber ?? ''],
       [t('components.fields.vendor'), component.vendor ?? ''],
       [t('components.fields.price'), price],

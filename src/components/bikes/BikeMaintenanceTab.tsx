@@ -3,6 +3,7 @@ import { Box, Button, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { deleteMaintenanceTask, invalidateMaintenance, maintenanceTasksQuery } from '@/api/maintenance'
 import { bikesQuery } from '@/api/bikes'
 import type { MaintenanceTask } from '@/types/api'
@@ -18,6 +19,7 @@ interface BikeMaintenanceTabProps {
 }
 
 export const BikeMaintenanceTab = ({ bikeId }: BikeMaintenanceTabProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   const { data, isLoading, error, refetch } = useQuery(maintenanceTasksQuery({ bikeId }))
@@ -29,7 +31,7 @@ export const BikeMaintenanceTab = ({ bikeId }: BikeMaintenanceTabProps) => {
   const [toDelete, setToDelete] = useState<MaintenanceTask | null>(null)
 
   const deleteMut = useApiMutation(deleteMaintenanceTask, {
-    successMessage: 'Maintenance task deleted',
+    successMessage: t('maintenance.bikeTab.deletedSuccess'),
     onSuccess: async () => {
       await invalidateMaintenance(qc)
       setToDelete(null)
@@ -63,7 +65,7 @@ export const BikeMaintenanceTab = ({ bikeId }: BikeMaintenanceTabProps) => {
             setFormOpen(true)
           }}
         >
-          Add task
+          {t('maintenance.bikeTab.addButton')}
         </Button>
       </Stack>
 
@@ -86,11 +88,11 @@ export const BikeMaintenanceTab = ({ bikeId }: BikeMaintenanceTabProps) => {
 
       <ConfirmDialog
         open={!!toDelete}
-        title="Delete maintenance task"
-        message={toDelete ? `Delete "${toDelete.name}"? This also deletes its event history.` : ''}
+        title={t('maintenance.bikeTab.deleteTitle')}
+        message={toDelete ? t('maintenance.bikeTab.deleteMessage', { name: toDelete.name }) : ''}
         onCancel={() => setToDelete(null)}
         onConfirm={() => toDelete && deleteMut.mutate(toDelete.id)}
-        confirmLabel="Delete"
+        confirmLabel={t('common.delete')}
         destructive
         busy={deleteMut.isPending}
       />

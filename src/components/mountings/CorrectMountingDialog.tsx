@@ -3,6 +3,7 @@ import { Checkbox, FormControlLabel, Stack } from '@mui/material'
 import { DateTimePicker } from '@mui/x-date-pickers'
 import { Controller, useForm } from 'react-hook-form'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import { correctMounting, invalidateAfterMountingChanges } from '@/api/mountings'
@@ -23,6 +24,7 @@ interface CorrectMountingDialogProps {
 }
 
 export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMountingDialogProps) => {
+  const { t } = useTranslation()
   const qc = useQueryClient()
 
   const {
@@ -51,7 +53,7 @@ export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMounti
     (body: ReturnType<typeof buildCorrectMountingBody>) =>
       correctMounting(mounting!.id, body),
     {
-      successMessage: 'Mounting corrected',
+      successMessage: t('mountings.correct.successMessage'),
       onSuccess: async () => {
         await invalidateAfterMountingChanges(qc)
         onClose()
@@ -74,7 +76,7 @@ export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMounti
   return (
     <FormDialog
       open={open}
-      title="Correct mounting"
+      title={t('mountings.correct.title')}
       onCancel={onClose}
       onSubmit={submit}
       submitting={correctMut.isPending}
@@ -85,7 +87,7 @@ export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMounti
           name="mountedAt"
           render={({ field }) => (
             <DateTimePicker
-              label="Mounted at"
+              label={t('components.mount.atLabel')}
               value={field.value}
               onChange={field.onChange}
               slotProps={{ textField: { fullWidth: true } }}
@@ -97,7 +99,7 @@ export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMounti
           name="dismountedAt"
           render={({ field }) => (
             <DateTimePicker
-              label="Dismounted at"
+              label={t('components.dismount.atLabel')}
               value={field.value}
               onChange={field.onChange}
               disabled={reopen}
@@ -117,7 +119,7 @@ export const CorrectMountingDialog = ({ open, onClose, mounting }: CorrectMounti
                     onChange={(e) => field.onChange(e.target.checked)}
                   />
                 }
-                label="Re-open (clear dismount time, make active again)"
+                label={t('mountings.correct.reopenLabel')}
               />
             )}
           />
