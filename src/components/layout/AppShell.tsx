@@ -23,6 +23,7 @@ import { Link as RouterLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { pendingMyTourbookSessionQuery } from '@/api/tours'
 import { NavList } from './NavList'
+import { MaintenanceDueIndicator } from './MaintenanceDueIndicator'
 import { VersionInfo } from './VersionInfo'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { FormatSwitcher } from './FormatSwitcher'
@@ -106,6 +107,7 @@ export const AppShell = () => {
             {t('appShell.title')}
           </Typography>
           <ImportAttentionIndicator />
+          <MaintenanceDueIndicator />
           <LanguageSwitcher />
           <FormatSwitcher />
           <Tooltip title={mode === 'dark' ? t('appShell.lightMode') : t('appShell.darkMode')}>

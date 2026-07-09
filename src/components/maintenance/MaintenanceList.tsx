@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Box, Button, Checkbox, FormControlLabel, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { SortingState } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,8 @@ export const MaintenanceList = () => {
   const qc = useQueryClient()
   const navigate = useNavigate()
   const [bikeFilter, setBikeFilter] = useState<string | null>(null)
-  const [dueOnly, setDueOnly] = useState(false)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const dueOnly = searchParams.get('due') === '1'
 
   const filters: MaintenanceTasksFilters = {
     ...(bikeFilter && { bikeId: bikeFilter }),
@@ -94,7 +95,14 @@ export const MaintenanceList = () => {
           sx={{ maxWidth: 260 }}
         />
         <FormControlLabel
-          control={<Checkbox checked={dueOnly} onChange={(e) => setDueOnly(e.target.checked)} />}
+          control={
+            <Checkbox
+              checked={dueOnly}
+              onChange={(e) =>
+                setSearchParams(e.target.checked ? { due: '1' } : {}, { replace: true })
+              }
+            />
+          }
           label={t('maintenance.list.dueOnlyLabel')}
         />
       </Stack>
