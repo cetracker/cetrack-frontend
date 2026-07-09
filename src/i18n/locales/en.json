@@ -342,7 +342,8 @@
       "deletedSuccess": "Mount point deleted",
       "deleteTitle": "Delete mount point",
       "swapTooltip": "Swap",
-      "sincePrefix": "since {{date}}"
+      "sincePrefix": "since {{date}}",
+      "mandatoryEmptyTooltip": "Mandatory mount point is empty"
     },
     "compositionAtDate": {
       "title": "Composition snapshot",

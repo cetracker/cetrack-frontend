@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   Box,
   Button,
-  Checkbox,
   IconButton,
   Stack,
   Table,
@@ -18,6 +17,8 @@ import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
 import LinkOffIcon from '@mui/icons-material/LinkOff'
+import WarningAmberIcon from '@mui/icons-material/WarningAmber'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -74,6 +75,7 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
   )
 
   const rows = (mountPoints ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))
+  const mountingsLoaded = activeMountings !== undefined
 
   return (
     <Box>
@@ -112,13 +114,30 @@ export const CompositionTable = ({ bikeId }: CompositionTableProps) => {
                 (activeMountings ?? []).filter((m) => m.mountPointId === mp.id),
               )
               const mountedComponent = active ? componentById.get(active.componentId) : undefined
+              const isMounted = !!active
               return (
                 <TableRow key={mp.id}>
                   <TableCell>{mp.name}</TableCell>
                   <TableCell>{typeNameById.get(mp.componentTypeId) ?? ''}</TableCell>
                   <TableCell>{mp.positionId ? positionNameById.get(mp.positionId) ?? '' : ''}</TableCell>
                   <TableCell>
-                    <Checkbox checked={mp.mandatory} disabled size="small" sx={{ p: 0 }} />
+                    {mp.mandatory && mountingsLoaded && (
+                      isMounted ? (
+                        <CheckBoxIcon
+                          fontSize="small"
+                          sx={{ color: 'text.disabled' }}
+                          titleAccess={t('common.mandatory')}
+                        />
+                      ) : (
+                        <Tooltip title={t('bikes.composition.mandatoryEmptyTooltip')}>
+                          <WarningAmberIcon
+                            color="warning"
+                            fontSize="small"
+                            titleAccess={t('bikes.composition.mandatoryEmptyTooltip')}
+                          />
+                        </Tooltip>
+                      )
+                    )}
                   </TableCell>
                   <TableCell>
                     {active && mountedComponent ? (

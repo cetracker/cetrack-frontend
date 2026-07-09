@@ -342,7 +342,8 @@
       "deletedSuccess": "Montagepunkt gelöscht",
       "deleteTitle": "Montagepunkt löschen",
       "swapTooltip": "Tauschen",
-      "sincePrefix": "seit {{date}}"
+      "sincePrefix": "seit {{date}}",
+      "mandatoryEmptyTooltip": "Pflicht-Montagepunkt ist nicht belegt"
     },
     "compositionAtDate": {
       "title": "Zusammensetzung zum Zeitpunkt",
