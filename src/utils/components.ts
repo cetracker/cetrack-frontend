@@ -4,6 +4,7 @@ import type {
   AssemblyMembership,
   Component,
   ComponentStatus,
+  CorrectAssemblyMountingRequest,
   CorrectMembershipRequest,
   CorrectMountingRequest,
   Mounting,
@@ -136,6 +137,33 @@ export const buildCorrectMembershipBody = ({
     body.memberTo = null
   } else if (memberTo !== undefined) {
     body.memberTo = memberTo
+  }
+  return body
+}
+
+interface CorrectAssemblyMountingBodyInput {
+  mountedAt?: string
+  dismountedAt?: string
+  reopen?: boolean
+}
+
+/**
+ * Builds the tri-state CorrectAssemblyMountingRequest body: only changed fields
+ * are present in the result (an omitted key means "keep current value" server-side).
+ * `reopen` wins over `dismountedAt` and serializes an explicit `dismountedAt: null`
+ * to re-open the assembly mounting.
+ */
+export const buildCorrectAssemblyMountingBody = ({
+  mountedAt,
+  dismountedAt,
+  reopen,
+}: CorrectAssemblyMountingBodyInput): CorrectAssemblyMountingRequest => {
+  const body: CorrectAssemblyMountingRequest = {}
+  if (mountedAt !== undefined) body.mountedAt = mountedAt
+  if (reopen) {
+    body.dismountedAt = null
+  } else if (dismountedAt !== undefined) {
+    body.dismountedAt = dismountedAt
   }
   return body
 }

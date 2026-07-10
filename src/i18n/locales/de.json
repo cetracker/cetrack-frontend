@@ -500,7 +500,18 @@
       "deletedSuccess": "Platz gelöscht"
     },
     "mountingHistory": {
-      "empty": "Noch kein Montageverlauf."
+      "empty": "Noch kein Montageverlauf.",
+      "correctTooltip": "Korrigieren",
+      "voidTooltip": "Aufheben",
+      "voidTitle": "Baugruppen-Montage aufheben",
+      "voidMessage": "Diese Baugruppen-Montage aufheben? Von ihr erstellte verwaltete Montagen werden gelöscht; von einer bereits bestehenden direkten Montage übernommene werden stattdessen freigegeben. Dies kann nicht rückgängig gemacht werden.",
+      "voidConfirm": "Aufheben",
+      "voidedSuccess": "Baugruppen-Montage aufgehoben",
+      "correct": {
+        "title": "Baugruppen-Montage korrigieren",
+        "reopenLabel": "Wieder öffnen (Demontage-Zeit löschen, wieder aktiv machen)",
+        "successMessage": "Baugruppen-Montage korrigiert"
+      }
     },
     "membershipHistory": {
       "empty": "Noch keine Mitglieder.",
@@ -510,7 +521,7 @@
       "voidTooltip": "Aufheben",
       "activeVoidBlockedTooltip": "Aktive Mitgliedschaft - stattdessen Mitglied entfernen verwenden",
       "voidTitle": "Mitgliedschaft aufheben",
-      "voidMessage": "Diese Mitgliedschaft aufheben? Eine damit vollständig zusammenfallende Montage wird ebenfalls gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "voidMessage": "Diese Mitgliedschaft aufheben? Eine von ihr erstellte verwaltete Montage wird gelöscht; eine von einer bereits bestehenden direkten Montage übernommene wird stattdessen freigegeben. Dies kann nicht rückgängig gemacht werden.",
       "voidConfirm": "Aufheben",
       "voidedSuccess": "Mitgliedschaft aufgehoben",
       "correct": {

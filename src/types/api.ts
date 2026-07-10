@@ -326,6 +326,12 @@ export interface AssemblyMounting {
   createdAt?: ISODateTime
 }
 
+export interface CorrectAssemblyMountingRequest {
+  mountedAt?: ISODateTime
+  // tri-state: value sets, key absent keeps, explicit null re-opens
+  dismountedAt?: ISODateTime | null
+}
+
 export interface AssemblyMembership {
   id: UUID
   componentId: UUID

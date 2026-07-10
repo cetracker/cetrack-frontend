@@ -10,6 +10,7 @@ import type {
   AssemblyMountResult,
   AssemblySlot,
   AssemblySlotInput,
+  CorrectAssemblyMountingRequest,
   DismountAssemblyRequest,
   MountAssemblyRequest,
   MountingChanges,
@@ -151,6 +152,27 @@ export const dismountAssembly = async (
     body,
   )
   return res.data
+}
+
+// caller controls key presence — only fields that changed should be present;
+// see utils/components.ts#buildCorrectAssemblyMountingBody
+export const correctAssemblyMounting = async (
+  assemblyId: string,
+  mountingId: string,
+  body: CorrectAssemblyMountingRequest,
+): Promise<AssemblyMounting> => {
+  const res = await client.post<AssemblyMounting>(
+    `/assemblies/${assemblyId}/mountings/${mountingId}/action/correct`,
+    body,
+  )
+  return res.data
+}
+
+export const voidAssemblyMounting = async (
+  assemblyId: string,
+  mountingId: string,
+): Promise<void> => {
+  await client.post(`/assemblies/${assemblyId}/mountings/${mountingId}/action/void`)
 }
 
 /**

@@ -500,7 +500,18 @@
       "deletedSuccess": "Slot deleted"
     },
     "mountingHistory": {
-      "empty": "No mounting history yet."
+      "empty": "No mounting history yet.",
+      "correctTooltip": "Correct",
+      "voidTooltip": "Void",
+      "voidTitle": "Void assembly mounting",
+      "voidMessage": "Void this assembly mounting? Governed mountings it created are deleted; ones it adopted from a pre-existing direct mounting are freed instead. This cannot be undone.",
+      "voidConfirm": "Void",
+      "voidedSuccess": "Assembly mounting voided",
+      "correct": {
+        "title": "Correct assembly mounting",
+        "reopenLabel": "Re-open (clear dismounted-at time, make active again)",
+        "successMessage": "Assembly mounting corrected"
+      }
     },
     "membershipHistory": {
       "empty": "No members yet.",
@@ -510,7 +521,7 @@
       "voidTooltip": "Void",
       "activeVoidBlockedTooltip": "Active membership - use Remove member instead",
       "voidTitle": "Void membership",
-      "voidMessage": "Void this membership? Any governed mounting fully coincident with it is deleted too. This cannot be undone.",
+      "voidMessage": "Void this membership? A governed mounting it created is deleted; one adopted from a pre-existing direct mounting is freed instead. This cannot be undone.",
       "voidConfirm": "Void",
       "voidedSuccess": "Membership voided",
       "correct": {
