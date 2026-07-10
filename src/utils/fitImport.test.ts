@@ -1,6 +1,7 @@
 // Pin timezone so local-time assertions are deterministic across environments.
 // The implementation uses getHours() etc. (local time), so in CEST (UTC+2)
 // "2026-06-27T03:00:57Z" would display as "2026-06-27 05:00:57".
+// eslint-disable-next-line no-undef -- Node global available under vitest
 process.env.TZ = 'UTC'
 
 import { describe, expect, it } from 'vitest'

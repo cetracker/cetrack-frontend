@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Alert,
   Box,
@@ -220,13 +220,13 @@ export const MyTourbookImportReview = () => {
   const [driftDismissed, setDriftDismissed] = useState(false)
   const [supersededNotice, setSupersededNotice] = useState(false)
 
-  useEffect(() => {
-    if (session) {
-      setCheckedMtTourIds(new Set(session.candidates.map((c) => c.mtTourId)))
-      setResolutionsByMtTourId({})
-      setDriftDismissed(false)
-    }
-  }, [session?.sessionId])
+  const [loadedSessionId, setLoadedSessionId] = useState<string | undefined>(undefined)
+  if (session && session.sessionId !== loadedSessionId) {
+    setLoadedSessionId(session.sessionId)
+    setCheckedMtTourIds(new Set(session.candidates.map((c) => c.mtTourId)))
+    setResolutionsByMtTourId({})
+    setDriftDismissed(false)
+  }
 
   const commitMutation = useApiMutation<void, CommitImportRequest>(
     (body) => commitMyTourbookImport(session!.sessionId, body),
