@@ -32,10 +32,10 @@ export const assembliesQuery = () => ({
   },
 })
 
-export const assemblyQuery = (id: string) => ({
-  queryKey: assemblyQueryKey(id),
+export const assemblyQuery = (id: string, at?: string) => ({
+  queryKey: at ? ([...assemblyQueryKey(id), { at }] as const) : assemblyQueryKey(id),
   queryFn: async (): Promise<Assembly> => {
-    const res = await client.get<Assembly>(`/assemblies/${id}`)
+    const res = await client.get<Assembly>(`/assemblies/${id}`, { params: at ? { at } : undefined })
     return res.data
   },
 })

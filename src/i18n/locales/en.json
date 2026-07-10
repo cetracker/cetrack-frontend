@@ -477,6 +477,12 @@
       "slotsTab": "Slots & Members",
       "historyTab": "Mounting History"
     },
+    "membershipSnapshot": {
+      "title": "Membership snapshot",
+      "atLabel": "Membership at",
+      "sincePrefix": "since {{date}}",
+      "empty": "No slots yet."
+    },
     "slot": {
       "addTitle": "Add Slot",
       "editTitle": "Edit Slot",

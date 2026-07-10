@@ -477,6 +477,12 @@
       "slotsTab": "Plätze & Mitglieder",
       "historyTab": "Montageverlauf"
     },
+    "membershipSnapshot": {
+      "title": "Mitgliedschafts-Schnappschuss",
+      "atLabel": "Mitgliedschaft am",
+      "sincePrefix": "seit {{date}}",
+      "empty": "Noch keine Plätze."
+    },
     "slot": {
       "addTitle": "Platz hinzufügen",
       "editTitle": "Platz bearbeiten",

@@ -9,6 +9,7 @@ import { positionsQuery } from '@/api/catalog'
 import { AssemblyForm } from './AssemblyForm'
 import { AssemblySlotsTable } from './AssemblySlotsTable'
 import { AssemblyMountingHistoryTable } from './AssemblyMountingHistoryTable'
+import { AssemblyMembershipSnapshot } from './AssemblyMembershipSnapshot'
 import { MountAssemblyDialog } from './MountAssemblyDialog'
 import { DismountAssemblyDialog } from './DismountAssemblyDialog'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
@@ -112,7 +113,10 @@ export const AssemblyDetail = () => {
         (tab === 0 ? (
           <AssemblySlotsTable assembly={assembly} />
         ) : (
-          <AssemblyMountingHistoryTable assemblyId={assemblyId} />
+          <>
+            <AssemblyMembershipSnapshot assemblyId={assemblyId} />
+            <AssemblyMountingHistoryTable assemblyId={assemblyId} />
+          </>
         ))}
 
       {assembly && (
