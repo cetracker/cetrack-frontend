@@ -386,7 +386,7 @@
       "reuseTooltip": "Re-use",
       "correctTooltip": "Correct",
       "voidTooltip": "Void",
-      "governedTooltip": "Governed by an assembly mounting",
+      "governedTooltip": "Correct it in the assembly slot member history instead",
       "voidTitle": "Void mounting",
       "voidMessage": "Void this mounting? The fact is erased, not closed. This cannot be undone.",
       "voidConfirm": "Void"
@@ -505,7 +505,19 @@
     "membershipHistory": {
       "empty": "No members yet.",
       "fromHeader": "From",
-      "toHeader": "To"
+      "toHeader": "To",
+      "correctTooltip": "Correct",
+      "voidTooltip": "Void",
+      "activeVoidBlockedTooltip": "Active membership - use Remove member instead",
+      "voidTitle": "Void membership",
+      "voidMessage": "Void this membership? Any governed mounting fully coincident with it is deleted too. This cannot be undone.",
+      "voidConfirm": "Void",
+      "voidedSuccess": "Membership voided",
+      "correct": {
+        "title": "Correct membership",
+        "reopenLabel": "Re-open (clear member-to time, make active again)",
+        "successMessage": "Membership corrected"
+      }
     },
     "mount": {
       "title": "Mount {{name}}",

@@ -1,14 +1,17 @@
 import { useMemo, useState } from 'react'
 import { Box, Button, Drawer, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
-import { membershipsQuery } from '@/api/memberships'
+import { invalidateAfterMembershipChanges, membershipsQuery, voidMembership } from '@/api/memberships'
+import { useApiMutation } from '@/hooks/useApiMutation'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { MembershipHistoryTable } from './MembershipHistoryTable'
+import { CorrectMembershipDialog } from './CorrectMembershipDialog'
 import { AddMemberDialog } from './AddMemberDialog'
 import { ReuseMemberDialog } from './ReuseMemberDialog'
-import type { Assembly, AssemblySlot } from '@/types/api'
+import type { Assembly, AssemblyMembership, AssemblySlot } from '@/types/api'
 import { componentIdentity } from '@/utils/formatters'
 import { isComponentRetired, reuseCandidateMemberComponentIds } from '@/utils/components'
 
@@ -30,8 +33,19 @@ export const SlotMemberHistoryDrawer = ({
   slot,
 }: SlotMemberHistoryDrawerProps) => {
   const { t } = useTranslation()
+  const qc = useQueryClient()
   const [addOtherOpen, setAddOtherOpen] = useState(false)
   const [reuseComponentId, setReuseComponentId] = useState<string | null>(null)
+  const [toCorrect, setToCorrect] = useState<AssemblyMembership | null>(null)
+  const [toVoid, setToVoid] = useState<AssemblyMembership | null>(null)
+
+  const voidMut = useApiMutation(voidMembership, {
+    successMessage: t('assemblies.membershipHistory.voidedSuccess'),
+    onSuccess: async () => {
+      await invalidateAfterMembershipChanges(qc)
+      setToVoid(null)
+    },
+  })
 
   const { data: memberships } = useQuery({
     ...membershipsQuery({ slotId: slot?.id ?? '' }),
@@ -99,6 +113,8 @@ export const SlotMemberHistoryDrawer = ({
               memberships={memberships}
               onReuse={setReuseComponentId}
               reuseComponentIds={reuseIds}
+              onCorrect={setToCorrect}
+              onVoid={setToVoid}
             />
           ) : (
             <Typography color="text.secondary">{t('common.loading')}</Typography>
@@ -132,6 +148,23 @@ export const SlotMemberHistoryDrawer = ({
           assemblyMounted={assembly.mounted}
         />
       )}
+
+      <CorrectMembershipDialog
+        open={!!toCorrect}
+        onClose={() => setToCorrect(null)}
+        membership={toCorrect}
+      />
+
+      <ConfirmDialog
+        open={!!toVoid}
+        title={t('assemblies.membershipHistory.voidTitle')}
+        message={t('assemblies.membershipHistory.voidMessage')}
+        onCancel={() => setToVoid(null)}
+        onConfirm={() => toVoid && voidMut.mutate(toVoid.id)}
+        confirmLabel={t('assemblies.membershipHistory.voidConfirm')}
+        destructive
+        busy={voidMut.isPending}
+      />
     </Drawer>
   )
 }

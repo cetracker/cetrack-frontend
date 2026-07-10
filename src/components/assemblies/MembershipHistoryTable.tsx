@@ -1,6 +1,7 @@
 import {
   Chip,
   IconButton,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +11,8 @@ import {
   Typography,
 } from '@mui/material'
 import CachedIcon from '@mui/icons-material/Cached'
+import DeleteIcon from '@mui/icons-material/Delete'
+import EditIcon from '@mui/icons-material/Edit'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
@@ -20,12 +23,16 @@ interface MembershipHistoryTableProps {
   memberships: AssemblyMembership[]
   onReuse?: (componentId: string) => void
   reuseComponentIds?: string[]
+  onCorrect?: (membership: AssemblyMembership) => void
+  onVoid?: (membership: AssemblyMembership) => void
 }
 
 export const MembershipHistoryTable = ({
   memberships,
   onReuse,
   reuseComponentIds,
+  onCorrect,
+  onVoid,
 }: MembershipHistoryTableProps) => {
   const { t } = useTranslation()
   const { data: components } = useQuery(componentsQuery())
@@ -36,6 +43,7 @@ export const MembershipHistoryTable = ({
 
   const reuseIdSet = new Set(reuseComponentIds ?? [])
   const seenComponentIds = new Set<string>()
+  const showActions = !!onCorrect || !!onVoid
 
   if (sorted.length === 0) {
     return (
@@ -53,6 +61,7 @@ export const MembershipHistoryTable = ({
           <TableCell>{t('components.list.columns.component')}</TableCell>
           <TableCell>{t('assemblies.membershipHistory.fromHeader')}</TableCell>
           <TableCell>{t('assemblies.membershipHistory.toHeader')}</TableCell>
+          {showActions && <TableCell align="right" />}
         </TableRow>
       </TableHead>
       <TableBody>
@@ -82,6 +91,39 @@ export const MembershipHistoryTable = ({
                   <Chip label={t('mountings.history.activeChip')} color="success" size="small" />
                 )}
               </TableCell>
+              {showActions && (
+                <TableCell align="right">
+                  <Stack sx={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+                    {onCorrect && (
+                      <Tooltip title={t('assemblies.membershipHistory.correctTooltip')}>
+                        <IconButton size="small" onClick={() => onCorrect(m)}>
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {onVoid && (
+                      <Tooltip
+                        title={
+                          m.memberTo
+                            ? t('assemblies.membershipHistory.voidTooltip')
+                            : t('assemblies.membershipHistory.activeVoidBlockedTooltip')
+                        }
+                      >
+                        <span>
+                          <IconButton
+                            size="small"
+                            color="error"
+                            disabled={!m.memberTo}
+                            onClick={() => onVoid(m)}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    )}
+                  </Stack>
+                </TableCell>
+              )}
             </TableRow>
           )
         })}

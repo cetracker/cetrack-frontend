@@ -386,7 +386,7 @@
       "reuseTooltip": "Wiederverwenden",
       "correctTooltip": "Korrigieren",
       "voidTooltip": "Aufheben",
-      "governedTooltip": "Wird von einer Baugruppenmontage verwaltet",
+      "governedTooltip": "Stattdessen in der Mitgliedshistorie des Baugruppenplatzes korrigieren",
       "voidTitle": "Montage aufheben",
       "voidMessage": "Diese Montage aufheben? Der Vorgang wird gelöscht, nicht beendet. Dies kann nicht rückgängig gemacht werden.",
       "voidConfirm": "Aufheben"
@@ -505,7 +505,19 @@
     "membershipHistory": {
       "empty": "Noch keine Mitglieder.",
       "fromHeader": "Von",
-      "toHeader": "Bis"
+      "toHeader": "Bis",
+      "correctTooltip": "Korrigieren",
+      "voidTooltip": "Aufheben",
+      "activeVoidBlockedTooltip": "Aktive Mitgliedschaft - stattdessen Mitglied entfernen verwenden",
+      "voidTitle": "Mitgliedschaft aufheben",
+      "voidMessage": "Diese Mitgliedschaft aufheben? Eine damit vollständig zusammenfallende Montage wird ebenfalls gelöscht. Dies kann nicht rückgängig gemacht werden.",
+      "voidConfirm": "Aufheben",
+      "voidedSuccess": "Mitgliedschaft aufgehoben",
+      "correct": {
+        "title": "Mitgliedschaft korrigieren",
+        "reopenLabel": "Wieder öffnen (Bis-Zeit löschen, wieder aktiv machen)",
+        "successMessage": "Mitgliedschaft korrigiert"
+      }
     },
     "mount": {
       "title": "{{name}} montieren",

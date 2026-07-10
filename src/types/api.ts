@@ -336,6 +336,12 @@ export interface AssemblyMembership {
   createdAt?: ISODateTime
 }
 
+export interface CorrectMembershipRequest {
+  memberFrom?: ISODateTime
+  // tri-state: value sets, key absent keeps, explicit null re-opens
+  memberTo?: ISODateTime | null
+}
+
 export interface AddMemberRequest {
   componentId: UUID
   slotId: UUID

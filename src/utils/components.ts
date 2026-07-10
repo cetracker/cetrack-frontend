@@ -4,6 +4,7 @@ import type {
   AssemblyMembership,
   Component,
   ComponentStatus,
+  CorrectMembershipRequest,
   CorrectMountingRequest,
   Mounting,
 } from '@/types/api'
@@ -108,6 +109,33 @@ export const buildCorrectMountingBody = ({
     body.dismountedAt = null
   } else if (dismountedAt !== undefined) {
     body.dismountedAt = dismountedAt
+  }
+  return body
+}
+
+interface CorrectMembershipBodyInput {
+  memberFrom?: string
+  memberTo?: string
+  reopen?: boolean
+}
+
+/**
+ * Builds the tri-state CorrectMembershipRequest body: only changed fields are
+ * present in the result (an omitted key means "keep current value" server-side).
+ * `reopen` wins over `memberTo` and serializes an explicit `memberTo: null`
+ * to re-open the membership.
+ */
+export const buildCorrectMembershipBody = ({
+  memberFrom,
+  memberTo,
+  reopen,
+}: CorrectMembershipBodyInput): CorrectMembershipRequest => {
+  const body: CorrectMembershipRequest = {}
+  if (memberFrom !== undefined) body.memberFrom = memberFrom
+  if (reopen) {
+    body.memberTo = null
+  } else if (memberTo !== undefined) {
+    body.memberTo = memberTo
   }
   return body
 }
