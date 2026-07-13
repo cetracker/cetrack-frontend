@@ -119,6 +119,7 @@ export interface Mounting {
   bikeId: UUID
   mountPointName: string
   assemblyMountingId?: UUID
+  assemblyId?: UUID | null
   mountedAt: ISODateTime
   dismountedAt?: ISODateTime | null
   createdAt?: ISODateTime

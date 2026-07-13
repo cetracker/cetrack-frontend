@@ -13,6 +13,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { Link as RouterLink } from 'react-router-dom'
 import { componentQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
@@ -20,7 +21,7 @@ import { DismountDialog } from './DismountDialog'
 import { RetireComponentDialog } from './RetireComponentDialog'
 import { MountComponentDialog } from './MountComponentDialog'
 import { formatDate, componentIdentity } from '@/utils/formatters'
-import { componentStatusLabel } from '@/utils/components'
+import { activeMounting, componentStatusLabel } from '@/utils/components'
 
 interface ComponentDetailProps {
   open: boolean
@@ -52,6 +53,9 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
   const [dismountOpen, setDismountOpen] = useState(false)
   const [retireOpen, setRetireOpen] = useState(false)
 
+  const mountedViaAssembly = component?.status === 'mounted' && !component?.directlyMounted
+  const assemblyId = mountings ? activeMounting(mountings)?.assemblyId : undefined
+
   return (
     <Drawer
       anchor="right"
@@ -77,12 +81,25 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {componentIdentity(component) || (isLoading ? t('common.loading') : t('components.detail.fallbackTitle'))}
           </Typography>
-          {component?.status && (
+          {component?.status && mountedViaAssembly && assemblyId ? (
             <Chip
               label={componentStatusLabel(component)}
               color={STATUS_COLOR[component.status]}
               size="small"
+              component={RouterLink}
+              to={`/assemblies/${assemblyId}`}
+              clickable
+              aria-label={t('components.detail.goToAssembly')}
+              title={t('components.detail.goToAssembly')}
             />
+          ) : (
+            component?.status && (
+              <Chip
+                label={componentStatusLabel(component)}
+                color={STATUS_COLOR[component.status]}
+                size="small"
+              />
+            )
           )}
           <IconButton onClick={onClose} aria-label={t('components.detail.closeDrawer')}>
             <CloseIcon />
