@@ -13,7 +13,13 @@ vi.mock('@/api/components', async (importOriginal) => {
     componentsQuery: () => ({
       queryKey: actual.componentsQueryKey(),
       queryFn: async () => [
-        { id: 'c1', componentTypeId: 'ct1', label: 'Component One', status: 'inStock' },
+        {
+          id: 'c1',
+          componentTypeId: 'ct1',
+          label: 'Component One',
+          serialNumber: 'SN-001',
+          status: 'inStock',
+        },
         { id: 'c2', componentTypeId: 'ct1', label: 'Component Two', status: 'inStock' },
       ],
     }),
@@ -66,6 +72,16 @@ describe('MembershipHistoryTable', () => {
     expect(rows[1]).toHaveTextContent('Component Two')
     expect(rows[1]).toHaveTextContent('active')
     expect(rows[2]).toHaveTextContent('Component One')
+  })
+
+  it('shows a details affordance and disambiguator so same-label components can be told apart', async () => {
+    renderTable({
+      memberships: [membership('c1', '2026-01-01T00:00:00Z', '2026-02-01T00:00:00Z')],
+    })
+
+    await screen.findByText('Component One')
+    expect(screen.getByRole('button', { name: /component details/i })).toBeInTheDocument()
+    expect(screen.getByText(/#SN-001/)).toBeInTheDocument()
   })
 
   it('shows one re-use button per unique component and calls onReuse with its id', async () => {

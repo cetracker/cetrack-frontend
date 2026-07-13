@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { componentsQuery } from '@/api/components'
+import { ComponentInfoCell } from '@/components/components/ComponentInfoCell'
 import type { AssemblyMembership } from '@/types/api'
 import { componentIdentity, formatDateTime } from '@/utils/formatters'
 
@@ -82,7 +83,16 @@ export const MembershipHistoryTable = ({
                   )}
                 </TableCell>
               )}
-              <TableCell>{componentIdentity(componentMap.get(m.componentId))}</TableCell>
+              <TableCell>
+                {(() => {
+                  const component = componentMap.get(m.componentId)
+                  return component ? (
+                    <ComponentInfoCell component={component} />
+                  ) : (
+                    componentIdentity(component)
+                  )
+                })()}
+              </TableCell>
               <TableCell>{formatDateTime(m.memberFrom)}</TableCell>
               <TableCell>
                 {m.memberTo ? (
