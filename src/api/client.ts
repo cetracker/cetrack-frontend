@@ -31,9 +31,7 @@ export const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// shared Error schema (common-api.yaml); tour-api 400/409/500 bodies are
-// contract-undefined (bare `description`, no Error schema) — may arrive as
-// plain text instead of this shape.
+// shared Error schema (common-api.yaml), used by all endpoints incl. tour-api.
 type BackendErrorShape = {
   code?: string
   message?: string
