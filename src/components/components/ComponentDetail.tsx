@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router-dom'
 import { componentQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
+import { membershipsQuery } from '@/api/memberships'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
 import { DismountDialog } from './DismountDialog'
 import { RetireComponentDialog } from './RetireComponentDialog'
@@ -48,6 +49,10 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
     ...mountingsQuery({ componentId: componentId ?? '' }),
     enabled: !!componentId && open,
   })
+  const { data: memberships } = useQuery({
+    ...membershipsQuery({ componentId: componentId ?? '' }),
+    enabled: !!componentId && open && component?.status === 'inAssembly',
+  })
 
   const [mountOpen, setMountOpen] = useState(false)
   const [dismountOpen, setDismountOpen] = useState(false)
@@ -55,6 +60,8 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
 
   const mountedViaAssembly = component?.status === 'mounted' && !component?.directlyMounted
   const assemblyId = mountings ? activeMounting(mountings)?.assemblyId : undefined
+  const membershipAssemblyId = memberships?.find((m) => !m.memberTo)?.assemblyId
+  const linkAssemblyId = mountedViaAssembly ? assemblyId : membershipAssemblyId
 
   return (
     <Drawer
@@ -81,13 +88,13 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {componentIdentity(component) || (isLoading ? t('common.loading') : t('components.detail.fallbackTitle'))}
           </Typography>
-          {component?.status && mountedViaAssembly && assemblyId ? (
+          {component?.status && linkAssemblyId ? (
             <Chip
               label={componentStatusLabel(component)}
               color={STATUS_COLOR[component.status]}
               size="small"
               component={RouterLink}
-              to={`/assemblies/${assemblyId}`}
+              to={`/assemblies/${linkAssemblyId}`}
               clickable
               aria-label={t('components.detail.goToAssembly')}
               title={t('components.detail.goToAssembly')}
