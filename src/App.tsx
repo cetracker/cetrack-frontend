@@ -10,6 +10,7 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { darkTheme, lightTheme } from './theme'
 import { NotifyProvider } from './hooks/NotifyProvider'
+import { UnlockProvider } from './hooks/UnlockProvider'
 import { ColorModeContext, type ColorMode } from './hooks/useColorMode'
 import { OnboardingContext } from './hooks/useOnboarding'
 import { useLanguage } from './hooks/useLanguage'
@@ -149,7 +150,9 @@ export const App = () => (
         <LocaleProviders>
           <QueryClientProvider client={queryClient}>
             <NotifyProvider>
-              <RouterProvider router={router} />
+              <UnlockProvider>
+                <RouterProvider router={router} />
+              </UnlockProvider>
             </NotifyProvider>
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>

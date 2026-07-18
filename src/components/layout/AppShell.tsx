@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next'
 import { NavList } from './NavList'
 import { ImportAttentionIndicator } from './ImportAttentionIndicator'
 import { MaintenanceDueIndicator } from './MaintenanceDueIndicator'
+import { LockIndicator } from './LockIndicator'
 import { VersionInfo } from './VersionInfo'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { FormatSwitcher } from './FormatSwitcher'
@@ -66,6 +67,7 @@ export const AppShell = () => {
           </Typography>
           <ImportAttentionIndicator />
           <MaintenanceDueIndicator />
+          <LockIndicator />
           <LanguageSwitcher />
           <FormatSwitcher />
           <Tooltip title={mode === 'dark' ? t('appShell.lightMode') : t('appShell.darkMode')}>
