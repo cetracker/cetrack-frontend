@@ -1,6 +1,6 @@
 // Hand-written TypeScript types mirroring the backend OpenAPI specs
 // (common-api.yaml, catalog-api.yaml, component-api.yaml, bike-api.yaml,
-// tour-api.yaml, report-api.yaml).
+// tour-api.yaml, report-api.yaml, auth-api.yaml).
 // Keep in sync when the specs change.
 
 export type UUID = string
@@ -458,4 +458,19 @@ export interface MaintenanceEvent {
 
 export type MaintenanceEventInput = {
   performedAt: ISODateTime
+}
+
+// ============== Auth (CE-0118 PIN-gated writes) ==============
+
+export interface UnlockRequest {
+  pin: string
+}
+
+export interface UnlockResponse {
+  token: string
+  expiresAt: ISODateTime
+}
+
+export interface AuthStatus {
+  enabled: boolean
 }

@@ -1,16 +1,20 @@
-import axios, { AxiosError, type AxiosResponse } from 'axios'
+import axios, { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios'
+import { clearStoredUnlockToken, getStoredUnlockToken, storeUnlockToken } from './auth'
 
 export interface ApiError {
   status: number
   code?: string
   message: string
   details?: Record<string, unknown>
+  /** Seconds until the edit-gate cooldown lifts (429 TOO_MANY_ATTEMPTS only). */
+  retryAfterSeconds?: number
 }
 
 export class ApiException extends Error implements ApiError {
   status: number
   code?: string
   details?: Record<string, unknown>
+  retryAfterSeconds?: number
 
   constructor(apiError: ApiError) {
     super(apiError.message)
@@ -18,6 +22,7 @@ export class ApiException extends Error implements ApiError {
     this.status = apiError.status
     this.code = apiError.code
     this.details = apiError.details
+    this.retryAfterSeconds = apiError.retryAfterSeconds
   }
 }
 
@@ -31,6 +36,29 @@ export const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+const UNLOCK_PATH = '/auth/unlock'
+
+/**
+ * Resolves with a fresh unlock token once the user re-enters the PIN, or
+ * rejects if they cancel. Registered by UnlockProvider (kept as a plain
+ * setter, not an import, so client.ts never depends on UI/context code).
+ */
+type UnlockHandler = () => Promise<string>
+let unlockHandler: UnlockHandler | null = null
+export const setUnlockHandler = (handler: UnlockHandler | null): void => {
+  unlockHandler = handler
+}
+
+client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = getStoredUnlockToken()
+  if (token) {
+    config.headers.set('Authorization', `Bearer ${token}`)
+  }
+  return config
+})
+
+type RetriableConfig = InternalAxiosRequestConfig & { _retriedForUnlock?: boolean }
+
 // shared Error schema (common-api.yaml); tour-api 400/409/500 bodies are
 // contract-undefined (bare `description`, no Error schema) — may arrive as
 // plain text instead of this shape.
@@ -40,24 +68,41 @@ type BackendErrorShape = {
   details?: Record<string, unknown>
 }
 
+const toApiError = (err: AxiosError<BackendErrorShape | string>): ApiError => {
+  const status = err.response?.status ?? 0
+  const body = err.response?.data
+  const retryAfterHeader = err.response?.headers?.['retry-after']
+  const retryAfterSeconds = retryAfterHeader !== undefined ? Number(retryAfterHeader) : undefined
+  if (typeof body === 'string' && body.length > 0) {
+    return { status, message: body, retryAfterSeconds }
+  }
+  if (body && typeof body === 'object' && typeof body.message === 'string') {
+    return { status, code: body.code, message: body.message, details: body.details, retryAfterSeconds }
+  }
+  return { status, message: err.message ?? 'Unexpected error', retryAfterSeconds }
+}
+
 client.interceptors.response.use(
   (res: AxiosResponse) => res,
-  (err: AxiosError<BackendErrorShape | string>) => {
+  async (err: AxiosError<BackendErrorShape | string>) => {
+    const config = err.config as RetriableConfig | undefined
     const status = err.response?.status ?? 0
-    const body = err.response?.data
-    let apiError: ApiError
-    if (typeof body === 'string' && body.length > 0) {
-      apiError = { status, message: body }
-    } else if (body && typeof body === 'object' && typeof body.message === 'string') {
-      apiError = {
-        status,
-        code: body.code,
-        message: body.message,
-        details: body.details,
+
+    // Edit-gate 401 (CE-0118): clear the stale token, prompt the keypad, retry
+    // once with the fresh token. /auth/unlock's own 401 (wrong PIN) is never
+    // intercepted here — that's a normal ApiException for the dialog to show.
+    if (status === 401 && unlockHandler && config && !config._retriedForUnlock && config.url !== UNLOCK_PATH) {
+      clearStoredUnlockToken()
+      try {
+        const token = await unlockHandler()
+        storeUnlockToken(token)
+        config._retriedForUnlock = true
+        return client.request(config)
+      } catch {
+        // user cancelled the keypad — fall through and report the original 401
       }
-    } else {
-      apiError = { status, message: err.message ?? 'Unexpected error' }
     }
-    throw new ApiException(apiError)
+
+    throw new ApiException(toApiError(err))
   },
 )
