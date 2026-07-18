@@ -31,7 +31,8 @@
     "componentType": "Komponententyp",
     "type": "Typ",
     "position": "Position",
-    "mandatory": "Pflicht"
+    "mandatory": "Pflicht",
+    "clear": "Löschen"
   },
   "nav": {
     "components": "Komponenten",
@@ -58,6 +59,15 @@
     "language": "Sprache",
     "dateFormat": "Datums- und Zahlenformat"
   },
+  "unlock": {
+    "title": "Bearbeitungs-PIN eingeben",
+    "lockedTooltip": "Bearbeiten ist gesperrt — zum Entsperren klicken",
+    "unlockedTooltip": "Bearbeiten ist entsperrt",
+    "pinEntered_one": "{{count}} Ziffer eingegeben",
+    "pinEntered_other": "{{count}} Ziffern eingegeben",
+    "backspace": "Rücktaste",
+    "cooldown": "Zu viele Fehlversuche — erneut in {{seconds}}s"
+  },
   "status": {
     "inStock": "Auf Lager",
     "inAssembly": "In Baugruppe",
@@ -83,6 +93,10 @@
     "ASSEMBLY_IN_USE": "Diese Baugruppe hat noch Mitgliedschafts- oder Montagehistorie und kann nicht gelöscht werden.",
     "ASSEMBLY_SLOT_IN_USE": "Dieser Platz hat noch Mitgliedschaftshistorie — beenden Sie seine Gültigkeit, statt ihn zu löschen.",
     "ALREADY_MEMBER": "Diese Komponente gehört bereits zu einer Baugruppe.",
+    "UNAUTHORIZED": "Diese Aktion erfordert vorheriges Entsperren.",
+    "INVALID_PIN": "Falsche PIN.",
+    "TOO_MANY_ATTEMPTS": "Zu viele Fehlversuche. Bitte warten und erneut versuchen.",
+    "GATE_DISABLED": "Bearbeitung ist auf diesem System nicht PIN-gesperrt.",
     "generic": "Ein Fehler ist aufgetreten",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten"
   },

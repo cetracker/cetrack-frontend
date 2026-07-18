@@ -31,7 +31,8 @@
     "componentType": "Component Type",
     "type": "Type",
     "position": "Position",
-    "mandatory": "Mandatory"
+    "mandatory": "Mandatory",
+    "clear": "Clear"
   },
   "nav": {
     "components": "Components",
@@ -58,6 +59,15 @@
     "language": "Language",
     "dateFormat": "Date & number format"
   },
+  "unlock": {
+    "title": "Enter edit PIN",
+    "lockedTooltip": "Editing is locked — click to unlock",
+    "unlockedTooltip": "Editing is unlocked",
+    "pinEntered_one": "{{count}} digit entered",
+    "pinEntered_other": "{{count}} digits entered",
+    "backspace": "Backspace",
+    "cooldown": "Too many wrong attempts — try again in {{seconds}}s"
+  },
   "status": {
     "inStock": "In stock",
     "inAssembly": "In assembly",
@@ -83,6 +93,10 @@
     "ASSEMBLY_IN_USE": "This assembly still has membership or mounting history and cannot be deleted.",
     "ASSEMBLY_SLOT_IN_USE": "This slot still has membership history — end its validity instead of deleting it.",
     "ALREADY_MEMBER": "This component already belongs to an assembly.",
+    "UNAUTHORIZED": "This action requires unlocking first.",
+    "INVALID_PIN": "Wrong PIN.",
+    "TOO_MANY_ATTEMPTS": "Too many wrong attempts. Please wait and try again.",
+    "GATE_DISABLED": "Editing isn't PIN-gated on this deployment.",
     "generic": "An error occurred",
     "unexpected": "An unexpected error occurred"
   },
