@@ -156,6 +156,53 @@ describe('MountAssemblyDialog', () => {
     expect(assembliesApi.mountAssembly).not.toHaveBeenCalled()
   })
 
+  it('warns about a governed occupant to be overridden, and reports it on success - CE-0119', async () => {
+    const user = userEvent.setup()
+    const plan: MountPlan = {
+      assemblyId: 'a1',
+      bikeId: 'b1',
+      at: '2026-01-01T00:00:00Z',
+      mountable: true,
+      slots: [
+        { slotId: 's1', state: 'resolved', mountPointId: 'mp1', resolvedBy: 'uniqueCandidate' },
+        { slotId: 's2', state: 'resolved', mountPointId: 'mp2', resolvedBy: 'uniqueCandidate' },
+      ],
+      assembliesToDismount: [{ assemblyId: 'a2', assemblyMountingId: 'am2', name: 'Other Assembly' }],
+    }
+    vi.mocked(assembliesApi.planMountAssembly).mockResolvedValue(plan)
+    vi.mocked(assembliesApi.mountAssembly).mockResolvedValue({
+      assemblyMounting: { id: 'am1', assemblyId: 'a1', bikeId: 'b1', mountedAt: '2026-01-01T00:00:00Z' },
+      changes: {
+        closed: [
+          {
+            id: 'm1', componentId: 'c1', mountPointId: 'mp1', bikeId: 'b1',
+            mountPointName: 'Frame mount', assemblyId: 'a2', mountedAt: '2025-01-01T00:00:00Z',
+          },
+          {
+            id: 'm2', componentId: 'c2', mountPointId: 'mp2', bikeId: 'b1',
+            mountPointName: 'Front wheel', assemblyId: 'a2', mountedAt: '2025-01-01T00:00:00Z',
+          },
+        ],
+      },
+      dismountedAssemblyMountings: [
+        { id: 'am2', assemblyId: 'a2', bikeId: 'b1', mountedAt: '2025-01-01T00:00:00Z', dismountedAt: '2026-01-01T00:00:00Z' },
+      ],
+    })
+
+    renderDialog()
+    await pickBikeAndNext(user)
+
+    expect(
+      await screen.findByText(/mounting will dismount another assembly: other assembly/i),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^mount$/i }))
+
+    // both closed rows belong to the dismounted assembly - no separate auto-closed count
+    expect(await screen.findByText(/dismounted 1 other assembly \(other assembly\)/i)).toBeInTheDocument()
+    expect(screen.queryByText(/auto-closed/i)).not.toBeInTheDocument()
+  })
+
   it('an empty slot also blocks submission', async () => {
     const user = userEvent.setup()
     const plan: MountPlan = {

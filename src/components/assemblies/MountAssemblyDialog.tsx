@@ -88,8 +88,20 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
             t('assemblies.mount.rememberedAnswers', { count: result.rememberedSlotMappings.length }),
           )
         }
-        if (result.changes.closed?.length) {
-          parts.push(t('assemblies.mount.autoClosed', { count: result.changes.closed.length }))
+        const dismounted = result.dismountedAssemblyMountings ?? []
+        const dismountedAssemblyIds = new Set(dismounted.map((am) => am.assemblyId))
+        // exclude closures that belong to a dismounted assembly - reported separately below,
+        // so the auto-closed count isn't double-counting them
+        const directlyClosedCount = (result.changes.closed ?? []).filter(
+          (m) => !m.assemblyId || !dismountedAssemblyIds.has(m.assemblyId),
+        ).length
+        if (directlyClosedCount) {
+          parts.push(t('assemblies.mount.autoClosed', { count: directlyClosedCount }))
+        }
+        if (dismounted.length) {
+          const nameByAssemblyId = new Map(plan?.assembliesToDismount?.map((a) => [a.assemblyId, a.name]))
+          const names = dismounted.map((am) => nameByAssemblyId.get(am.assemblyId) ?? am.assemblyId).join(', ')
+          parts.push(t('assemblies.mount.dismountedAssemblies', { count: dismounted.length, names }))
         }
         notify(parts.join(' — '), 'success')
         handleClose()
@@ -144,6 +156,14 @@ export const MountAssemblyDialog = ({ open, onClose, assembly }: MountAssemblyDi
         </Stack>
       ) : (
         <Stack spacing={2} sx={{ pt: 1 }}>
+          {!!plan?.assembliesToDismount?.length && (
+            <Alert severity="warning">
+              {t('assemblies.mount.willDismountAssemblies', {
+                count: plan.assembliesToDismount.length,
+                names: plan.assembliesToDismount.map((a) => a.name).join(', '),
+              })}
+            </Alert>
+          )}
           {plan?.slots.map((ps) => {
             const slotName = slotById.get(ps.slotId)?.name ?? ps.slotId
             if (ps.state === 'empty') {

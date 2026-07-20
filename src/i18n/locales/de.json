@@ -571,11 +571,15 @@
       "resolvedBySlotMapping": "gemerkt",
       "chooseMountPointSuffix": "— Montagepunkt wählen",
       "willDismount": "Demontiert {{name}} von diesem Montagepunkt",
+      "willDismountAssemblies_one": "Die Montage demontiert eine andere Baugruppe: {{names}}",
+      "willDismountAssemblies_other": "Die Montage demontiert andere Baugruppen: {{names}}",
       "successMessage": "Baugruppe montiert",
       "rememberedAnswers_one": "{{count}} Antwort für nächstes Mal gemerkt",
       "rememberedAnswers_other": "{{count}} Antworten für nächstes Mal gemerkt",
       "autoClosed_one": "{{count}} Montage automatisch beendet",
-      "autoClosed_other": "{{count}} Montagen automatisch beendet"
+      "autoClosed_other": "{{count}} Montagen automatisch beendet",
+      "dismountedAssemblies_one": "{{count}} andere Baugruppe demontiert ({{names}})",
+      "dismountedAssemblies_other": "{{count}} andere Baugruppen demontiert ({{names}})"
     },
     "dismount": {
       "title": "Baugruppe demontieren",

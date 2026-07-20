@@ -386,8 +386,12 @@ export interface PlannedSlot {
     | 'noCandidate'
     | 'positionFilterEmpty'
     | 'memberMountedElsewhere'
-    | 'occupiedByGovernedMounting'
   reason?: string
+}
+export interface AssemblyToDismount {
+  assemblyId: UUID
+  assemblyMountingId: UUID
+  name: string
 }
 export interface MountPlan {
   assemblyId: UUID
@@ -395,6 +399,7 @@ export interface MountPlan {
   at: ISODateTime
   mountable: boolean
   slots: PlannedSlot[]
+  assembliesToDismount?: AssemblyToDismount[]
 }
 export interface MountAssemblyRequest {
   bikeId: UUID
@@ -408,6 +413,7 @@ export interface AssemblyMountResult {
   assemblyMounting: AssemblyMounting
   changes: MountingChanges
   rememberedSlotMappings?: SlotMapping[]
+  dismountedAssemblyMountings?: AssemblyMounting[]
 }
 
 // bike-api.yaml SlotMapping — surfaced only via AssemblyMountResult.rememberedSlotMappings
