@@ -571,11 +571,15 @@
       "resolvedBySlotMapping": "remembered",
       "chooseMountPointSuffix": "— choose a mount point",
       "willDismount": "Will dismount {{name}} from this mount point",
+      "willDismountAssemblies_one": "Mounting will dismount another assembly: {{names}}",
+      "willDismountAssemblies_other": "Mounting will dismount other assemblies: {{names}}",
       "successMessage": "Assembly mounted",
       "rememberedAnswers_one": "remembered {{count}} answer for next time",
       "rememberedAnswers_other": "remembered {{count}} answers for next time",
       "autoClosed_one": "auto-closed {{count}} mounting",
-      "autoClosed_other": "auto-closed {{count}} mountings"
+      "autoClosed_other": "auto-closed {{count}} mountings",
+      "dismountedAssemblies_one": "dismounted {{count}} other assembly ({{names}})",
+      "dismountedAssemblies_other": "dismounted {{count}} other assemblies ({{names}})"
     },
     "dismount": {
       "title": "Dismount assembly",
