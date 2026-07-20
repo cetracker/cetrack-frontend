@@ -59,9 +59,7 @@ client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retriedForUnlock?: boolean }
 
-// shared Error schema (common-api.yaml); tour-api 400/409/500 bodies are
-// contract-undefined (bare `description`, no Error schema) — may arrive as
-// plain text instead of this shape.
+// shared Error schema (common-api.yaml), used by all endpoints incl. tour-api.
 type BackendErrorShape = {
   code?: string
   message?: string

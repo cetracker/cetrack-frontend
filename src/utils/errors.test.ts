@@ -37,6 +37,11 @@ describe('friendlyErrorMessage', () => {
     expect(friendlyErrorMessage(err)).toContain('managed by an assembly')
   })
 
+  it('maps TOUR_DUPLICATE to friendly text', () => {
+    const err = new ApiException({ status: 409, code: 'TOUR_DUPLICATE', message: 'raw server text' })
+    expect(friendlyErrorMessage(err)).toContain('already exists')
+  })
+
   it('falls back to the server message for an unknown code', () => {
     const err = new ApiException({ status: 400, code: 'SOMETHING_ELSE', message: 'raw server text' })
     expect(friendlyErrorMessage(err)).toBe('raw server text')
