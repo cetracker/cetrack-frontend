@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import { dateFnsLocale, getFormatProfile, numberFormatter } from '@/i18n/formatProfile'
+import { currentDateFnsLocale } from '@/i18n'
 import type { Bike, Component } from '@/types/api'
 
 export const formatDate = (iso?: string | null): string => {
@@ -21,6 +22,17 @@ export const formatDateTime = (iso?: string | null): string => {
 }
 
 export const formatNumber = (n: number): string => numberFormatter(getFormatProfile()).format(n)
+
+/**
+ * Abbreviated month name for a 1-12 month number (e.g. 3 -> "Mar"/"Mär").
+ * Follows the UI *language*, not the format profile: a month name is a word,
+ * whereas the profile only decides numeric date/number layout (its `iso`
+ * profile borrows the Swedish locale purely to get `YYYY-MM-DD`).
+ */
+export const formatMonthShort = (month: number): string => {
+  if (!Number.isInteger(month) || month < 1 || month > 12) return String(month ?? '')
+  return format(new Date(2000, month - 1, 1), 'LLL', { locale: currentDateFnsLocale() })
+}
 
 /**
  * Convert a local-calendar `Date` (e.g. from a date picker where the user

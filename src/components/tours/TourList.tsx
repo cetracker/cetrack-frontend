@@ -10,6 +10,7 @@ import {
   formatDistanceKm,
   formatDuration,
   formatKJ,
+  formatMonthShort,
   formatNumber,
 } from '@/utils/formatters'
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
@@ -80,6 +81,7 @@ const buildColumns = (
     accessorKey: 'startMonth',
     header: t('tours.list.columns.month'),
     enableGrouping: true,
+    cell: (c) => formatMonthShort(c.getValue<number>()),
     meta: { align: 'left' },
   },
   {

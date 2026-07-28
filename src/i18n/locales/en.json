@@ -13,6 +13,8 @@
     "hideFilters": "Hide filters",
     "showFilters": "Show filters",
     "grouping": "Grouping",
+    "sortHint": "Click to sort. Shift+click to add another sort level.",
+    "sortHintGrouped": "Click to reverse this group's order. Grouped columns always sort first.",
     "noGroupableColumns": "No groupable columns",
     "columns": "Columns",
     "retry": "Retry",
