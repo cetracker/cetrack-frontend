@@ -11,7 +11,7 @@
     "lint": "eslint --max-warnings=0 \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc -b --noEmit",
     "sonar": "sonar-scanner",
-    "test": "vitest run"
+    "test": "TZ=UTC vitest run"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

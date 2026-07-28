@@ -13,12 +13,15 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // vmThreads reuses one VM per worker instead of forking a process per file, but keeps a
+    // fresh module registry — so vi.mock still works, unlike `isolate: false`. Suite 204s -> 128s.
+    pool: 'vmThreads',
     // vitest 4 removed environmentMatchGlobs. DOM tests opt in with a
     // `// @vitest-environment jsdom` docblock on line 1 — required for new .test.tsx files.
-    // The slowest test (MountAssemblyDialog, 5 MUI dialog interactions) costs 4.3s alone
-    // but ~12s with all workers saturated. 30s keeps ~2.5x headroom on a busy machine.
-    // If it still flakes, `npm run test -- --maxWorkers=4` drops that test to 5.8s (suite 239s).
-    testTimeout: 30000,
+    // The slowest test (MountAssemblyDialog, 5 MUI dialog interactions) costs 4.3s alone but
+    // 14-16s with all workers saturated. 45s keeps ~3x headroom on a busy machine.
+    // If it still flakes, `npm run test -- --maxWorkers=4` trades ~17% wall clock for headroom.
+    testTimeout: 45000,
     // Prebundle MUI/react once with esbuild instead of re-resolving them for each
     // isolated test file — the dominant cost of the suite.
     deps: { optimizer: { client: { enabled: true } } },
