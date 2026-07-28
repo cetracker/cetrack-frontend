@@ -1,6 +1,7 @@
 import i18next from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { enUS, de as deLocale } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale/en-US'
+import { de as deLocale } from 'date-fns/locale/de'
 import en from './locales/en.json'
 import de from './locales/de.json'
 

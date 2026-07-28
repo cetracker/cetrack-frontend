@@ -1,4 +1,6 @@
-import { de, enUS, sv } from 'date-fns/locale'
+import { de } from 'date-fns/locale/de'
+import { enUS } from 'date-fns/locale/en-US'
+import { sv } from 'date-fns/locale/sv'
 import type { Locale } from 'date-fns'
 
 export type FormatProfile = 'iso' | 'de' | 'us'

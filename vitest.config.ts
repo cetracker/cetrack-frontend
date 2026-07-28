@@ -13,7 +13,12 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    environmentMatchGlobs: [['**/*.test.tsx', 'jsdom']],
+    // vitest 4 removed environmentMatchGlobs. DOM tests opt in with a
+    // `// @vitest-environment jsdom` docblock on line 1 — required for new .test.tsx files.
+    testTimeout: 15000,
+    // Prebundle MUI/react once with esbuild instead of re-resolving them for each
+    // isolated test file — the dominant cost of the suite.
+    deps: { optimizer: { client: { enabled: true } } },
     setupFiles: ['./src/setupTests.ts'],
   },
 })

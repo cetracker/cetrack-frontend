@@ -128,7 +128,7 @@ describe('MountAssemblyDialog', () => {
     expect(mountAssemblyId).toBe('a1')
     expect(mountBody.bikeId).toBe('b1')
     expect(mountBody.slotResolutions).toEqual([{ slotId: 's2', mountPointId: 'mp3' }])
-  }, 10000)
+  })
 
   it('an impossible slot blocks submission', async () => {
     const user = userEvent.setup()
