@@ -1,4 +1,19 @@
-import { useMemo, useState } from 'react'
+import { bikesQuery } from '@/api/bikes'
+import { assignTourBike, toursQuery, toursQueryKey } from '@/api/tours'
+import { DataTable } from '@/components/common/DataTable'
+import { useApiMutation } from '@/hooks/useApiMutation'
+import type { Bike, Tour } from '@/types/api'
+import { createErrorDisplay } from '@/utils/errors'
+import {
+  bikeIdentity,
+  formatDateTime,
+  formatDistanceKm,
+  formatDuration,
+  formatKJ,
+  formatNumber,
+} from '@/utils/formatters'
+import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {
   Box,
   IconButton,
@@ -8,8 +23,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   ColumnDef,
@@ -17,22 +30,9 @@ import type {
   SortingState,
   VisibilityState,
 } from '@tanstack/react-table'
-import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
-import { toursQuery, toursQueryKey, assignTourBike } from '@/api/tours'
-import { bikesQuery } from '@/api/bikes'
-import type { Bike, Tour } from '@/types/api'
-import { DataTable } from '@/components/common/DataTable'
-import {
-  bikeIdentity,
-  formatDateTime,
-  formatDistanceKm,
-  formatDuration,
-  formatKJ,
-  formatNumber,
-} from '@/utils/formatters'
-import { createErrorDisplay } from '@/utils/errors'
-import { useApiMutation } from '@/hooks/useApiMutation'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const sum = (rows: Tour[], key: keyof Tour): number =>
   rows.reduce((acc, r) => acc + ((r[key] as number | undefined) ?? 0), 0)
@@ -74,13 +74,13 @@ const buildColumns = (
     accessorKey: 'startYear',
     header: t('tours.list.columns.year'),
     enableGrouping: true,
-    meta: { align: 'right' },
+    meta: { align: 'left' },
   },
   {
     accessorKey: 'startMonth',
     header: t('tours.list.columns.month'),
     enableGrouping: true,
-    meta: { align: 'right' },
+    meta: { align: 'left' },
   },
   {
     accessorKey: 'startedAt',
@@ -208,14 +208,14 @@ export const TourList = () => {
     [t, data, totals],
   )
 
-   return (
-     <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
-       <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-         <Box sx={{ typography: 'h5' }}>{t('tours.list.title')}</Box>
-         <Typography variant="body2" color="text.secondary">
-           {t('tours.list.groupingHint')}
-         </Typography>
-       </Stack>
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, minHeight: 0 }}>
+      <Stack sx={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Box sx={{ typography: 'h5' }}>{t('tours.list.title')}</Box>
+        <Typography variant="body2" color="text.secondary">
+          {t('tours.list.groupingHint')}
+        </Typography>
+      </Stack>
 
       <DataTable<Tour>
         columns={columns}
@@ -257,11 +257,11 @@ export const TourList = () => {
             }}
           >
             <Tooltip title={bikeIdentity(b)} placement="left">
-               <Stack sx={{ flexDirection: 'row', gap: 1, alignItems: 'center' }}>
-                 <DirectionsBikeIcon fontSize="small" />
-                 <span>{bikeIdentity(b)}</span>
-               </Stack>
-             </Tooltip>
+              <Stack sx={{ flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+                <DirectionsBikeIcon fontSize="small" />
+                <span>{bikeIdentity(b)}</span>
+              </Stack>
+            </Tooltip>
           </MenuItem>
         ))}
         {(bikes ?? []).length === 0 && (
