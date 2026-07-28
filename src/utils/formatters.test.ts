@@ -5,9 +5,11 @@ import {
   componentIdentity,
   formatDate,
   formatDateTime,
+  formatMonthShort,
   formatNumber,
 } from './formatters'
 import { setFormatProfile } from '@/i18n/formatProfile'
+import i18n from '@/i18n'
 import type { Bike, Component } from '@/types/api'
 
 describe('bikeIdentity', () => {
@@ -103,5 +105,30 @@ describe('format profile', () => {
     setFormatProfile('us')
     expect(formatDate('2026-01-15')).toBe('01/15/2026')
     expect(formatNumber(1234.5)).toBe('1,234.5')
+  })
+})
+
+describe('formatMonthShort', () => {
+  afterEach(async () => {
+    await i18n.changeLanguage('en')
+    setFormatProfile('iso')
+  })
+
+  it('abbreviates months in the UI language', async () => {
+    expect(formatMonthShort(1)).toBe('Jan')
+    expect(formatMonthShort(12)).toBe('Dec')
+
+    await i18n.changeLanguage('de')
+    expect(formatMonthShort(3)).toBe('Mär')
+  })
+
+  it('ignores the numeric format profile, whose iso locale is Swedish', () => {
+    setFormatProfile('iso')
+    expect(formatMonthShort(1)).toBe('Jan')
+  })
+
+  it('passes through out-of-range input instead of throwing', () => {
+    expect(formatMonthShort(0)).toBe('0')
+    expect(formatMonthShort(13)).toBe('13')
   })
 })

@@ -13,6 +13,8 @@
     "hideFilters": "Filter ausblenden",
     "showFilters": "Filter anzeigen",
     "grouping": "Gruppierung",
+    "sortHint": "Klicken zum Sortieren. Umschalt+Klick fügt eine weitere Sortierebene hinzu.",
+    "sortHintGrouped": "Klicken kehrt die Reihenfolge dieser Gruppe um. Gruppierte Spalten sortieren immer zuerst.",
     "noGroupableColumns": "Keine gruppierbaren Spalten",
     "columns": "Spalten",
     "retry": "Erneut versuchen",

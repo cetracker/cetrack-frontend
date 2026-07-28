@@ -129,6 +129,9 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
   const [internalColumnFilters, setInternalColumnFilters] =
     useState<ColumnFiltersState>([])
   const [internalSorting, setInternalSorting] = useState<SortingState>([])
+  // Sort direction per grouped column. Grouping owns the outer sort order, so
+  // this lives here next to the grouping picker rather than in the parent.
+  const [groupSortDesc, setGroupSortDesc] = useState<Record<string, boolean>>({})
   const [internalGrouping, setInternalGrouping] = useState<GroupingState>([])
   const [internalColumnVisibility, setInternalColumnVisibility] =
     useState<VisibilityState>({})
@@ -160,19 +163,45 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
     }
   }, [mobileHiddenOverrides, columnVisibility, internalColumnVisibility, activeGrouping])
 
+  // Grouping implies ordering: grouped columns are always the outer sort keys,
+  // in grouping order, and the user's column sort applies inside the innermost
+  // group. Without this, group rows sort on an undefined aggregate and keep
+  // their raw insertion order.
+  const userSorting = sorting ?? internalSorting
+  const effectiveSorting = useMemo<SortingState>(
+    () => [
+      ...activeGrouping.map((id) => ({ id, desc: groupSortDesc[id] ?? false })),
+      ...userSorting.filter((s) => !activeGrouping.includes(s.id)),
+    ],
+    [activeGrouping, groupSortDesc, userSorting],
+  )
+
+  // The table's sorting handlers derive the next state from `state.sorting`,
+  // which now carries the grouped keys. Strip them again on write-back so they
+  // never leak into the parent's state and linger after ungrouping.
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const next = typeof updater === 'function' ? updater(effectiveSorting) : updater
+    ;(onSortingChange ?? setInternalSorting)(
+      next.filter((s) => !activeGrouping.includes(s.id)),
+    )
+  }
+
+  const toggleGroupSort = (columnId: string) =>
+    setGroupSortDesc((d) => ({ ...d, [columnId]: !(d[columnId] ?? false) }))
+
   const table = useReactTable({
     data,
     columns,
     state: {
       globalFilter: globalFilter ?? internalGlobalFilter,
       columnFilters: columnFilters ?? internalColumnFilters,
-      sorting: sorting ?? internalSorting,
+      sorting: effectiveSorting,
       grouping: grouping ?? internalGrouping,
       columnVisibility: effectiveColumnVisibility,
     },
     onGlobalFilterChange: onGlobalFilterChange ?? setInternalGlobalFilter,
     onColumnFiltersChange: onColumnFiltersChange ?? setInternalColumnFilters,
-    onSortingChange: onSortingChange ?? setInternalSorting,
+    onSortingChange: handleSortingChange,
     onGroupingChange: onGroupingChange ?? setInternalGrouping,
     onColumnVisibilityChange:
       onColumnVisibilityChange ?? setInternalColumnVisibility,
@@ -322,6 +351,8 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
                 {hg.headers.map((header) => {
                   const canSort = header.column.getCanSort()
                   const dir = header.column.getIsSorted()
+                  const isGrouped = header.column.getIsGrouped()
+                  const sortIndex = header.column.getSortIndex()
                   const align =
                     header.column.columnDef.meta?.align ?? 'left'
                   return (
@@ -329,16 +360,47 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
                       key={header.id}
                       align={align}
                       sx={{ whiteSpace: 'nowrap' }}
+                      aria-sort={
+                        dir === 'asc'
+                          ? 'ascending'
+                          : dir === 'desc'
+                            ? 'descending'
+                            : 'none'
+                      }
                     >
                       {canSort ? (
+                        // Native `title` rather than <Tooltip>: this renders once
+                        // per sortable header on every keystroke elsewhere in the
+                        // page, and MUI's Tooltip is far too costly at that rate.
                         <TableSortLabel
                           active={!!dir}
                           direction={dir === false ? 'asc' : dir}
-                          onClick={header.column.getToggleSortingHandler()}
+                          title={t(
+                            isGrouped ? 'common.sortHintGrouped' : 'common.sortHint',
+                          )}
+                          onClick={
+                            isGrouped
+                              ? () => toggleGroupSort(header.column.id)
+                              : header.column.getToggleSortingHandler()
+                          }
                         >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext(),
+                          )}
+                          {effectiveSorting.length > 1 && sortIndex >= 0 && (
+                            <Typography
+                              component="sup"
+                              variant="caption"
+                              sx={{
+                                ml: 0.25,
+                                color: isGrouped
+                                  ? 'text.disabled'
+                                  : 'text.secondary',
+                              }}
+                            >
+                              {sortIndex + 1}
+                            </Typography>
                           )}
                         </TableSortLabel>
                       ) : (
