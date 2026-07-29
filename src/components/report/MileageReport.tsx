@@ -8,6 +8,7 @@ import { mileageQuery } from '@/api/reports'
 import type { MileageItem, MileageScope } from '@/types/api'
 import { DataTable } from '@/components/common/DataTable'
 import { ReportItemInfoCell } from '@/components/report/ReportItemInfoCell'
+import { TourReport } from '@/components/report/TourReport'
 import {
   componentIdentity,
   formatDistanceKm,
@@ -19,39 +20,44 @@ import {
 } from '@/utils/formatters'
 import { createErrorDisplay } from '@/utils/errors'
 
+type ReportScope = MileageScope | 'tours'
+
 const rowIdentity = (item: MileageItem, scope: MileageScope): string =>
   scope === 'bikes' ? item.bikeName || item.bikeModel || '' : componentIdentity(item)
 
 export const MileageReport = () => {
   const { t } = useTranslation()
-  const [scope, setScope] = useState<MileageScope>('components')
+  const [scope, setScope] = useState<ReportScope>('components')
   const [from, setFrom] = useState<Date | null>(null)
   const [to, setTo] = useState<Date | null>(null)
-  const { data, isLoading, error, refetch } = useQuery(
-    mileageQuery({
-      scope,
+  const { data, isLoading, error, refetch } = useQuery({
+    ...mileageQuery({
+      scope: scope === 'tours' ? 'components' : scope,
       from: toLocalDayStartISO(from) ?? undefined,
       to: toLocalDayEndISO(to) ?? undefined,
     }),
-  )
+    enabled: scope !== 'tours',
+  })
 
   const [globalFilter, setGlobalFilter] = useState('')
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'distance', desc: true },
   ])
 
+  const tableScope: MileageScope = scope === 'tours' ? 'components' : scope
+
   const columns = useMemo<ColumnDef<MileageItem>[]>(
     () => [
       {
         id: 'identity',
-        header: scope === 'bikes' ? t('common.bike') : t('components.list.columns.component'),
-        accessorFn: (r) => rowIdentity(r, scope),
+        header: tableScope === 'bikes' ? t('common.bike') : t('components.list.columns.component'),
+        accessorFn: (r) => rowIdentity(r, tableScope),
         cell: ({ row }) =>
-          scope === 'bikes' ? rowIdentity(row.original, scope) : (
+          tableScope === 'bikes' ? rowIdentity(row.original, tableScope) : (
             <ReportItemInfoCell item={row.original} />
           ),
         footer: () =>
-          `${(data ?? []).length} ${scope === 'bikes' ? t('bikes.list.title') : t('components.list.title')}`,
+          `${(data ?? []).length} ${tableScope === 'bikes' ? t('bikes.list.title') : t('components.list.title')}`,
       },
       {
         accessorKey: 'distance',
@@ -84,7 +90,7 @@ export const MileageReport = () => {
         meta: { align: 'right', hideOnMobile: true },
       },
     ],
-    [data, scope, t],
+    [data, tableScope, t],
   )
 
   return (
@@ -92,41 +98,50 @@ export const MileageReport = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
         <Box sx={{ typography: 'h5' }}>{t('report.title')}</Box>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <DatePicker
-            label={t('report.fromLabel')}
-            value={from}
-            onChange={setFrom}
-            slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
-          />
-          <DatePicker
-            label={t('report.toLabel')}
-            value={to}
-            onChange={setTo}
-            slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
-          />
+          {scope !== 'tours' && (
+            <>
+              <DatePicker
+                label={t('report.fromLabel')}
+                value={from}
+                onChange={setFrom}
+                slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
+              />
+              <DatePicker
+                label={t('report.toLabel')}
+                value={to}
+                onChange={setTo}
+                slotProps={{ textField: { size: 'small' }, field: { clearable: true } }}
+              />
+            </>
+          )}
           <ToggleButtonGroup
             value={scope}
             exclusive
             size="small"
-            onChange={(_, v: MileageScope | null) => v && setScope(v)}
+            onChange={(_, v: ReportScope | null) => v && setScope(v)}
           >
             <ToggleButton value="components">{t('components.list.title')}</ToggleButton>
             <ToggleButton value="bikes">{t('bikes.list.title')}</ToggleButton>
+            <ToggleButton value="tours">{t('report.tours.scopeLabel')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       </Box>
-      <DataTable<MileageItem>
-        columns={columns}
-        data={data ?? []}
-        isLoading={isLoading}
-        error={createErrorDisplay(error)}
-        onRetry={() => refetch()}
-        globalFilter={globalFilter}
-        onGlobalFilterChange={setGlobalFilter}
-        sorting={sorting}
-        onSortingChange={setSorting}
-        showFooter
-      />
+      {scope === 'tours' ? (
+        <TourReport />
+      ) : (
+        <DataTable<MileageItem>
+          columns={columns}
+          data={data ?? []}
+          isLoading={isLoading}
+          error={createErrorDisplay(error)}
+          onRetry={() => refetch()}
+          globalFilter={globalFilter}
+          onGlobalFilterChange={setGlobalFilter}
+          sorting={sorting}
+          onSortingChange={setSorting}
+          showFooter
+        />
+      )}
     </Box>
   )
 }

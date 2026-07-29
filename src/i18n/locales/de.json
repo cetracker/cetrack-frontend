@@ -209,7 +209,22 @@
     "toLabel": "Bis",
     "uphillHeader": "Anstieg (m)",
     "downhillHeader": "Abstieg (m)",
-    "sumWorkHeader": "Gesamtarbeit (kJ)"
+    "sumWorkHeader": "Gesamtarbeit (kJ)",
+    "tours": {
+      "scopeLabel": "Touren",
+      "metricLabel": "Metrik",
+      "metricDistance": "Distanz",
+      "metricAscent": "Höhenmeter",
+      "metricDurationMoving": "Fahrzeit",
+      "granularityLabel": "Granularität",
+      "granularityMonth": "Monat",
+      "granularityYear": "Jahr",
+      "endYearLabel": "Endjahr",
+      "yearsBackLabel": "Jahre zurück",
+      "unassigned": "Nicht zugeordnet",
+      "total": "Gesamt",
+      "empty": "Noch keine Touren erfasst"
+    }
   },
   "landing": {
     "guide": {

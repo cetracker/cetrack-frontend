@@ -209,7 +209,22 @@
     "toLabel": "To",
     "uphillHeader": "Uphill (m)",
     "downhillHeader": "Downhill (m)",
-    "sumWorkHeader": "Sum Work (kJ)"
+    "sumWorkHeader": "Sum Work (kJ)",
+    "tours": {
+      "scopeLabel": "Tours",
+      "metricLabel": "Metric",
+      "metricDistance": "Distance",
+      "metricAscent": "Elevation gain",
+      "metricDurationMoving": "Moving time",
+      "granularityLabel": "Granularity",
+      "granularityMonth": "Month",
+      "granularityYear": "Year",
+      "endYearLabel": "End year",
+      "yearsBackLabel": "Years back",
+      "unassigned": "Unassigned",
+      "total": "Total",
+      "empty": "No tours recorded yet"
+    }
   },
   "landing": {
     "guide": {
