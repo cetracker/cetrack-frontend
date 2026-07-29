@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode, type Ref } from 'react'
 import {
   Box,
   Alert,
@@ -43,10 +43,12 @@ import {
   type ColumnFiltersState,
   type GroupingState,
   type OnChangeFn,
+  type Row,
   type RowData,
   type SortingState,
   type VisibilityState,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 declare module '@tanstack/react-table' {
   // Generic parameter names must stay aligned with upstream declaration.
@@ -88,6 +90,8 @@ export interface DataTableProps<TData> {
   fillHeight?: boolean
   title?: ReactNode
   toolbarExtras?: ReactNode
+  /** Render only the rows near the viewport. Requires explicit column sizes. */
+  virtualized?: boolean
 }
 
 export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
@@ -119,7 +123,18 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
     fillHeight = false,
     title,
     toolbarExtras,
+    virtualized = false,
   } = props
+
+  // jsdom has no ResizeObserver, so tests render every row exactly as before —
+  // no global stubs, no cross-file flakiness.
+  const canVirtualize = virtualized && typeof ResizeObserver !== 'undefined'
+
+  // A callback ref, not useRef: the virtualizer's layout effect lives in the
+  // descendant VirtualRows, and React attaches host refs bottom-up, so a plain
+  // ref on the ancestor TableContainer is still null when that effect runs.
+  // The state update on mount forces the second render the virtualizer needs.
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
 
   const [showFilters, setShowFilters] = useState(false)
   const [colMenuEl, setColMenuEl] = useState<HTMLElement | null>(null)
@@ -224,6 +239,76 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
     () => showFooter && columns.some((c) => c.footer !== undefined),
     [columns, showFooter],
   )
+
+  const renderRow = (
+    row: Row<TData>,
+    index: number,
+    measureRef?: Ref<HTMLTableRowElement>,
+  ) => {
+    const isGroup = row.getIsGrouped()
+    return (
+      <TableRow
+        key={row.id}
+        ref={measureRef}
+        data-index={measureRef ? index : undefined}
+        hover={!!onRowClick && !isGroup}
+        onClick={
+          onRowClick && !isGroup ? () => onRowClick(row.original) : undefined
+        }
+        sx={{
+          cursor: onRowClick && !isGroup ? 'pointer' : 'default',
+          // One expression rather than `&:nth-of-type(odd)`: with spacer rows in
+          // the DOM, position no longer tracks row index. It also lets a group
+          // header keep its own colour, which the nth-of-type rule used to win.
+          bgcolor: isGroup
+            ? theme.palette.action.selected
+            : index % 2 === 0
+              ? theme.palette.action.hover
+              : undefined,
+        }}
+      >
+        {row.getVisibleCells().map((cell) => {
+          const align = cell.column.columnDef.meta?.align ?? 'left'
+          if (cell.getIsGrouped()) {
+            return (
+              <TableCell
+                key={cell.id}
+                align={align}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  row.getToggleExpandedHandler()()
+                }}
+                sx={{ cursor: 'pointer', fontWeight: 600 }}
+              >
+                {row.getIsExpanded() ? '▼ ' : '▶ '}
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}{' '}
+                ({row.subRows.length})
+              </TableCell>
+            )
+          }
+          if (cell.getIsAggregated()) {
+            return (
+              <TableCell key={cell.id} align={align}>
+                {flexRender(
+                  cell.column.columnDef.aggregatedCell ??
+                    cell.column.columnDef.cell,
+                  cell.getContext(),
+                )}
+              </TableCell>
+            )
+          }
+          if (cell.getIsPlaceholder()) {
+            return <TableCell key={cell.id} align={align} />
+          }
+          return (
+            <TableCell key={cell.id} align={align}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          )
+        })}
+      </TableRow>
+    )
+  }
 
   return (
     <Paper
@@ -342,9 +427,29 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
       )}
 
       <TableContainer
+        ref={virtualized ? setScrollEl : undefined}
         sx={fillHeight ? { flexGrow: 1, minHeight: 0, overflow: 'auto' } : { maxHeight }}
       >
-        <Table size="small" stickyHeader={stickyHeader}>
+        <Table
+          size="small"
+          stickyHeader={stickyHeader}
+          sx={
+            virtualized
+              ? {
+                  tableLayout: 'fixed',
+                  width: '100%',
+                  minWidth: table.getTotalSize(),
+                }
+              : undefined
+          }
+        >
+          {virtualized && (
+            <colgroup>
+              {table.getVisibleLeafColumns().map((col) => (
+                <col key={col.id} style={{ width: col.getSize() }} />
+              ))}
+            </colgroup>
+          )}
           <TableHead>
             {table.getHeaderGroups().map((hg) => (
               <TableRow key={hg.id}>
@@ -359,7 +464,10 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
                     <TableCell
                       key={header.id}
                       align={align}
-                      sx={{ whiteSpace: 'nowrap' }}
+                      // With fixed column widths a nowrap header overflows into
+                      // its neighbour; the header is outside the virtual window,
+                      // so wrapping to two lines costs no row-height constancy.
+                      sx={{ whiteSpace: virtualized ? undefined : 'nowrap' }}
                       aria-sort={
                         dir === 'asc'
                           ? 'ascending'
@@ -460,76 +568,18 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
               </TableRow>
             )}
             {!isLoading &&
-              rows.map((row) => {
-                const isGroup = row.getIsGrouped()
-                return (
-                  <TableRow
-                    key={row.id}
-                    hover={!!onRowClick && !isGroup}
-                    onClick={
-                      onRowClick && !isGroup
-                        ? () => onRowClick(row.original)
-                        : undefined
-                    }
-                    sx={{
-                      cursor: onRowClick && !isGroup ? 'pointer' : 'default',
-                      '&:nth-of-type(odd)': (theme) => ({
-                        bgcolor: theme.palette.action.hover,
-                      }),
-                      ...(isGroup && {
-                        bgcolor: (theme) => theme.palette.action.selected,
-                      }),
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => {
-                      const align =
-                        cell.column.columnDef.meta?.align ?? 'left'
-                      if (cell.getIsGrouped()) {
-                        return (
-                          <TableCell
-                            key={cell.id}
-                            align={align}
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              row.getToggleExpandedHandler()()
-                            }}
-                            sx={{ cursor: 'pointer', fontWeight: 600 }}
-                          >
-                            {row.getIsExpanded() ? '▼ ' : '▶ '}
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}{' '}
-                            ({row.subRows.length})
-                          </TableCell>
-                        )
-                      }
-                      if (cell.getIsAggregated()) {
-                        return (
-                          <TableCell key={cell.id} align={align}>
-                            {flexRender(
-                              cell.column.columnDef.aggregatedCell ??
-                                cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        )
-                      }
-                      if (cell.getIsPlaceholder()) {
-                        return <TableCell key={cell.id} align={align} />
-                      }
-                      return (
-                        <TableCell key={cell.id} align={align}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      )
-                    })}
-                  </TableRow>
-                )
-              })}
+              (canVirtualize ? (
+                <VirtualRows
+                  rows={rows}
+                  scrollEl={scrollEl}
+                  colSpan={table.getVisibleLeafColumns().length}
+                  renderRow={renderRow}
+                />
+              ) : (
+                // The explicit arrow matters: `rows.map(renderRow)` would pass
+                // map's third argument into the measureRef slot.
+                rows.map((row, i) => renderRow(row, i))
+              ))}
           </TableBody>
           {hasAnyFooter && (
             <TableFooter>
@@ -562,5 +612,66 @@ export function DataTable<TData>(props: Readonly<DataTableProps<TData>>) {
         </Table>
       </TableContainer>
     </Paper>
+  )
+}
+
+interface VirtualRowsProps<TData> {
+  rows: Row<TData>[]
+  scrollEl: HTMLDivElement | null
+  colSpan: number
+  renderRow: (
+    row: Row<TData>,
+    index: number,
+    measureRef?: Ref<HTMLTableRowElement>,
+  ) => ReactNode
+}
+
+/**
+ * Renders the rows near the viewport, padded above and below by spacer rows so
+ * the scrollbar still spans the whole set. A child component, so the hook is
+ * never called conditionally.
+ */
+function VirtualRows<TData>({
+  rows,
+  scrollEl,
+  colSpan,
+  renderRow,
+}: Readonly<VirtualRowsProps<TData>>) {
+  const virtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => scrollEl,
+    // Leaf rows carry an IconButton on some lists (~43px); group headers are
+    // plain text (~33px). A flat estimate under-fills the first window.
+    estimateSize: (i) => (rows[i].getIsGrouped() ? 33 : 43),
+    // row.id is stable across the index shifts an expand/collapse causes.
+    getItemKey: (i) => rows[i].id,
+    overscan: 8,
+  })
+
+  const items = virtualizer.getVirtualItems()
+  const padTop = items.length ? items[0].start : 0
+  // Clamped: re-measurement can transiently drive this negative.
+  const padBottom = items.length
+    ? Math.max(0, virtualizer.getTotalSize() - items[items.length - 1].end)
+    : 0
+
+  // Spacers need a cell — a <tr> with no cells generates no cell boxes and
+  // collapses to zero height. The padding/border reset strips the ~13px MUI
+  // would otherwise add per spacer.
+  const spacer = (height: number, key: string) =>
+    height > 0 ? (
+      <tr aria-hidden key={key}>
+        <td colSpan={colSpan} style={{ height, padding: 0, border: 0 }} />
+      </tr>
+    ) : null
+
+  return (
+    <>
+      {spacer(padTop, 'virtual-pad-top')}
+      {items.map((item) =>
+        renderRow(rows[item.index], item.index, virtualizer.measureElement),
+      )}
+      {spacer(padBottom, 'virtual-pad-bottom')}
+    </>
   )
 }

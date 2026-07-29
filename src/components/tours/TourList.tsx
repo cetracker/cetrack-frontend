@@ -4,20 +4,10 @@ import { DataTable } from '@/components/common/DataTable'
 import { useApiMutation } from '@/hooks/useApiMutation'
 import type { Bike, Tour } from '@/types/api'
 import { createErrorDisplay } from '@/utils/errors'
-import {
-  bikeIdentity,
-  formatDateTime,
-  formatDistanceKm,
-  formatDuration,
-  formatKJ,
-  formatMonthShort,
-  formatNumber,
-} from '@/utils/formatters'
+import { bikeIdentity } from '@/utils/formatters'
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import {
   Box,
-  IconButton,
   Menu,
   MenuItem,
   Stack,
@@ -26,139 +16,13 @@ import {
 } from '@mui/material'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
-  ColumnDef,
   GroupingState,
   SortingState,
   VisibilityState,
 } from '@tanstack/react-table'
-import type { TFunction } from 'i18next'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { buildColumns } from './tourColumns'
 import { useTranslation } from 'react-i18next'
-
-const sum = (rows: Tour[], key: keyof Tour): number =>
-  rows.reduce((acc, r) => acc + ((r[key] as number | undefined) ?? 0), 0)
-
-interface TourActionsCellProps {
-  tour: Tour
-  onOpenMenu: (tour: Tour, el: HTMLElement) => void
-}
-
-const TourActionsCell = ({ tour, onOpenMenu }: TourActionsCellProps) => (
-  <IconButton
-    size="small"
-    onClick={(e) => {
-      e.stopPropagation()
-      onOpenMenu(tour, e.currentTarget)
-    }}
-  >
-    <MoreVertIcon fontSize="small" />
-  </IconButton>
-)
-
-interface TourColumnExtras {
-  data: Tour[] | undefined
-  totals: { distance: number; durationMoving: number; ascent: number; descent: number; powerTotal: number }
-  onOpenMenu: (tour: Tour, el: HTMLElement) => void
-}
-
-const buildColumns = (
-  t: TFunction,
-  { data, totals, onOpenMenu }: TourColumnExtras,
-): ColumnDef<Tour>[] => [
-  {
-    accessorKey: 'title',
-    header: t('tours.list.columns.title'),
-    enableGrouping: false,
-    footer: () => t('tours.list.columns.titleFooter', { count: (data ?? []).length }),
-  },
-  {
-    accessorKey: 'startYear',
-    header: t('tours.list.columns.year'),
-    enableGrouping: true,
-    meta: { align: 'left' },
-  },
-  {
-    accessorKey: 'startMonth',
-    header: t('tours.list.columns.month'),
-    enableGrouping: true,
-    cell: (c) => formatMonthShort(c.getValue<number>()),
-    meta: { align: 'left' },
-  },
-  {
-    accessorKey: 'startedAt',
-    header: t('tours.list.columns.started'),
-    enableGrouping: false,
-    cell: (c) => formatDateTime(c.getValue<string>()),
-    meta: { align: 'right' },
-  },
-  {
-    accessorKey: 'distance',
-    header: t('tours.list.columns.distance'),
-    enableGrouping: false,
-    cell: (c) => formatDistanceKm(c.getValue<number>()),
-    aggregatedCell: (c) => formatDistanceKm(c.getValue<number>()),
-    footer: () => formatDistanceKm(totals.distance),
-    meta: { align: 'right' },
-  },
-  {
-    accessorKey: 'durationMoving',
-    header: t('tours.list.columns.durationMoving'),
-    enableGrouping: false,
-    cell: (c) => formatDuration(c.getValue<number>()),
-    aggregatedCell: (c) => formatDuration(c.getValue<number>()),
-    footer: () => formatDuration(totals.durationMoving),
-    meta: { align: 'right', hideOnMobile: true },
-  },
-  {
-    accessorKey: 'ascent',
-    header: t('tours.list.columns.up'),
-    enableGrouping: false,
-    cell: (c) => formatNumber(c.getValue<number>()),
-    aggregatedCell: (c) => {
-      const v = c.getValue<number>()
-      return v != null ? formatNumber(v) : ''
-    },
-    footer: () => formatNumber(totals.ascent),
-    meta: { align: 'right', hideOnMobile: true },
-  },
-  {
-    accessorKey: 'descent',
-    header: t('tours.list.columns.down'),
-    enableGrouping: false,
-    cell: (c) => formatNumber(c.getValue<number>()),
-    aggregatedCell: (c) => {
-      const v = c.getValue<number>()
-      return v != null ? formatNumber(v) : ''
-    },
-    footer: () => formatNumber(totals.descent),
-    meta: { align: 'right', hideOnMobile: true },
-  },
-  {
-    accessorKey: 'powerTotal',
-    header: t('tours.list.columns.work'),
-    enableGrouping: false,
-    cell: (c) => formatKJ(c.getValue<number>()),
-    aggregatedCell: (c) => formatKJ(c.getValue<number>()),
-    footer: () => formatKJ(totals.powerTotal),
-    meta: { align: 'right', hideOnMobile: true },
-  },
-  {
-    id: 'bike',
-    header: t('common.bike'),
-    accessorFn: (tour) => bikeIdentity(tour.bike),
-    enableGrouping: true,
-    filterFn: 'equalsString',
-  },
-  {
-    id: 'actions',
-    header: '',
-    enableSorting: false,
-    enableGlobalFilter: false,
-    cell: ({ row }) => (
-      <TourActionsCell tour={row.original} onOpenMenu={onOpenMenu} />
-    ),
-  },
-]
 
 export const TourList = () => {
   const { t } = useTranslation()
@@ -189,25 +53,14 @@ export const TourList = () => {
     },
   )
 
-  const totals = useMemo(() => {
-    const rows = data ?? []
-    return {
-      distance: sum(rows, 'distance'),
-      durationMoving: sum(rows, 'durationMoving'),
-      ascent: sum(rows, 'ascent'),
-      descent: sum(rows, 'descent'),
-      powerTotal: sum(rows, 'powerTotal'),
-    }
-  }, [data])
-
-  const handleOpenMenu = (tour: Tour, el: HTMLElement) => {
+  const handleOpenMenu = useCallback((tour: Tour, el: HTMLElement) => {
     setMenuTour(tour)
     setMenuEl(el)
-  }
+  }, [])
 
   const columns = useMemo(
-    () => buildColumns(t, { data, totals, onOpenMenu: handleOpenMenu }),
-    [t, data, totals],
+    () => buildColumns(t, { onOpenMenu: handleOpenMenu }),
+    [t, handleOpenMenu],
   )
 
   return (
@@ -236,6 +89,7 @@ export const TourList = () => {
         enableGrouping
         showFooter
         fillHeight
+        virtualized
       />
 
       <Menu
