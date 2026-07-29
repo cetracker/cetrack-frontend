@@ -98,6 +98,7 @@ export const TourReportChart = ({ report, granularity, endYear, yearsBack, metri
         {
           scaleType: 'band',
           data: xKeys,
+          height: 'auto',
           valueFormatter: (value: string, context: { location: string }) => {
             const index = xKeys.indexOf(value)
             if (context.location === 'tooltip') {
