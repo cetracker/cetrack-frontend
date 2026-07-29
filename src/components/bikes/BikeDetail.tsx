@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Alert, Box, Button, Stack, Tab, Tabs } from '@mui/material'
+import { Alert, Box, Button, IconButton, Stack, Tab, Tabs, Typography } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import EditIcon from '@mui/icons-material/Edit'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { bikeQuery } from '@/api/bikes'
@@ -11,8 +12,10 @@ import { CompositionTable } from './CompositionTable'
 import { BikeCompositionAtDate } from './BikeCompositionAtDate'
 import { BikeForm } from './BikeForm'
 import { RetireBikeDialog } from './RetireBikeDialog'
+import { CorrectBikeRetirementDialog } from './CorrectBikeRetirementDialog'
 import { BikeMaintenanceTab } from './BikeMaintenanceTab'
-import { bikeIdentity } from '@/utils/formatters'
+import { bikeIdentity, formatDate } from '@/utils/formatters'
+import { retirementKindLabel } from '@/utils/retirement'
 
 export const BikeDetail = () => {
   const { t } = useTranslation()
@@ -30,6 +33,7 @@ export const BikeDetail = () => {
   const [tab, setTab] = useState(0)
   const [editOpen, setEditOpen] = useState(false)
   const [retireOpen, setRetireOpen] = useState(false)
+  const [correctRetirementOpen, setCorrectRetirementOpen] = useState(false)
 
   if (!bikeId) return null
 
@@ -66,9 +70,44 @@ export const BikeDetail = () => {
       </Stack>
 
       {bike?.retiredAt && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          {t('bikes.detail.retiredBanner')}
-        </Alert>
+        <Box sx={{ mb: 2 }}>
+          <Alert severity="warning" sx={{ mb: 1 }}>
+            {t('bikes.detail.retiredBanner')}
+          </Alert>
+          <Stack sx={{ gap: 0.5 }}>
+            <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                {t('bikes.fields.retired')}
+              </Typography>
+              <Stack sx={{ flexDirection: 'row', gap: 0.5, alignItems: 'center' }}>
+                <Typography variant="body2">{formatDate(bike.retiredAt)}</Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => setCorrectRetirementOpen(true)}
+                  aria-label={t('bikes.detail.editRetirementAriaLabel')}
+                >
+                  <EditIcon fontSize="inherit" />
+                </IconButton>
+              </Stack>
+            </Stack>
+            {bike.retirementKind && (
+              <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between' }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t('retirement.reasonLabel')}
+                </Typography>
+                <Typography variant="body2">{retirementKindLabel(bike.retirementKind)}</Typography>
+              </Stack>
+            )}
+            {bike.retirementNote && (
+              <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between' }}>
+                <Typography variant="body2" color="text.secondary">
+                  {t('retirement.noteLabel')}
+                </Typography>
+                <Typography variant="body2">{bike.retirementNote}</Typography>
+              </Stack>
+            )}
+          </Stack>
+        </Box>
       )}
 
       <Tabs value={tab} onChange={(_, v: number) => setTab(v)} sx={{ mb: 2 }}>
@@ -93,6 +132,13 @@ export const BikeDetail = () => {
             open={retireOpen}
             onClose={() => setRetireOpen(false)}
             bikeId={bike.id}
+          />
+          <CorrectBikeRetirementDialog
+            open={correctRetirementOpen}
+            onClose={() => setCorrectRetirementOpen(false)}
+            bikeId={bike.id}
+            currentKind={bike.retirementKind}
+            currentNote={bike.retirementNote}
           />
         </>
       )}

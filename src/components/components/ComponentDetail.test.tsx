@@ -156,4 +156,37 @@ describe('ComponentDetail', () => {
     expect(link).toHaveAttribute('href', '/assemblies/a2')
     expect(link).toHaveTextContent('In assembly')
   })
+
+  it('renders reason and note beneath the retired date when present', async () => {
+    componentData = {
+      id: 'c1',
+      componentTypeId: 'ct1',
+      label: 'Retired One',
+      status: 'retired',
+      retiredAt: '2025-01-01T00:00:00Z',
+      retirementKind: 'gifted',
+      retirementNote: 'given to a friend',
+    }
+
+    renderDetail()
+
+    expect(await screen.findByText('Gifted')).toBeInTheDocument()
+    expect(screen.getByText('given to a friend')).toBeInTheDocument()
+  })
+
+  it('renders the retired date alone (no reason row) for a legacy kind-less retirement', async () => {
+    componentData = {
+      id: 'c1',
+      componentTypeId: 'ct1',
+      label: 'Legacy Retired',
+      status: 'retired',
+      retiredAt: '2025-01-01T00:00:00Z',
+    }
+
+    renderDetail()
+
+    expect(await screen.findAllByText('Retired')).not.toHaveLength(0)
+    expect(screen.queryByText('Reason')).not.toBeInTheDocument()
+    expect(screen.queryByText('Note')).not.toBeInTheDocument()
+  })
 })

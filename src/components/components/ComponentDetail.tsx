@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
+import EditIcon from '@mui/icons-material/Edit'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink } from 'react-router'
@@ -20,9 +21,11 @@ import { membershipsQuery } from '@/api/memberships'
 import { MountingHistoryTable } from '@/components/mountings/MountingHistoryTable'
 import { DismountDialog } from './DismountDialog'
 import { RetireComponentDialog } from './RetireComponentDialog'
+import { CorrectComponentRetirementDialog } from './CorrectComponentRetirementDialog'
 import { MountComponentDialog } from './MountComponentDialog'
 import { formatDate, componentIdentity } from '@/utils/formatters'
 import { activeMounting, componentStatusLabel } from '@/utils/components'
+import { retirementKindLabel } from '@/utils/retirement'
 
 interface ComponentDetailProps {
   open: boolean
@@ -57,6 +60,7 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
   const [mountOpen, setMountOpen] = useState(false)
   const [dismountOpen, setDismountOpen] = useState(false)
   const [retireOpen, setRetireOpen] = useState(false)
+  const [correctRetirementOpen, setCorrectRetirementOpen] = useState(false)
 
   const mountedViaAssembly = component?.status === 'mounted' && !component?.directlyMounted
   const assemblyId = mountings ? activeMounting(mountings)?.assemblyId : undefined
@@ -139,7 +143,6 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
                       : undefined,
                   ),
                 ],
-                [t('components.fields.retired'), formatDate(component.retiredAt)],
               ] as [string, string][]
             )
               .filter(([, v]) => v)
@@ -154,6 +157,43 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
                   <Typography variant="body2">{v}</Typography>
                 </Stack>
               ))}
+            {component.retiredAt && (
+              <Stack sx={{ gap: 0.5 }}>
+                <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('components.fields.retired')}
+                  </Typography>
+                  <Stack sx={{ flexDirection: 'row', gap: 0.5, alignItems: 'center' }}>
+                    <Typography variant="body2">{formatDate(component.retiredAt)}</Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => setCorrectRetirementOpen(true)}
+                      aria-label={t('components.detail.editRetirementAriaLabel')}
+                    >
+                      <EditIcon fontSize="inherit" />
+                    </IconButton>
+                  </Stack>
+                </Stack>
+                {component.retirementKind && (
+                  <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('retirement.reasonLabel')}
+                    </Typography>
+                    <Typography variant="body2">
+                      {retirementKindLabel(component.retirementKind)}
+                    </Typography>
+                  </Stack>
+                )}
+                {component.retirementNote && (
+                  <Stack sx={{ flexDirection: 'row', gap: 1, justifyContent: 'space-between' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {t('retirement.noteLabel')}
+                    </Typography>
+                    <Typography variant="body2">{component.retirementNote}</Typography>
+                  </Stack>
+                )}
+              </Stack>
+            )}
           </Box>
         )}
 
@@ -216,6 +256,13 @@ export const ComponentDetail = ({ open, onClose, componentId }: ComponentDetailP
               open={retireOpen}
               onClose={() => setRetireOpen(false)}
               componentId={component.id}
+            />
+            <CorrectComponentRetirementDialog
+              open={correctRetirementOpen}
+              onClose={() => setCorrectRetirementOpen(false)}
+              componentId={component.id}
+              currentKind={component.retirementKind}
+              currentNote={component.retirementNote}
             />
           </>
         )}

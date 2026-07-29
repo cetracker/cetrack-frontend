@@ -2,6 +2,7 @@ import { client } from './client'
 import type {
   Bike,
   BikeInput,
+  CorrectRetirementRequest,
   MountingChanges,
   MountPoint,
   MountPointInput,
@@ -53,6 +54,17 @@ export const retireBike = async (
   body: RetireBikeRequest,
 ): Promise<Bike> => {
   const res = await client.post<Bike>(`/bikes/${id}/action/retire`, body)
+  return res.data
+}
+
+export const correctBikeRetirement = async (
+  id: string,
+  body: CorrectRetirementRequest,
+): Promise<Bike> => {
+  const res = await client.post<Bike>(
+    `/bikes/${id}/action/correctRetirement`,
+    body,
+  )
   return res.data
 }
 

@@ -16,17 +16,21 @@ export interface Bike {
   price?: string
   priceCurrency?: string
   retiredAt?: ISODateTime
+  retirementKind?: RetirementKind
+  retirementNote?: string
   createdAt?: ISODateTime
 }
 
-// no retiredAt — set only via the retire action
+// no retiredAt/retirementKind/retirementNote — set only via the retire/correctRetirement actions
 export type BikeInput = Omit<
   Bike,
-  'id' | 'retiredAt' | 'createdAt'
+  'id' | 'retiredAt' | 'retirementKind' | 'retirementNote' | 'createdAt'
 >
 
 export interface RetireBikeRequest {
   at: ISODateTime
+  kind: RetirementKind
+  note?: string
 }
 
 export interface MountPoint {
@@ -69,7 +73,15 @@ export type PositionInput = Omit<Position, 'id' | 'createdAt'>
 
 export type ComponentStatus = 'inStock' | 'inAssembly' | 'mounted' | 'retired'
 
-export type RetirementKind = 'scrapped' | 'sold'
+export type RetirementKind =
+  | 'scrapped'
+  | 'sold'
+  | 'gifted'
+  | 'broken'
+  | 'lost'
+  | 'stolen'
+  | 'wornOut'
+  | 'other'
 
 export interface Component {
   id: UUID
@@ -84,15 +96,16 @@ export interface Component {
   priceCurrency?: string
   retiredAt?: ISODateTime
   retirementKind?: RetirementKind
+  retirementNote?: string
   status?: ComponentStatus
   directlyMounted?: boolean
   createdAt?: ISODateTime
 }
 
-// editable subset — lifecycle fields (retiredAt, retirementKind, status) change via actions only
+// editable subset — lifecycle fields (retiredAt, retirementKind, retirementNote, status) change via actions only
 export type ComponentInput = Omit<
   Component,
-  'id' | 'retiredAt' | 'retirementKind' | 'status' | 'createdAt'
+  'id' | 'retiredAt' | 'retirementKind' | 'retirementNote' | 'status' | 'createdAt'
 >
 
 export interface DismountRequest {
@@ -102,6 +115,13 @@ export interface DismountRequest {
 export interface RetireComponentRequest {
   at: ISODateTime
   kind: RetirementKind
+  note?: string
+}
+
+// full replacement: kind required, an omitted note clears any existing note
+export interface CorrectRetirementRequest {
+  kind: RetirementKind
+  note?: string
 }
 
 export interface CorrectMountingRequest {

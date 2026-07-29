@@ -77,7 +77,24 @@
     "mountedViaAssembly": "Mounted (via assembly)",
     "retired": "Retired"
   },
+  "retirement": {
+    "kinds": {
+      "scrapped": "Scrapped",
+      "sold": "Sold",
+      "gifted": "Gifted",
+      "broken": "Broken",
+      "lost": "Lost",
+      "stolen": "Stolen",
+      "wornOut": "Worn out",
+      "other": "Other"
+    },
+    "reasonLabel": "Reason",
+    "noteLabel": "Note",
+    "correctTitle": "Edit retirement reason",
+    "correctSuccessMessage": "Retirement reason updated"
+  },
   "errors": {
+    "NOT_RETIRED": "This item isn't retired.",
     "TYPE_MISMATCH": "That component type does not fit this mount point.",
     "COMPONENT_RETIRED": "This component is retired and can no longer be used.",
     "MOUNTING_OVERLAP": "That change would overlap another mounting.",
@@ -158,7 +175,8 @@
       "mountingHistoryTitle": "Mounting history",
       "mountButton": "Mount",
       "dismountButton": "Dismount",
-      "retireButton": "Retire"
+      "retireButton": "Retire",
+      "editRetirementAriaLabel": "Edit retirement reason"
     },
     "infoCell": {
       "detailsAriaLabel": "Component details"
@@ -182,9 +200,6 @@
     "retire": {
       "title": "Retire component",
       "atLabel": "Retired at",
-      "reasonLabel": "Reason",
-      "scrapped": "Scrapped",
-      "sold": "Sold",
       "successMessage": "Component retired"
     }
   },
@@ -333,6 +348,9 @@
     }
   },
   "bikes": {
+    "fields": {
+      "retired": "Retired"
+    },
     "list": {
       "title": "Bikes",
       "addButton": "Add bike",
@@ -355,7 +373,8 @@
       "retiredBanner": "Retired — no new tours or mountings.",
       "compositionTab": "Composition",
       "historyTab": "History",
-      "maintenanceTab": "Maintenance"
+      "maintenanceTab": "Maintenance",
+      "editRetirementAriaLabel": "Edit retirement reason"
     },
     "mountPoint": {
       "addTitle": "Add Mount Point",

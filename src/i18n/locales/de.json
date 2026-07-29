@@ -77,7 +77,24 @@
     "mountedViaAssembly": "Montiert (über Baugruppe)",
     "retired": "Ausgemustert"
   },
+  "retirement": {
+    "kinds": {
+      "scrapped": "Verschrottet",
+      "sold": "Verkauft",
+      "gifted": "Verschenkt",
+      "broken": "Kaputt",
+      "lost": "Verloren",
+      "stolen": "Gestohlen",
+      "wornOut": "Verschlissen",
+      "other": "Sonstiges"
+    },
+    "reasonLabel": "Grund",
+    "noteLabel": "Notiz",
+    "correctTitle": "Ausmusterungsgrund bearbeiten",
+    "correctSuccessMessage": "Ausmusterungsgrund aktualisiert"
+  },
   "errors": {
+    "NOT_RETIRED": "Dieser Eintrag ist nicht ausgemustert.",
     "TYPE_MISMATCH": "Dieser Komponententyp passt nicht zu diesem Montagepunkt.",
     "COMPONENT_RETIRED": "Diese Komponente ist ausgemustert und kann nicht mehr verwendet werden.",
     "MOUNTING_OVERLAP": "Diese Änderung würde eine andere Montage überschneiden.",
@@ -158,7 +175,8 @@
       "mountingHistoryTitle": "Montageverlauf",
       "mountButton": "Montieren",
       "dismountButton": "Demontieren",
-      "retireButton": "Ausmustern"
+      "retireButton": "Ausmustern",
+      "editRetirementAriaLabel": "Ausmusterungsgrund bearbeiten"
     },
     "infoCell": {
       "detailsAriaLabel": "Komponentendetails"
@@ -182,9 +200,6 @@
     "retire": {
       "title": "Komponente ausmustern",
       "atLabel": "Ausgemustert am",
-      "reasonLabel": "Grund",
-      "scrapped": "Verschrottet",
-      "sold": "Verkauft",
       "successMessage": "Komponente ausgemustert"
     }
   },
@@ -333,6 +348,9 @@
     }
   },
   "bikes": {
+    "fields": {
+      "retired": "Ausgemustert"
+    },
     "list": {
       "title": "Fahrräder",
       "addButton": "Fahrrad hinzufügen",
@@ -355,7 +373,8 @@
       "retiredBanner": "Ausgemustert — keine neuen Touren oder Montagen.",
       "compositionTab": "Zusammensetzung",
       "historyTab": "Verlauf",
-      "maintenanceTab": "Wartung"
+      "maintenanceTab": "Wartung",
+      "editRetirementAriaLabel": "Ausmusterungsgrund bearbeiten"
     },
     "mountPoint": {
       "addTitle": "Montagepunkt hinzufügen",

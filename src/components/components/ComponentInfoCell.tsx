@@ -3,6 +3,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { useTranslation } from 'react-i18next'
 import type { Component } from '@/types/api'
 import { componentDisambiguator, componentIdentity, formatDate } from '@/utils/formatters'
+import { retirementKindLabel } from '@/utils/retirement'
 
 export const ComponentInfoCell = ({ component }: { component: Component }) => {
   const { t } = useTranslation()
@@ -18,6 +19,11 @@ export const ComponentInfoCell = ({ component }: { component: Component }) => {
       [t('components.fields.price'), price],
       [t('components.fields.purchased'), formatDate(component.purchaseDate)],
       [t('components.fields.retired'), formatDate(component.retiredAt)],
+      [
+        t('retirement.reasonLabel'),
+        component.retirementKind ? retirementKindLabel(component.retirementKind) : '',
+      ],
+      [t('retirement.noteLabel'), component.retirementNote ?? ''],
     ] as [string, string][]
   ).filter(([, v]) => v)
 

@@ -3,6 +3,7 @@ import type {
   Component,
   ComponentInput,
   ComponentStatus,
+  CorrectRetirementRequest,
   DismountRequest,
   MountingChanges,
   RetireComponentRequest,
@@ -75,6 +76,17 @@ export const retireComponent = async (
 ): Promise<Component> => {
   const res = await client.post<Component>(
     `/components/${id}/action/retire`,
+    body,
+  )
+  return res.data
+}
+
+export const correctComponentRetirement = async (
+  id: string,
+  body: CorrectRetirementRequest,
+): Promise<Component> => {
+  const res = await client.post<Component>(
+    `/components/${id}/action/correctRetirement`,
     body,
   )
   return res.data

@@ -1,32 +1,52 @@
 import { useState } from 'react'
-import { DateTimePicker } from '@mui/x-date-pickers'
 import { MenuItem, Stack, TextField } from '@mui/material'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { FormDialog } from '@/components/common/FormDialog'
 import { useApiMutation } from '@/hooks/useApiMutation'
-import { bikeQueryKey, bikesQueryKey, retireBike } from '@/api/bikes'
+import { bikeQueryKey, bikesQueryKey, correctBikeRetirement } from '@/api/bikes'
 import type { RetirementKind } from '@/types/api'
-import { withLocalOffset } from '@/utils/formatters'
 import { RETIREMENT_KINDS, retirementKindLabel } from '@/utils/retirement'
 
-interface RetireBikeDialogProps {
+interface CorrectBikeRetirementDialogProps {
   open: boolean
   onClose: () => void
   bikeId: string
+  currentKind?: RetirementKind
+  currentNote?: string
 }
 
-export const RetireBikeDialog = ({ open, onClose, bikeId }: RetireBikeDialogProps) => {
+export const CorrectBikeRetirementDialog = ({
+  open,
+  onClose,
+  bikeId,
+  currentKind,
+  currentNote,
+}: CorrectBikeRetirementDialogProps) => {
   const { t } = useTranslation()
   const qc = useQueryClient()
-  const [at, setAt] = useState<Date | null>(new Date())
-  const [kind, setKind] = useState<RetirementKind>('scrapped')
-  const [note, setNote] = useState('')
+  const [kind, setKind] = useState<RetirementKind | ''>(currentKind ?? '')
+  const [note, setNote] = useState(currentNote ?? '')
 
-  const retireMut = useApiMutation(
-    (body: { at: string; kind: RetirementKind; note?: string }) => retireBike(bikeId, body),
+  // Re-seed from the current values every time the dialog (re)opens — a
+  // dialog copied literally from RetireBikeDialog would default kind to a
+  // constant and silently wipe an existing note on submit. A legacy bike
+  // with no kind at all starts with an empty selection, not an invented one.
+  // Adjusting state during render (not in an effect) per React's "resetting
+  // state when a prop changes" pattern.
+  const [wasOpen, setWasOpen] = useState(open)
+  if (open !== wasOpen) {
+    setWasOpen(open)
+    if (open) {
+      setKind(currentKind ?? '')
+      setNote(currentNote ?? '')
+    }
+  }
+
+  const correctMut = useApiMutation(
+    (body: { kind: RetirementKind; note?: string }) => correctBikeRetirement(bikeId, body),
     {
-      successMessage: t('bikes.retire.successMessage'),
+      successMessage: t('retirement.correctSuccessMessage'),
       onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: bikesQueryKey })
         await qc.invalidateQueries({ queryKey: bikeQueryKey(bikeId) })
@@ -36,32 +56,27 @@ export const RetireBikeDialog = ({ open, onClose, bikeId }: RetireBikeDialogProp
   )
 
   const submit = () => {
-    if (!at) return
-    retireMut.mutate({ at: withLocalOffset(at), kind, note: note.trim() || undefined })
+    if (!kind) return
+    correctMut.mutate({ kind, note: note.trim() || undefined })
   }
 
   return (
     <FormDialog
       open={open}
-      title={t('bikes.retire.title')}
+      title={t('retirement.correctTitle')}
       onCancel={onClose}
       onSubmit={submit}
-      submitting={retireMut.isPending}
-      submitDisabled={!at}
-      submitLabel={t('bikes.detail.retireButton')}
+      submitting={correctMut.isPending}
+      submitDisabled={!kind}
+      submitLabel={t('common.save')}
     >
       <Stack spacing={2} sx={{ pt: 1 }}>
-        <DateTimePicker
-          label={t('bikes.retire.atLabel')}
-          value={at}
-          onChange={setAt}
-          slotProps={{ textField: { fullWidth: true, autoFocus: true } }}
-        />
         <TextField
           select
           label={t('retirement.reasonLabel')}
           value={kind}
           onChange={(e) => setKind(e.target.value as RetirementKind)}
+          autoFocus
         >
           {RETIREMENT_KINDS.map((k) => (
             <MenuItem key={k} value={k}>
