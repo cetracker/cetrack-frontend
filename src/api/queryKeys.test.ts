@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { componentQueryKey, componentsQueryKey } from './components'
 import { mountingsQueryKey } from './mountings'
-import { mileageQueryKey } from './reports'
+import { mileageQueryKey, tourReportQueryKey } from './reports'
 import { bikeQueryKey, mountPointsQueryKey } from './bikes'
 import { componentTypeQueryKey, positionQueryKey } from './catalog'
 import {
@@ -38,6 +38,14 @@ describe('query-key factories', () => {
 
   it('mileageQueryKey nests under reports/mileage', () => {
     expect(mileageQueryKey({ scope: 'bikes' })).toEqual(['reports', 'mileage', { scope: 'bikes' }])
+  })
+
+  it('tourReportQueryKey nests under reports/tours and omits metric', () => {
+    expect(tourReportQueryKey({ granularity: 'month', yearsBack: 1 })).toEqual([
+      'reports',
+      'tours',
+      { granularity: 'month', yearsBack: 1 },
+    ])
   })
 
   it('bikeQueryKey nests under bikes', () => {

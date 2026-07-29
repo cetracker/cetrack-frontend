@@ -178,6 +178,33 @@ export interface MileageItem {
   powerTotal?: number
 }
 
+export type TourGranularity = 'month' | 'year'
+
+export interface TourReportBike {
+  bikeId?: UUID
+  bikeName?: string
+  bikeModel?: string
+}
+
+export interface TourReportItem {
+  bikeId?: UUID
+  distance: number
+  ascent: number
+  durationMoving: number
+}
+
+export interface TourReportBucket {
+  year: number
+  month?: number
+  items: TourReportItem[]
+}
+
+export interface TourReport {
+  availableYears: number[]
+  bikes: TourReportBike[]
+  buckets: TourReportBucket[]
+}
+
 export interface Tour {
   id: UUID
   title: string
