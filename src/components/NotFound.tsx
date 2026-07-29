@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from '@mui/material'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router'
 import { useTranslation } from 'react-i18next'
 
 export const NotFound = () => {

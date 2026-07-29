@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { Link as RouterLink, MemoryRouter } from 'react-router-dom'
+import { Link as RouterLink, MemoryRouter } from 'react-router'
 import { NotifyProvider } from '@/hooks/NotifyProvider'
 import { MaintenanceList } from './MaintenanceList'
 

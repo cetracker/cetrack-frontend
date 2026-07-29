@@ -13,7 +13,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router'
 import { componentQuery } from '@/api/components'
 import { mountingsQuery } from '@/api/mountings'
 import { membershipsQuery } from '@/api/memberships'

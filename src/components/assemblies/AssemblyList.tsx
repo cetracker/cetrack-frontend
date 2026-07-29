@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Box, Button, Chip, Stack } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'

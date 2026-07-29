@@ -2,7 +2,7 @@ import { Badge, IconButton, Tooltip } from '@mui/material'
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import { useQuery } from '@tanstack/react-query'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { pendingMyTourbookSessionQuery } from '@/api/tours'
 

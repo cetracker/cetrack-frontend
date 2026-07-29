@@ -57,7 +57,7 @@ The `demo` profile seeds sample data — useful when working on list / grouping 
 src/
 ├── main.tsx                  # React entry
 ├── App.tsx                   # Theme + providers (ColorMode, Query, Notify, Router)
-├── router.tsx                # react-router-dom route definitions
+├── router.tsx                # react-router route definitions
 ├── theme.ts                  # MUI light + dark themes
 ├── types/api.ts              # Hand-written TS types mirroring the OpenAPI specs
 ├── api/

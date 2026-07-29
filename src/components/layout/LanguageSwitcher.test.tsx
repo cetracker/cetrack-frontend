@@ -2,7 +2,7 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
 import i18n from '@/i18n'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { NavList } from './NavList'
