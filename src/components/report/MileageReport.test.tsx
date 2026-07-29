@@ -24,6 +24,10 @@ vi.mock('@/api/reports', async (importOriginal) => {
   }
 })
 
+vi.mock('@/components/report/TourReport', () => ({
+  TourReport: () => <div data-testid="tour-report" />,
+}))
+
 const renderReport = () => {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
@@ -69,5 +73,32 @@ describe('MileageReport time frame', () => {
 
     expect(lastFilters().from).toMatch(/^2026-04-22T00:00:00\.000/)
     expect(lastFilters().to).toMatch(/^2026-05-01T23:59:59\.999/)
+  })
+})
+
+describe('MileageReport tours scope', () => {
+  beforeEach(() => {
+    capturedFilters = []
+  })
+
+  it('switches to the Tours panel, hiding the date pickers and the table', async () => {
+    const user = userEvent.setup()
+    renderReport()
+
+    await user.click(screen.getByRole('button', { name: 'Tours' }))
+
+    expect(screen.getByTestId('tour-report')).toBeInTheDocument()
+    expect(screen.queryByLabelText('From', { selector: 'input' })).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('To', { selector: 'input' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
+
+  it('never calls mileageQuery with scope: tours', async () => {
+    const user = userEvent.setup()
+    renderReport()
+
+    await user.click(screen.getByRole('button', { name: 'Tours' }))
+
+    expect(capturedFilters.some((f) => (f.scope as string) === 'tours')).toBe(false)
   })
 })
