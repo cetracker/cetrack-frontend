@@ -24,6 +24,28 @@ const formatMetricValue = (metric: TourMetric, value: number): string => {
   }
 }
 
+/**
+ * Compact, locale-independent axis-tick formatting: x-charts' own default
+ * tick formatter ignores the app's number locale and always groups with a
+ * comma, which reads as a decimal point in German - so ticks always render
+ * plain, ungrouped digits here instead of routing through formatNumber.
+ */
+const formatAxisValue = (metric: TourMetric, value: number): string => {
+  switch (metric) {
+    case 'distance':
+      return `${Math.round(value / 1000)} km`
+    case 'ascent':
+      return `${Math.round(value)} m`
+    case 'durationMoving': {
+      const totalMinutes = Math.round(value / 60)
+      return `${Math.floor(totalMinutes / 60)}:${String(totalMinutes % 60).padStart(2, '0')}`
+    }
+  }
+}
+
+/** Tick labels always use the short, year-less form - a full "Aug 24" per
+ *  tick overlaps at 24 monthly columns and x-charts' overlap avoidance then
+ *  hides nearly every label. The year still disambiguates in the tooltip. */
 const formatBucketLabel = (bucket: AxisBucket, showYear: boolean): string =>
   bucket.month != null
     ? showYear
@@ -78,12 +100,18 @@ export const TourReportChart = ({ report, granularity, endYear, yearsBack, metri
           data: xKeys,
           valueFormatter: (value: string, context: { location: string }) => {
             const index = xKeys.indexOf(value)
-            const label = formatBucketLabel(axis[index], showYearInLabel)
             if (context.location === 'tooltip') {
+              const label = formatBucketLabel(axis[index], showYearInLabel)
               return `${label} — ${t('report.tours.total')}: ${formatMetricValue(metric, bucketTotals[index])}`
             }
-            return label
+            return formatBucketLabel(axis[index], false)
           },
+        },
+      ]}
+      yAxis={[
+        {
+          width: 'auto',
+          valueFormatter: (value: number) => formatAxisValue(metric, value),
         },
       ]}
     />
