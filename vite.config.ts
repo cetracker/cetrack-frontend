@@ -33,6 +33,7 @@ export default defineConfig({
       output: {
         manualChunks: (id) => {
           if (!id.includes('node_modules')) return
+          if (id.includes('@mui/x-charts')) return 'vendor-charts'
           if (id.includes('@mui') || id.includes('@emotion')) return 'vendor-mui'
           if (id.includes('@tanstack')) return 'vendor-tanstack'
           if (
