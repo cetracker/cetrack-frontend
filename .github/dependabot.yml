@@ -9,12 +9,22 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "monthly"
+    cooldown:
+    default-days: 5
     versioning-strategy: increase
-  - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    groups:
+      monthly-batch:
+        patterns:
+          - "*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
       interval: "monthly"
-  - package-ecosystem: "docker" # See documentation for possible values
+    groups:
+      monthly-batch:
+        patterns:
+          - "*"
+    - package-ecosystem: "docker" # See documentation for possible values
     directory: "/"
     schedule:
       interval: "monthly"
